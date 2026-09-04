@@ -1,0 +1,466 @@
+export interface CategoryProduct {
+  id: string
+  title: string
+  sku: string
+  image: string
+  categorySlug: string
+  categoryName: string
+  description: string
+  specs: string
+}
+
+export interface CategoryDetail {
+  id: string
+  slug: string
+  title: string
+  highlight: string
+  badgeText: string
+  description: string
+  products: CategoryProduct[]
+}
+
+export const CATEGORIES_DATA: Record<string, CategoryDetail> = {
+  'general-surgery': {
+    id: '01',
+    slug: 'general-surgery',
+    title: 'GENERAL',
+    highlight: 'SURGERY',
+    badgeText: 'PRODUCT CATEGORY 01',
+    description:
+      'Explore our comprehensive range of general surgical tools including dissection scissors, hemostatic clamps, tissue forceps, scalpel handles, and retractors crafted from Japanese stainless steel.',
+    products: [
+      {
+        id: 'surg-1',
+        title: 'Iris Precision Surgical Scissors',
+        sku: 'SURG-SC-101',
+        image: '/images/cat-scissors-shears.png',
+        categorySlug: 'general-surgery',
+        categoryName: 'General Surgery',
+        description: 'Delicate curved surgical scissors crafted from Japanese stainless steel for fine tissue dissection.',
+        specs: 'Japanese AISI 420 Steel, 11.5cm Curved Micro-Blades',
+      },
+      {
+        id: 'surg-2',
+        title: 'Mayo Dissecting Straight Scissors',
+        sku: 'SURG-SC-102',
+        image: '/images/blog-instruments-tray.png',
+        categorySlug: 'general-surgery',
+        categoryName: 'General Surgery',
+        description: 'Heavy-duty Mayo dissecting scissors featuring beveled cutting edges for dense tissue cutting.',
+        specs: 'Gold-Handle Tungsten Carbide, 14cm Straight',
+      },
+      {
+        id: 'surg-3',
+        title: 'Kelly Hemostatic Forceps Curved',
+        sku: 'SURG-FC-201',
+        image: '/images/cat-forceps-clamps.png',
+        categorySlug: 'general-surgery',
+        categoryName: 'General Surgery',
+        description: 'Precision hemostatic locking forceps with serrated jaws for occluding blood vessels.',
+        specs: 'Interlocking Ratchet, Transverse Serrations, 14cm',
+      },
+      {
+        id: 'surg-4',
+        title: 'Adson Tissue Forceps 1x2 Teeth',
+        sku: 'SURG-FC-202',
+        image: '/images/about-surgical-instruments.png',
+        categorySlug: 'general-surgery',
+        categoryName: 'General Surgery',
+        description: 'Micro-tooth tissue grasping forceps designed for delicate skin closure and tissue handling.',
+        specs: 'Fine 1x2 Teeth, Anti-Slip Wide Thumb Grip, 12cm',
+      },
+      {
+        id: 'surg-5',
+        title: 'Weitlaner Self-Retaining Retractor',
+        sku: 'SURG-RT-301',
+        image: '/images/cat-retractors.png',
+        categorySlug: 'general-surgery',
+        categoryName: 'General Surgery',
+        description: 'Self-retaining surgical retractor with finger rings and ratchet lock mechanism.',
+        specs: '3x4 Blunt Prongs, Ratchet Lock System, 16.5cm',
+      },
+      {
+        id: 'surg-6',
+        title: 'Scalpel Handle No. 3 Standard',
+        sku: 'SURG-HD-003',
+        image: '/images/cat-handles-blades.png',
+        categorySlug: 'general-surgery',
+        categoryName: 'General Surgery',
+        description: 'Standard surgical scalpel handle compatible with micro-blades #10 through #15.',
+        specs: 'Graduated Millimeter Scale, Fits Blades #10-#15',
+      },
+    ],
+  },
+  dental: {
+    id: '02',
+    slug: 'dental',
+    title: 'DENTAL &',
+    highlight: 'RESTORATIVE',
+    badgeText: 'PRODUCT CATEGORY 02',
+    description:
+      'Full range catalogue of ergonomic restorative, periodontal, extraction, and orthodontic dental instruments engineered for maximum tactile precision.',
+    products: [
+      {
+        id: 'dent-1',
+        title: 'Pro Explorer & Periodontal Probe #23/CP12',
+        sku: 'DENT-PR-101',
+        image: '/images/icon-dental.png',
+        categorySlug: 'dental',
+        categoryName: 'Dental',
+        description: 'Double-ended dental diagnostic explorer and color-coded periodontal depth probe.',
+        specs: 'Hollow Anti-Slip Handle, 3-6-9-12mm Markings',
+      },
+      {
+        id: 'dent-2',
+        title: 'Universal Dental Extraction Forceps #150',
+        sku: 'DENT-FC-201',
+        image: '/images/dental-clinic-banner.png',
+        categorySlug: 'dental',
+        categoryName: 'Dental',
+        description: 'Upper universal tooth extraction forceps with knurled non-slip handle grip.',
+        specs: 'Anatomical Beak Contour, Satin Finish Stainless Steel',
+      },
+      {
+        id: 'dent-3',
+        title: 'Gracey Periodontal Curette Set 1/2 to 13/14',
+        sku: 'DENT-CR-301',
+        image: '/images/dental-clinic-banner.png',
+        categorySlug: 'dental',
+        categoryName: 'Dental',
+        description: 'Area-specific Gracey curettes for subgingival scaling and root planing.',
+        specs: 'Double-Ended Stainless Steel, Color-Coded Handles',
+      },
+      {
+        id: 'dent-4',
+        title: 'Dental Composite Filling Carver',
+        sku: 'DENT-CV-401',
+        image: '/images/icon-dental.png',
+        categorySlug: 'dental',
+        categoryName: 'Dental',
+        description: 'Titanium-nitride coated composite modeling and anterior tooth carving instrument.',
+        specs: 'Non-Stick Blue Titanium Coated Working Tips',
+      },
+    ],
+  },
+  'extraction-oral-surgery': {
+    id: 'dent-cat-01',
+    slug: 'extraction-oral-surgery',
+    title: 'EXTRACTION &',
+    highlight: 'ORAL SURGERY',
+    badgeText: 'DENTAL CATEGORY 01',
+    description:
+      'Extracting forceps in English & American patterns, root elevators, luxators, and bone chisels for trauma-free oral surgery.',
+    products: [
+      {
+        id: 'eos-1',
+        title: 'English Pattern Extracting Forceps #51A',
+        sku: 'DENT-EOS-101',
+        image: '/images/dental-clinic-banner.png',
+        categorySlug: 'extraction-oral-surgery',
+        categoryName: 'Extraction & Oral Surgery',
+        description: 'Upper roots extracting forceps featuring narrow anatomical beaks.',
+        specs: 'Japanese AISI 420 Stainless Steel, Anatomical Beaks',
+      },
+      {
+        id: 'eos-2',
+        title: 'Straight Root Elevator Bein #3',
+        sku: 'DENT-EOS-102',
+        image: '/images/dental-clinic-banner.png',
+        categorySlug: 'extraction-oral-surgery',
+        categoryName: 'Extraction & Oral Surgery',
+        description: '3mm straight blade root elevator with ergonomic hollow hexagonal handle.',
+        specs: '3mm Blade, Hexagonal Hollow Handle, 14.5cm',
+      },
+      {
+        id: 'eos-3',
+        title: 'Dental Luxating Elevator Curved 4mm',
+        sku: 'DENT-EOS-103',
+        image: '/images/dental-clinic-banner.png',
+        categorySlug: 'extraction-oral-surgery',
+        categoryName: 'Extraction & Oral Surgery',
+        description: 'Sharpened curved blade luxator for periodontal ligament cutting prior to extraction.',
+        specs: 'Micro-Sharpened Tip, Color-Coded Handle',
+      },
+    ],
+  },
+  'dental-bone-surgery': {
+    id: 'dent-cat-02',
+    slug: 'dental-bone-surgery',
+    title: 'DENTAL BONE',
+    highlight: 'SURGERY',
+    badgeText: 'DENTAL CATEGORY 02',
+    description:
+      'Osteotomes, gouges, chisels, bone rongeurs, bone curettes, periosteal elevators, and surgical mallets for implantology and bone grafting.',
+    products: [
+      {
+        id: 'dbs-1',
+        title: 'Partsch Bone Chisel 4mm',
+        sku: 'DENT-DBS-201',
+        image: '/images/blog-instruments-tray.png',
+        categorySlug: 'dental-bone-surgery',
+        categoryName: 'Dental Bone Surgery',
+        description: 'Precision bone cutting chisel engineered for crestal sinus lifting and bone block harvesting.',
+        specs: 'Millimeter Depth Markings, German Stainless Steel',
+      },
+      {
+        id: 'dbs-2',
+        title: 'Beyer Dental Bone Rongeur Curved',
+        sku: 'DENT-DBS-202',
+        image: '/images/blog-instruments-tray.png',
+        categorySlug: 'dental-bone-surgery',
+        categoryName: 'Dental Bone Surgery',
+        description: 'Double-spring action bone rongeur for trimming sharp alveolar bone ridges.',
+        specs: 'Double-Spring Mechanism, 18cm Curved Jaws',
+      },
+    ],
+  },
+  'periodontics-cleaning': {
+    id: 'dent-cat-03',
+    slug: 'periodontics-cleaning',
+    title: 'PERIODONTICS &',
+    highlight: 'CLEANING',
+    badgeText: 'DENTAL CATEGORY 03',
+    description:
+      'Supragingival and subgingival scalers, Gracey curettes, periodontal probes, composite filling instruments, amalgam carvers, and spatulas.',
+    products: [
+      {
+        id: 'prc-1',
+        title: 'Sickle Scaler H6/H7 Hygienist Model',
+        sku: 'DENT-PRC-301',
+        image: '/images/icon-dental.png',
+        categorySlug: 'periodontics-cleaning',
+        categoryName: 'Periodontics & Cleaning',
+        description: 'Anterior sickle scaler with contra-angle design for supragingival calculus removal.',
+        specs: 'Dual-End Sickle Tip, Light Weight Anti-Slip Handle',
+      },
+      {
+        id: 'prc-2',
+        title: 'Goldman-Fox Periodontal Scaler #21',
+        sku: 'DENT-PRC-302',
+        image: '/images/icon-dental.png',
+        categorySlug: 'periodontics-cleaning',
+        categoryName: 'Periodontics & Cleaning',
+        description: 'Universal subgingival calculus scaler featuring modified blade angles.',
+        specs: 'AISI 420 High Carbon Steel, 15cm',
+      },
+    ],
+  },
+  endodontics: {
+    id: 'dent-cat-04',
+    slug: 'endodontics',
+    title: 'ENDODONTICS &',
+    highlight: 'ROOT CANAL',
+    badgeText: 'DENTAL CATEGORY 04',
+    description:
+      "Root canal spreaders, pluggers, Ehricke's impression trays, partial perforated trays, matrix bands, and retainers.",
+    products: [
+      {
+        id: 'endo-1',
+        title: 'Endodontic Root Canal Spreader #D11T',
+        sku: 'DENT-ENDO-401',
+        image: '/images/surgical-tray-durable.png',
+        categorySlug: 'endodontics',
+        categoryName: 'Endodontics',
+        description: 'Pointed Nickel-Titanium spreader for lateral condensation of gutta-percha points.',
+        specs: 'Flexible NiTi Tip, Color-Coded Ring Handle',
+      },
+      {
+        id: 'endo-2',
+        title: "Ehricke's Perforated Dental Impression Tray",
+        sku: 'DENT-ENDO-402',
+        image: '/images/surgical-tray-durable.png',
+        categorySlug: 'endodontics',
+        categoryName: 'Endodontics',
+        description: 'Rigid stainless steel impression tray with keyhole perforations for retention.',
+        specs: 'Autoclavable 304 Steel, Size Large Upper',
+      },
+    ],
+  },
+  diagnostic: {
+    id: 'dent-cat-05',
+    slug: 'diagnostic',
+    title: 'DIAGNOSTIC &',
+    highlight: 'EXAMINATION',
+    badgeText: 'DENTAL CATEGORY 05',
+    description:
+      'Mouth mirrors, rhodium front-surface mirrors, explorers, periodontal probes, college cotton pliers, articulating paper forceps, and endodontic locking tweezers.',
+    products: [
+      {
+        id: 'diag-1',
+        title: 'College Cotton Plier Locking 15cm',
+        sku: 'DENT-DIAG-501',
+        image: '/images/blog-instruments-tray.png',
+        categorySlug: 'diagnostic',
+        categoryName: 'Diagnostic',
+        description: 'Serrated locking dental tweezers for gripping cotton rolls and small posts.',
+        specs: 'Positive Catch Lock, Angled Serrated Tips',
+      },
+      {
+        id: 'diag-2',
+        title: 'Intraoral Glass Mirror Front Surface',
+        sku: 'DENT-DIAG-502',
+        image: '/images/blog-instruments-tray.png',
+        categorySlug: 'diagnostic',
+        categoryName: 'Diagnostic',
+        description: 'High reflectivity dental mirror with ergonomic stainless steel handle.',
+        specs: 'Rhodium Coated Glass, Standard Thread #4',
+      },
+    ],
+  },
+  'discipline-specific-dental': {
+    id: 'dent-cat-06',
+    slug: 'discipline-specific-dental',
+    title: 'DISCIPLINE SPECIFIC',
+    highlight: 'DENTAL INSTRUMENTS',
+    badgeText: 'DENTAL CATEGORY 06',
+    description:
+      'Micro needle holders, dissecting & gum scissors, hemostatic artery forceps, dressing pliers, tissue forceps, retractors, mouth gags, skin hooks, and suction cannulas.',
+    products: [
+      {
+        id: 'dsd-1',
+        title: 'Castroviejo Dental Micro Needle Holder TC',
+        sku: 'DENT-DSD-601',
+        image: '/images/process-hand-filing.png',
+        categorySlug: 'discipline-specific-dental',
+        categoryName: 'Discipline Specific Instruments',
+        description: 'Spring-action micro needle holder with gold-plated Tungsten Carbide inserts for 5-0 to 7-0 sutures.',
+        specs: 'Tungsten Carbide Jaws, Straight Lock 14cm',
+      },
+      {
+        id: 'dsd-2',
+        title: 'Goldman-Fox Dental Gum Scissors Curved',
+        sku: 'DENT-DSD-602',
+        image: '/images/process-hand-filing.png',
+        categorySlug: 'discipline-specific-dental',
+        categoryName: 'Discipline Specific Instruments',
+        description: 'Fine serrated curved gum scissors for gingivectomy and delicate soft tissue trimming.',
+        specs: 'One Serrated Edge, Curved Tip 13cm',
+      },
+    ],
+  },
+  'orthopedic-instruments': {
+    id: '05-ortho',
+    slug: 'orthopedic-instruments',
+    title: 'BONE &',
+    highlight: 'ORTHOPEDIC',
+    badgeText: 'PRODUCT CATEGORY 05',
+    description:
+      'Specialized range of bone chisels, osteotomes, mallets, rongeurs, gouges, bone holding forceps, and wire tighteners.',
+    products: [
+      {
+        id: 'orth-1',
+        title: 'Lambotte Osteotome Straight 15mm',
+        sku: 'ORTH-OST-101',
+        image: '/images/blog-instruments-tray.png',
+        categorySlug: 'orthopedic-instruments',
+        categoryName: 'Bone & Orthopedic Instruments',
+        description: 'Flat blade orthopedic osteotome engineered for joint reconstruction and bone transection.',
+        specs: 'AISI 420 High Carbon Steel, 15mm Blade, 24cm',
+      },
+      {
+        id: 'orth-2',
+        title: 'Stille-Luer Bone Rongeur Curved',
+        sku: 'ORTH-RNG-201',
+        image: '/images/blog-instruments-tray.png',
+        categorySlug: 'orthopedic-instruments',
+        categoryName: 'Bone & Orthopedic Instruments',
+        description: 'Double-action heavy duty rongeur for gouging bone tissue in joint replacements.',
+        specs: 'Double-Action Joint, 22cm Curved Jaws',
+      },
+    ],
+  },
+  'medical-hollowware': {
+    id: '03',
+    slug: 'medical-hollowware',
+    title: 'MEDICAL',
+    highlight: 'HOLLOWWARE',
+    badgeText: 'PRODUCT CATEGORY 03',
+    description:
+      'Heavy-duty 304 stainless steel instrument storage trays, kidney basins, gallipots, and autoclave sterilization container boxes.',
+    products: [
+      {
+        id: 'hol-1',
+        title: 'Stainless Steel Kidney Basin 250ml',
+        sku: 'HOL-KB-101',
+        image: '/images/surgical-tray-durable.png',
+        categorySlug: 'medical-hollowware',
+        categoryName: 'Medical Hollowware',
+        description: 'Seamless stainless steel kidney-shaped basin for holding surgical dressings and liquids.',
+        specs: 'Seamless 304 Stainless Steel, 250ml Capacity',
+      },
+      {
+        id: 'hol-2',
+        title: 'Sterilization Instrument Tray with Lid',
+        sku: 'HOL-TR-201',
+        image: '/images/surgical-tray-durable.png',
+        categorySlug: 'medical-hollowware',
+        categoryName: 'Medical Hollowware',
+        description: 'Perforated instrument sterilization tray equipped with secure latch handles.',
+        specs: 'Perforated Mesh Base, Latch Locking Lid, 30x20x5cm',
+      },
+    ],
+  },
+  ophthalmic: {
+    id: '04',
+    slug: 'ophthalmic',
+    title: 'OPHTHALMIC',
+    highlight: 'MICRO-SURGERY',
+    badgeText: 'PRODUCT CATEGORY 04',
+    description:
+      'Ultra-delicate ophthalmic micro-forceps, eye speculums, corneal scissors, and cataract micro-surgical cassettes.',
+    products: [
+      {
+        id: 'oph-1',
+        title: 'Castroviejo Micro Dissecting Forceps',
+        sku: 'OPH-FC-101',
+        image: '/images/blog-instruments-tray.png',
+        categorySlug: 'ophthalmic',
+        categoryName: 'Ophthalmic',
+        description: 'Ultra-fine ophthalmic micro forceps with 0.12mm teeth and tying platform.',
+        specs: '0.12mm Micro Teeth, Tying Platform, Titanium Alloy',
+      },
+    ],
+  },
+  'hospital-furniture': {
+    id: '05',
+    slug: 'hospital-furniture',
+    title: 'HOSPITAL',
+    highlight: 'FURNITURE',
+    badgeText: 'PRODUCT CATEGORY 05',
+    description:
+      'Ergonomic hospital beds, stainless steel MAYO instrument trolleys, mobile IV poles, and clinical examination tables.',
+    products: [
+      {
+        id: 'furn-1',
+        title: 'Stainless Steel MAYO Instrument Trolley',
+        sku: 'FURN-MY-101',
+        image: '/images/icon-hospital-furniture.png',
+        categorySlug: 'hospital-furniture',
+        categoryName: 'Hospital Furniture',
+        description: 'Hydraulic height-adjustable MAYO instrument tray stand with smooth anti-static casters.',
+        specs: 'Adjustable Hydraulic Height, Removable 304 Steel Tray',
+      },
+    ],
+  },
+  'single-use-instruments': {
+    id: '06',
+    slug: 'single-use-instruments',
+    title: 'SINGLE USE',
+    highlight: 'STERILE INSTRUMENTS',
+    badgeText: 'PRODUCT CATEGORY 06',
+    description:
+      'Pre-sterilized single-use disposable surgical packs, suture removal kits, and laparoscopic instruments.',
+    products: [
+      {
+        id: 'sgl-1',
+        title: 'Disposable Sterile Suture Removal Kit',
+        sku: 'SGL-ST-101',
+        image: '/images/icon-single-use-instruments.png',
+        categorySlug: 'single-use-instruments',
+        categoryName: 'Single Use Instruments',
+        description: 'Individually packed sterile suture removal kit containing Littauer scissors and forceps.',
+        specs: 'EO Gas Sterilized Pouch, Single-Use Disposable',
+      },
+    ],
+  },
+}
