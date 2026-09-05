@@ -62,14 +62,9 @@ export function PublicFooter({ settings }: PublicFooterProps) {
           <Link href="/" className="inline-block shrink-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/images/durable-footer-logo.png"
+              src="/logo.svg"
               alt={settings?.company_name || 'Durable Hospital Supplies'}
-              className="h-10 sm:h-12 w-auto object-contain filter brightness-110"
-              onError={(e) => {
-                // Fallback text if image load error
-                const target = e.target as HTMLImageElement
-                target.style.display = 'none'
-              }}
+              className="h-10 sm:h-12 w-auto object-contain"
             />
           </Link>
 

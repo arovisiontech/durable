@@ -129,19 +129,12 @@ export function AdminSidebar({
       {/* Brand Header */}
       <div className="h-16 px-4 flex items-center justify-between border-b border-slate-800/80 shrink-0">
         <Link href="/admin" className="flex items-center gap-3 overflow-hidden">
-          <div className="w-9 h-9 rounded-xl bg-red-600 flex items-center justify-center font-black text-white shadow-md shadow-red-600/20 text-base shrink-0">
-            <Cross className="w-5 h-5 text-white" />
-          </div>
-          {!isCollapsed && (
-            <div className="min-w-0">
-              <span className="font-extrabold text-sm text-white block leading-tight tracking-tight truncate">
-                DURABLE
-              </span>
-              <span className="text-[10px] font-semibold text-red-400 block tracking-widest uppercase truncate">
-                Medical Admin
-              </span>
-            </div>
-          )}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo.svg"
+            alt="Durable Medical Admin"
+            className={`${isCollapsed ? 'h-8 w-auto' : 'h-10 w-auto'} object-contain`}
+          />
         </Link>
 
         {/* Desktop Collapse Toggle */}

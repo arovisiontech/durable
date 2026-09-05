@@ -88,8 +88,9 @@ export default function LoginForm() {
     <div className="min-h-screen flex items-center justify-center bg-slate-950 px-4 py-12">
       <div className="w-full max-w-md space-y-8 bg-slate-900 border border-slate-800 p-8 rounded-2xl shadow-2xl">
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-600 text-white font-black text-2xl shadow-lg shadow-blue-500/20 mb-2">
-            D
+          <div className="flex justify-center mb-4">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.svg" alt="Durable Medical" className="h-14 w-auto object-contain" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-white">
             Durable Admin Portal
