@@ -177,16 +177,12 @@ export default function RecentEventsPage() {
 
                 <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
                   <span className="text-xs font-bold text-slate-500">
-                    Booth: {event.booth}
+                    Booth Location: {event.booth}
                   </span>
 
-                  <Link
-                    href="/contact"
-                    className="px-6 py-2.5 bg-[#0B1B3D] hover:bg-[#051026] text-white text-xs font-extrabold rounded-full transition-all flex items-center gap-2"
-                  >
-                    <span>Request Event Catalog</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
+                  <span className="px-4 py-1.5 bg-slate-100 text-[#0B1B3D] text-xs font-extrabold rounded-full">
+                    Completed Exhibition Archive
+                  </span>
                 </div>
               </div>
             </div>

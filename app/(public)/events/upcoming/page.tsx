@@ -155,19 +155,14 @@ export default function UpcomingEventsPage() {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4">
-                  <div className="flex items-center gap-2 text-xs font-bold text-emerald-600">
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span>Meeting Slot Booking Available</span>
+                <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-xs font-bold text-[#0B1B3D]">
+                    <Award className="w-4 h-4 text-[#E31B23]" />
+                    <span>Official Exhibition Floor Showcase</span>
                   </div>
-
-                  <Link
-                    href="/contact"
-                    className="px-6 py-3 bg-[#E31B23] hover:bg-red-700 text-white font-extrabold text-xs uppercase tracking-wider rounded-full shadow-md transition-all flex items-center gap-2"
-                  >
-                    <span>Reserve Booth Appointment</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
+                  <span className="text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full">
+                    Confirmed Participation 2026
+                  </span>
                 </div>
               </div>
             </div>

@@ -178,27 +178,91 @@ export default function EventsOverviewPage() {
           ))}
         </div>
 
-        {/* Global Partnership Banner */}
-        <div className="w-full bg-[#051026] text-white rounded-3xl p-8 sm:p-12 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8 border border-slate-800">
-          <div className="space-y-3 max-w-2xl">
-            <span className="text-xs font-black uppercase tracking-widest text-red-500">
-              Schedule A B2B Meeting
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-black uppercase tracking-tight">
-              Visiting An Upcoming Trade Fair?
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              Book an advance appointment with Durable Medical’s export team to discuss custom OEM manufacturing, private labeling, and regional distribution rights.
+        {/* Event Photo Gallery Grid */}
+        <div className="space-y-6 pt-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+            <div>
+              <span className="text-xs font-black uppercase tracking-wider text-[#E31B23]">Exhibition Gallery</span>
+              <h2 className="text-2xl sm:text-3xl font-black text-[#0B1B3D] uppercase">Trade Show & Exhibition Moments</h2>
+            </div>
+            <p className="text-xs text-slate-500 max-w-md">
+              Highlights from our global booth displays, international trade delegations, and live surgical tool demonstrations across Germany, UAE, and USA.
             </p>
           </div>
 
-          <Link
-            href="/contact"
-            className="px-8 py-4 bg-[#E31B23] hover:bg-red-700 text-white font-extrabold text-xs uppercase tracking-wider rounded-full shadow-lg transition-all shrink-0 flex items-center gap-2"
-          >
-            <span>Book Booth Meeting</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-md group">
+              <div className="h-48 overflow-hidden relative">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/images/dental-clinic-banner.png"
+                  alt="IDS Cologne Exhibition Booth"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <span className="absolute bottom-2 left-2 bg-[#0B1B3D] text-white text-[10px] font-bold px-2.5 py-1 rounded-md">
+                  IDS Cologne 2026
+                </span>
+              </div>
+              <div className="p-4">
+                <h4 className="text-xs font-bold text-slate-800">Dental Instrument Showcase</h4>
+                <p className="text-[11px] text-slate-500 mt-1">German stainless steel extraction forceps & implantology kits display.</p>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-md group">
+              <div className="h-48 overflow-hidden relative">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/images/surgical-tray-durable.png"
+                  alt="Arab Health Dubai Booth"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <span className="absolute bottom-2 left-2 bg-[#E31B23] text-white text-[10px] font-bold px-2.5 py-1 rounded-md">
+                  Arab Health Dubai
+                </span>
+              </div>
+              <div className="p-4">
+                <h4 className="text-xs font-bold text-slate-800">Sterile Surgery Trays</h4>
+                <p className="text-[11px] text-slate-500 mt-1">Live demo of autoclavable general surgery & cardiovascular trays.</p>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-md group">
+              <div className="h-48 overflow-hidden relative">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/images/about-surgical-instruments.png"
+                  alt="MEDICA Germany Forum"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <span className="absolute bottom-2 left-2 bg-[#0B1B3D] text-white text-[10px] font-bold px-2.5 py-1 rounded-md">
+                  MEDICA Germany
+                </span>
+              </div>
+              <div className="p-4">
+                <h4 className="text-xs font-bold text-slate-800">European Delegation Forum</h4>
+                <p className="text-[11px] text-slate-500 mt-1">Connecting with over 450 global medical buyers & hospital partners.</p>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-md group">
+              <div className="h-48 overflow-hidden relative">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/images/precision-healthcare-banner.png"
+                  alt="FIME USA Expo"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <span className="absolute bottom-2 left-2 bg-[#E31B23] text-white text-[10px] font-bold px-2.5 py-1 rounded-md">
+                  FIME Miami USA
+                </span>
+              </div>
+              <div className="p-4">
+                <h4 className="text-xs font-bold text-slate-800">Precision Micro Tools</h4>
+                <p className="text-[11px] text-slate-500 mt-1">Tungsten carbide surgical shears and specialized titanium instruments.</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
