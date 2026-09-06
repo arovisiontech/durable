@@ -42,7 +42,7 @@ export function ProductsHeroBanner({
     <div className="w-full relative bg-white pb-12 sm:pb-16">
       {/* Top Banner Box - 100% LCD Screen Responsive */}
       <section className="w-full relative bg-white overflow-hidden border-b border-slate-200">
-        <div className="w-full max-w-[1920px] mx-auto min-h-[380px] sm:min-h-[440px] lg:min-h-[500px] xl:min-h-[560px] relative flex items-center">
+        <div className="w-full max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto min-h-[380px] sm:min-h-[440px] lg:min-h-[500px] xl:min-h-[560px] relative flex items-center">
           
           {/* Right Side Surgical Gloves Hero Image */}
           <div
@@ -54,7 +54,7 @@ export function ProductsHeroBanner({
           <div className="absolute inset-0 bg-gradient-to-r from-white via-white/95 sm:via-white/85 via-50% to-transparent z-10" />
 
           {/* Text Content Overlay */}
-          <div className="relative z-20 max-w-[1920px] mx-auto px-6 sm:px-10 lg:px-16 py-10 sm:py-16 w-full">
+          <div className="relative z-20 max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto px-6 sm:px-10 lg:px-16 py-10 sm:py-16 w-full">
             <div className="max-w-3xl space-y-3.5 sm:space-y-5">
               
               {/* Pill Badge */}
@@ -83,7 +83,7 @@ export function ProductsHeroBanner({
       </section>
 
       {/* Floating Sub-Category Quick-Filter Pill Bar */}
-      <div className="w-full max-w-[1920px] mx-auto px-4 lg:px-10 relative z-30 -mt-12 sm:-mt-14">
+      <div className="w-full max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto px-4 lg:px-10 relative z-30 -mt-12 sm:-mt-14">
         <div className="bg-white rounded-3xl p-3.5 sm:p-5 shadow-2xl border border-slate-200/90 grid grid-cols-2 md:grid-cols-4 items-center gap-3 sm:gap-4 divide-y md:divide-y-0 md:divide-x divide-slate-200/80">
           {subCategories.map((subCat) => (
             <Link

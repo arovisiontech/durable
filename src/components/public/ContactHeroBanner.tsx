@@ -3,8 +3,8 @@
 export function ContactHeroBanner() {
   return (
     <section className="w-full relative bg-white overflow-hidden border-b border-slate-200">
-      {/* Background Banner Container - 100% LCD Screen Responsive */}
-      <div className="w-full max-w-[1920px] mx-auto min-h-[360px] sm:min-h-[420px] lg:min-h-[480px] xl:min-h-[540px] relative flex items-center">
+      {/* Background Banner Container - 100% Responsive across 24", 29", 60" LCD Monitors */}
+      <div className="w-full max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto min-h-[360px] sm:min-h-[420px] lg:min-h-[480px] xl:min-h-[540px] relative flex items-center">
         
         {/* Right Side Background Image */}
         <div 
@@ -16,7 +16,7 @@ export function ContactHeroBanner() {
         <div className="absolute inset-0 bg-gradient-to-r from-white via-white/95 sm:via-white/85 via-50% to-transparent z-10" />
 
         {/* Text Content Overlay */}
-        <div className="relative z-20 max-w-[1920px] mx-auto px-6 sm:px-10 lg:px-16 py-10 sm:py-16 w-full">
+        <div className="relative z-20 max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto px-6 sm:px-10 lg:px-16 py-10 sm:py-16 w-full">
           <div className="max-w-3xl space-y-4">
             
             {/* Pill Badge */}

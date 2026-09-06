@@ -32,7 +32,7 @@ export function PublicFooter({ settings }: PublicFooterProps) {
         style={{ backgroundImage: `url('/images/about-surgical-instruments.png')` }}
       />
 
-      <div className="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4 sm:space-y-5">
+      <div className="max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4 sm:space-y-5">
         {/* Top CTA Banner Block matching SS 1 */}
         <div className="flex flex-row items-center justify-between gap-4 pb-2">
           <div className="space-y-0.5">

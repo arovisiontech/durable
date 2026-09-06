@@ -6,8 +6,8 @@ import { ArrowRight, ShieldCheck } from 'lucide-react'
 export function HeroSection() {
   return (
     <section className="w-full bg-[#F8FAFC] overflow-hidden">
-      {/* Hero Banner Container - Full LCD Monitor Responsive */}
-      <div className="w-full max-w-[1920px] mx-auto px-2 sm:px-4 lg:px-6 py-2 sm:py-4">
+      {/* Hero Banner Container - Full 24", 29", 60" LCD Monitor Responsive */}
+      <div className="w-full max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto px-2 sm:px-4 lg:px-6 py-2 sm:py-4">
         <div className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border border-slate-200 bg-white">
           
           {/* Main Artwork Banner Image - Fits 100% on Laptop and LCD screens without cropping */}

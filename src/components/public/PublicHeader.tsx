@@ -72,8 +72,8 @@ export function PublicHeader({ navigation = [] }: PublicHeaderProps) {
       {/* Top Accent Line */}
       <div className="h-1.5 bg-[#051026] w-full" />
 
-      {/* Main Header Container */}
-      <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-10">
+      {/* Main Header Container - 100% Responsive across 24", 29", 60" LCD Monitors */}
+      <div className="max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-10">
         <div className="flex items-center justify-between h-20 gap-4">
           {/* Brand Logo */}
           <DurableLogo />

@@ -5,6 +5,12 @@
   --foreground: #171717;
 }
 
+@theme {
+  --breakpoint-3xl: 120rem; /* 1920px (24-inch FHD Monitor) */
+  --breakpoint-4xl: 160rem; /* 2560px (29-inch Ultra-wide Monitor) */
+  --breakpoint-5xl: 240rem; /* 3840px (60-inch 4K TV Display) */
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -19,8 +25,34 @@
   }
 }
 
+/* -------------------------------------------------------------
+   LCD Screen Responsiveness (24", 29", 60" Monitor/TV Displays)
+   ------------------------------------------------------------- */
+
+/* Standard Desktop & 24-inch FHD LCD Monitors (1920px+) */
+@media (min-width: 1920px) {
+  html {
+    font-size: 17px;
+  }
+}
+
+/* 29-inch Ultra-Wide LCD Monitors (2560px+) */
+@media (min-width: 2560px) {
+  html {
+    font-size: 19px;
+  }
+}
+
+/* 60-inch 4K TV & Large LCD Displays (3840px+) */
+@media (min-width: 3840px) {
+  html {
+    font-size: 26px;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
 }
