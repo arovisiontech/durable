@@ -62,7 +62,7 @@ export function PublicFooter({ settings }: PublicFooterProps) {
           <Link href="/" className="inline-block shrink-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/logo.svg"
+              src="/image 237.svg"
               alt={settings?.company_name || 'Durable Hospital Supplies'}
               className="h-10 sm:h-14 w-auto object-contain brightness-0 invert opacity-95"
             />

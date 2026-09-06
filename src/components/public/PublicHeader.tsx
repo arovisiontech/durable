@@ -49,7 +49,6 @@ export function PublicHeader({ navigation = [] }: PublicHeaderProps) {
         { label: 'Upcoming Events', url: '/events/upcoming' },
       ],
     },
-    { label: 'Strengths', url: '/strengths' },
     { label: "FAQ's", url: '/faqs' },
     { label: 'Blog', url: '/blog' },
     { label: 'Contact', url: '/contact' },

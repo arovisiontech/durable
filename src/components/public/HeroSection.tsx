@@ -8,32 +8,32 @@ export function HeroSection() {
     <section className="w-full bg-[#F8FAFC] overflow-hidden">
       {/* Hero Banner Container - Full LCD Monitor Responsive */}
       <div className="w-full max-w-[1920px] mx-auto px-2 sm:px-4 lg:px-6 py-2 sm:py-4">
-        <div className="relative w-full aspect-[16/7] min-h-[340px] sm:min-h-[460px] lg:min-h-[560px] xl:min-h-[640px] 2xl:min-h-[720px] rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border border-slate-200">
+        <div className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border border-slate-200 bg-white">
           
-          {/* Main Artwork Banner Image */}
+          {/* Main Artwork Banner Image - Fits 100% on Laptop and LCD screens without cropping */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/images/surgical-hero.png"
             alt="Every 5 Seconds We Make a Difference - Durable Hospital Supplies"
-            className="w-full h-full object-cover object-left-top sm:object-center"
+            className="w-full h-auto object-contain block"
           />
 
           {/* Interactive CTA Buttons Overlay (Positioned on Left) */}
-          <div className="absolute left-4 sm:left-10 lg:left-14 xl:left-16 bottom-4 sm:bottom-8 lg:bottom-12 flex flex-wrap items-center gap-2.5 sm:gap-4 z-20">
+          <div className="absolute left-[3%] bottom-[5%] sm:bottom-[8%] flex flex-wrap items-center gap-2 sm:gap-4 z-20">
             <Link
               href="/contact"
-              className="px-4 sm:px-8 py-2.5 sm:py-4 text-[11px] sm:text-xs lg:text-sm font-black text-white bg-[#E31B23] hover:bg-[#c9141b] rounded-full shadow-lg shadow-red-600/30 transition-all transform hover:scale-105 flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider"
+              className="px-3 sm:px-6 lg:px-8 py-2 sm:py-3.5 text-[10px] sm:text-xs lg:text-sm font-black text-white bg-[#E31B23] hover:bg-[#c9141b] rounded-full shadow-lg shadow-red-600/30 transition-all transform hover:scale-105 flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider"
             >
               <span>Partner With Us</span>
-              <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
             </Link>
 
             <Link
               href="/products"
-              className="px-4 sm:px-8 py-2.5 sm:py-4 text-[11px] sm:text-xs lg:text-sm font-black text-[#E31B23] bg-white border-2 border-[#E31B23] hover:bg-red-50 rounded-full transition-all transform hover:scale-105 flex items-center gap-1.5 sm:gap-2 shadow-xs uppercase tracking-wider"
+              className="px-3 sm:px-6 lg:px-8 py-2 sm:py-3.5 text-[10px] sm:text-xs lg:text-sm font-black text-[#E31B23] bg-white border-2 border-[#E31B23] hover:bg-red-50 rounded-full transition-all transform hover:scale-105 flex items-center gap-1.5 sm:gap-2 shadow-xs uppercase tracking-wider"
             >
               <span>Explore Products</span>
-              <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
             </Link>
           </div>
 
