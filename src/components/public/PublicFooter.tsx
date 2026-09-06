@@ -64,7 +64,7 @@ export function PublicFooter({ settings }: PublicFooterProps) {
             <img
               src="/logo.svg"
               alt={settings?.company_name || 'Durable Hospital Supplies'}
-              className="h-10 sm:h-12 w-auto object-contain"
+              className="h-10 sm:h-14 w-auto object-contain brightness-0 invert opacity-95"
             />
           </Link>
 

@@ -40,9 +40,9 @@ export function ProductsHeroBanner({
 
   return (
     <div className="w-full relative bg-white pb-12 sm:pb-16">
-      {/* Top Banner Box matching SS 1 */}
+      {/* Top Banner Box - 100% LCD Screen Responsive */}
       <section className="w-full relative bg-white overflow-hidden border-b border-slate-200">
-        <div className="max-w-[1680px] mx-auto min-h-[340px] sm:min-h-[380px] lg:min-h-[420px] relative flex items-center">
+        <div className="w-full max-w-[1920px] mx-auto min-h-[380px] sm:min-h-[440px] lg:min-h-[500px] xl:min-h-[560px] relative flex items-center">
           
           {/* Right Side Surgical Gloves Hero Image */}
           <div
@@ -54,10 +54,10 @@ export function ProductsHeroBanner({
           <div className="absolute inset-0 bg-gradient-to-r from-white via-white/95 sm:via-white/85 via-50% to-transparent z-10" />
 
           {/* Text Content Overlay */}
-          <div className="relative z-20 max-w-[1680px] mx-auto px-6 sm:px-10 lg:px-12 py-10 sm:py-14 w-full">
-            <div className="max-w-2xl space-y-3.5 sm:space-y-4">
+          <div className="relative z-20 max-w-[1920px] mx-auto px-6 sm:px-10 lg:px-16 py-10 sm:py-16 w-full">
+            <div className="max-w-3xl space-y-3.5 sm:space-y-5">
               
-              {/* Pill Badge matching SS 1 */}
+              {/* Pill Badge */}
               <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#F1F5F9] border border-slate-200 shadow-2xs">
                 <span className="w-2 h-2 rounded-full bg-[#E31B23]" />
                 <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-slate-800">
@@ -65,14 +65,14 @@ export function ProductsHeroBanner({
                 </span>
               </div>
 
-              {/* Main Title matching SS 1 */}
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-[#0B1B3D] tracking-tight leading-[1.1] uppercase">
+              {/* Main Title */}
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-[#0B1B3D] tracking-tight leading-[1.1] uppercase">
                 {categoryTitle} <br />
                 <span className="text-[#E31B23]">{categoryHighlight}</span>
               </h1>
 
               {/* Subtitle Description */}
-              <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed max-w-xl">
+              <p className="text-xs sm:text-sm lg:text-base text-slate-600 font-medium leading-relaxed max-w-2xl">
                 Durable Hospital Supplies Is A Trusted Manufacturer And Exporter Of Premium Surgical Instruments, Serving Healthcare Professionals, Distributors, And OEM Brands In More Than 15 Countries.
               </p>
 
@@ -82,8 +82,8 @@ export function ProductsHeroBanner({
         </div>
       </section>
 
-      {/* Floating Sub-Category Quick-Filter Pill Bar matching SS 1 */}
-      <div className="max-w-6xl 2xl:max-w-[1680px] mx-auto px-4 relative z-30 -mt-12 sm:-mt-14">
+      {/* Floating Sub-Category Quick-Filter Pill Bar */}
+      <div className="w-full max-w-[1920px] mx-auto px-4 lg:px-10 relative z-30 -mt-12 sm:-mt-14">
         <div className="bg-white rounded-3xl p-3.5 sm:p-5 shadow-2xl border border-slate-200/90 grid grid-cols-2 md:grid-cols-4 items-center gap-3 sm:gap-4 divide-y md:divide-y-0 md:divide-x divide-slate-200/80">
           {subCategories.map((subCat) => (
             <Link

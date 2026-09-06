@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
@@ -9,6 +9,7 @@ import {
   Menu,
   X,
   ArrowRight,
+  ChevronDown,
 } from 'lucide-react'
 import { PublicSiteSettings, PublicNavigationItem } from '@/src/types/public'
 import { CategoryItem } from '@/src/types/category'
@@ -16,53 +17,132 @@ import { DurableLogo } from './DurableLogo'
 import { PublicSearchModal } from './PublicSearchModal'
 
 interface PublicHeaderProps {
-  settings: PublicSiteSettings | null
-  navigation: PublicNavigationItem[]
-  categories: CategoryItem[]
+  settings?: PublicSiteSettings | null
+  navigation?: PublicNavigationItem[]
+  categories?: CategoryItem[]
 }
 
-export function PublicHeader({ navigation }: PublicHeaderProps) {
+interface NavItem {
+  label: string
+  url: string
+  children?: { label: string; url: string }[]
+}
+
+export function PublicHeader({ navigation = [] }: PublicHeaderProps) {
   const pathname = usePathname()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [isEventsDropdownOpen, setIsEventsDropdownOpen] = useState(false)
+  const [isMobileEventsOpen, setIsMobileEventsOpen] = useState(true)
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
-  const navLinks = [
+  // Standard Navigation Links with Events Sub-menu
+  const defaultNavLinks: NavItem[] = [
     { label: 'Home', url: '/' },
     { label: 'About', url: '/about' },
     { label: 'Products', url: '/products' },
+    {
+      label: 'Events',
+      url: '/events',
+      children: [
+        { label: 'Recent Events', url: '/events/recent' },
+        { label: 'Upcoming Events', url: '/events/upcoming' },
+      ],
+    },
     { label: 'Strengths', url: '/strengths' },
     { label: "FAQ's", url: '/faqs' },
     { label: 'Blog', url: '/blog' },
     { label: 'Contact', url: '/contact' },
   ]
 
-  // Use dynamic nav links if provided or fall back to standard links
-  const linksToRender = navigation.length > 0 ? navigation : navLinks
+  const linksToRender = defaultNavLinks
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsEventsDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   return (
-    <header className="w-full relative z-40 bg-white shadow-xs">
+    <header className="w-full relative z-50 bg-white shadow-xs">
       {/* Top Accent Line */}
-      <div className="h-1 bg-[#051026] w-full" />
+      <div className="h-1.5 bg-[#051026] w-full" />
 
       {/* Main Header Container */}
-      <div className="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-10">
         <div className="flex items-center justify-between h-20 gap-4">
           {/* Brand Logo */}
           <DurableLogo />
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-6 xl:gap-8 text-sm font-bold text-[#1E293B]">
+          <nav className="hidden lg:flex items-center gap-5 xl:gap-8 text-sm font-bold text-[#1E293B]">
             {linksToRender.map((nav) => {
+              const isEvents = nav.url === '/events'
               const isActive =
                 nav.url === '/' ? pathname === '/' : pathname.startsWith(nav.url)
+
+              if (isEvents) {
+                return (
+                  <div
+                    key={nav.url}
+                    ref={dropdownRef}
+                    className="relative py-1"
+                    onMouseEnter={() => setIsEventsDropdownOpen(true)}
+                    onMouseLeave={() => setIsEventsDropdownOpen(false)}
+                  >
+                    <button
+                      onClick={() => setIsEventsDropdownOpen(!isEventsDropdownOpen)}
+                      className={`hover:text-[#E31B23] transition-colors relative py-1 inline-flex items-center gap-1 cursor-pointer uppercase ${
+                        isActive ? 'text-[#E31B23] font-black' : 'text-slate-800 font-bold'
+                      }`}
+                    >
+                      <span>{nav.label}</span>
+                      <ChevronDown className="w-3.5 h-3.5" />
+                      {isActive && (
+                        <span className="absolute bottom-0 left-0 w-full h-[2.5px] bg-[#E31B23] rounded-full" />
+                      )}
+                    </button>
+
+                    {/* Floating Dropdown Card (Matching SS 1) */}
+                    {isEventsDropdownOpen && (
+                      <div className="absolute top-full left-0 mt-1 w-56 bg-white rounded-2xl border border-slate-100 shadow-2xl py-3 px-2 space-y-1 animate-in fade-in slide-in-from-top-2 duration-150 z-50">
+                        {nav.children?.map((child) => {
+                          const isChildActive = pathname === child.url
+                          return (
+                            <Link
+                              key={child.url}
+                              href={child.url}
+                              prefetch={true}
+                              onClick={() => setIsEventsDropdownOpen(false)}
+                              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                                isChildActive
+                                  ? 'bg-red-50 text-[#E31B23]'
+                                  : 'text-slate-800 hover:bg-slate-50 hover:text-[#E31B23]'
+                              }`}
+                            >
+                              <span className="w-2 h-2 rounded-full bg-[#E31B23] shrink-0" />
+                              <span>{child.label}</span>
+                            </Link>
+                          )
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )
+              }
 
               return (
                 <Link
                   key={nav.url}
                   href={nav.url}
                   prefetch={true}
-                  className={`hover:text-[#E31B23] transition-colors relative py-1 ${
-                    isActive ? 'text-[#0B1B3D] font-extrabold' : 'text-slate-700 font-semibold'
+                  className={`hover:text-[#E31B23] transition-colors relative py-1 uppercase ${
+                    isActive ? 'text-[#0B1B3D] font-extrabold' : 'text-slate-800 font-bold'
                   }`}
                 >
                   <span>{nav.label}</span>
@@ -123,17 +203,49 @@ export function PublicHeader({ navigation }: PublicHeaderProps) {
       {isMobileMenuOpen && (
         <div className="lg:hidden bg-white border-b border-slate-200 px-4 py-6 space-y-4 animate-in slide-in-from-top duration-200">
           <nav className="flex flex-col space-y-3 font-semibold text-slate-800 text-sm">
-            {linksToRender.map((nav) => (
-              <Link
-                key={nav.url}
-                href={nav.url}
-                prefetch={true}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="py-1 border-b border-slate-100 hover:text-[#E31B23]"
-              >
-                {nav.label}
-              </Link>
-            ))}
+            {linksToRender.map((nav) => {
+              if (nav.children) {
+                return (
+                  <div key={nav.url} className="space-y-2 border-b border-slate-100 pb-2">
+                    <button
+                      onClick={() => setIsMobileEventsOpen(!isMobileEventsOpen)}
+                      className="w-full flex items-center justify-between text-left font-bold text-slate-900 py-1"
+                    >
+                      <span className="uppercase">{nav.label}</span>
+                      <ChevronDown className={`w-4 h-4 transition-transform ${isMobileEventsOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    {isMobileEventsOpen && (
+                      <div className="pl-4 space-y-2 border-l-2 border-red-500">
+                        {nav.children.map((child) => (
+                          <Link
+                            key={child.url}
+                            href={child.url}
+                            prefetch={true}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="flex items-center gap-2 text-xs font-bold text-slate-700 hover:text-[#E31B23] py-1"
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#E31B23]" />
+                            <span>{child.label}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )
+              }
+
+              return (
+                <Link
+                  key={nav.url}
+                  href={nav.url}
+                  prefetch={true}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="py-1 border-b border-slate-100 hover:text-[#E31B23] uppercase font-bold"
+                >
+                  {nav.label}
+                </Link>
+              )
+            })}
           </nav>
 
           <div className="pt-3 border-t border-slate-200 flex flex-col gap-3">
