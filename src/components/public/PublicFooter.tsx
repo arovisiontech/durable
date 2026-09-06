@@ -64,7 +64,7 @@ export function PublicFooter({ settings }: PublicFooterProps) {
             <img
               src="/image 237.svg"
               alt={settings?.company_name || 'Durable Hospital Supplies'}
-              className="h-10 sm:h-14 w-auto object-contain brightness-0 invert opacity-95"
+              className="h-12 sm:h-16 w-auto object-contain transition-opacity hover:opacity-95"
             />
           </Link>
 
