@@ -30,7 +30,7 @@ export function InstrumentPillarsSection() {
       {/* Background Vector Dots Pattern */}
       <div className="absolute inset-0 opacity-[0.025] pointer-events-none bg-[radial-gradient(#0B1B3D_1.5px,transparent_1.5px)] [background-size:20px_20px]" />
 
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* 3 Pillar Cards Grid matching SS 1 */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10">
           {pillars.map((item) => (

@@ -103,7 +103,7 @@ export function DentalCatalogShowcaseSection() {
       {/* Background Glow */}
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[550px] h-[550px] bg-gradient-to-br from-red-500/5 via-blue-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-6xl xl:max-w-7xl 2xl:max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10 sm:space-y-14 relative z-10">
+      <div className="max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10 sm:space-y-14 relative z-10">
         
         {/* Header Block */}
         <div className="text-center max-w-2xl mx-auto space-y-2.5">

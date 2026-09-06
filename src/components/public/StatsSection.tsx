@@ -113,8 +113,8 @@ export function StatsSection() {
       {/* RIGHT FLANK: Dotted World Map Vector Texture (Matching SS 2) */}
       <div className="absolute right-0 top-0 bottom-0 w-1/4 sm:w-1/5 opacity-[0.20] pointer-events-none bg-[radial-gradient(#0B1B3D_1.5px,transparent_1.5px)] [background-size:14px_14px]" />
 
-      {/* CENTER: Pure Clean White Background for 4 Cards with Generous Left & Right Margin Space matching SS 2 */}
-      <div className="max-w-7xl 2xl:max-w-[1680px] mx-auto px-6 sm:px-10 lg:px-12 relative z-10">
+      {/* CENTER: Pure Clean White Background for 4 Cards - 100% LCD Screen Responsive */}
+      <div className="max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto px-6 sm:px-10 lg:px-12 relative z-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-4 pt-4">
           {stats.map((stat) => (
             <div

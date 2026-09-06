@@ -65,7 +65,7 @@ export function ProcessAcrossSection() {
       {/* Subtle Halftone Background Texture */}
       <div className="absolute inset-0 opacity-[0.025] pointer-events-none bg-[radial-gradient(#0B1B3D_1.5px,transparent_1.5px)] [background-size:20px_20px]" />
 
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-6 sm:space-y-8">
+      <div className="max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-6 sm:space-y-8">
         {/* Top Header Row matching SS 1 */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 pb-1">
           {/* Left Title Block */}

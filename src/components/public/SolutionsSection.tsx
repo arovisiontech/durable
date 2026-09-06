@@ -72,7 +72,7 @@ export function SolutionsSection() {
       {/* Background Vector Dot Texture */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#0B1B3D_1.5px,transparent_1.5px)] [background-size:20px_20px]" />
 
-      <div className="max-w-7xl 2xl:max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-6 sm:space-y-8">
+      <div className="max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-6 sm:space-y-8">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto space-y-1">
           <h2 className="text-xl sm:text-3xl lg:text-4xl font-black text-[#0B1B3D] tracking-tight leading-tight">
@@ -83,8 +83,8 @@ export function SolutionsSection() {
           </p>
         </div>
 
-        {/* 6 Cards Grid (3 Columns x 2 Rows) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+        {/* 6 Cards Grid (3 Columns / 6 Columns on Ultra-wide) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 3xl:grid-cols-6 gap-4 sm:gap-5">
           {solutions.map((item) => (
             <Link
               key={item.id}

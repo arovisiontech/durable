@@ -19,7 +19,7 @@ export function PrecisionHealthcareSection() {
       {/* Subtle Halftone Dotted Matrix Pattern on Bottom Left */}
       <div className="absolute left-4 bottom-4 w-36 h-36 opacity-[0.06] pointer-events-none bg-[radial-gradient(#0B1B3D_1.5px,transparent_1.5px)] [background-size:12px_12px]" />
 
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="flex gap-4 sm:gap-6 items-stretch">
           {/* Left Red Contour Accent Line & Top Circle matching SS 1 */}
           <div className="flex flex-col items-center shrink-0 pt-1">

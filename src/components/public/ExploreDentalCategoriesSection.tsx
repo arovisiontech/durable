@@ -62,7 +62,7 @@ export function ExploreDentalCategoriesSection() {
         }
       `}</style>
 
-      <div className="max-w-7xl 2xl:max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-10 sm:space-y-12">
+      <div className="max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-10 sm:space-y-12">
         
         {/* Top Centered Header Block matching User Screenshot */}
         <div className="text-center max-w-3xl mx-auto space-y-2.5">
