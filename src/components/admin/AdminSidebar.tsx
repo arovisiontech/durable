@@ -129,12 +129,14 @@ export function AdminSidebar({
       {/* Brand Header */}
       <div className="h-16 px-4 flex items-center justify-between border-b border-slate-800/80 shrink-0">
         <Link href="/admin" className="flex items-center gap-3 overflow-hidden">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/logo.svg"
-            alt="Durable Medical Admin"
-            className={`${isCollapsed ? 'h-8 w-auto' : 'h-10 w-auto'} object-contain`}
-          />
+          <div className="bg-white/95 px-2.5 py-1 rounded-xl shadow-sm border border-white/20 flex items-center justify-center transition-all hover:bg-white">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/image 237.svg"
+              alt="Durable Medical Admin"
+              className={`${isCollapsed ? 'h-7 w-auto' : 'h-8.5 w-auto'} object-contain`}
+            />
+          </div>
         </Link>
 
         {/* Desktop Collapse Toggle */}
