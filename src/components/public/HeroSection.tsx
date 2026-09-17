@@ -1,15 +1,13 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ArrowRight, ShieldCheck, ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react'
+import { ArrowRight, ShieldCheck, ChevronLeft, ChevronRight } from 'lucide-react'
 
 export interface HeroSlideItem {
   id: string
   image_url?: string | null
   title?: string | null
-  subtitle?: string | null
-  description?: string | null
   button_text?: string | null
   button_link?: string | null
   secondary_button_text?: string | null
@@ -18,108 +16,50 @@ export interface HeroSlideItem {
 
 interface HeroSectionProps {
   slides?: HeroSlideItem[]
-  autoPlayInterval?: number
+  heroBgImage?: string
 }
 
-const defaultHeroSlides: HeroSlideItem[] = [
-  {
-    id: 'default-1',
-    image_url: '/images/surgical-hero.png',
-    title: 'EVERY 5 SECONDS, WE MAKE A DIFFERENCE',
-    subtitle: 'SINCE 1973 • PRECISION SURGICAL MANUFACTURING',
-    description: 'Durable Hospital Supplies is a trusted global partner for healthcare brands seeking reliable, high-quality surgical manufacturing solutions.',
-    button_text: 'Partner With Us',
-    button_link: '/contact',
-    secondary_button_text: 'Explore Products',
-    secondary_button_link: '/products',
-  },
-  {
-    id: 'default-2',
-    image_url: '/images/dental-clinic-banner.png',
-    title: 'WORLD-CLASS DENTAL & SURGICAL INSTRUMENTS',
-    subtitle: 'ISO 13485 CERTIFIED • DENTAL & SURGICAL EXCELLENCE',
-    description: 'Engineered for precision surgeons and dental professionals worldwide.',
-    button_text: 'Dental Catalogues',
-    button_link: '/catalogues',
-    secondary_button_text: 'Contact Sales',
-    secondary_button_link: '/contact',
-  },
-  {
-    id: 'default-3',
-    image_url: '/images/precision-healthcare-banner.png',
-    title: 'PRECISION SOLUTIONS. TRUSTED QUALITY. BETTER HEALTHCARE.',
-    subtitle: 'GLOBAL OEM & PRIVATE LABEL SURGICAL SOLUTIONS',
-    description: 'Custom surgical instrument manufacturing for global healthcare brands.',
-    button_text: 'OEM Services',
-    button_link: '/partner-with-us',
-    secondary_button_text: 'Our Quality',
-    secondary_button_link: '/quality',
-  },
-  {
-    id: 'default-4',
-    image_url: '/images/products-hero-banner.png',
-    title: 'COMPREHENSIVE SURGICAL INSTRUMENTATION',
-    subtitle: '10,000+ PRECISION SKUS MANUFACTURED IN SIALKOT',
-    description: 'Explore full range technical instrument catalogues featuring sizing dimensions and SKUs.',
-    button_text: 'Explore Products',
-    button_link: '/products',
-    secondary_button_text: 'Download PDF',
-    secondary_button_link: '/catalogues',
-  },
+const defaultSlides: HeroSlideItem[] = [
+  { id: '1', image_url: '/images/surgical-hero.png' },
+  { id: '2', image_url: '/images/dental-clinic-banner.png' },
+  { id: '3', image_url: '/images/precision-healthcare-banner.png' },
+  { id: '4', image_url: '/images/products-hero-banner.png' },
 ]
 
-export function HeroSection({ slides, autoPlayInterval = 5000 }: HeroSectionProps) {
-  const activeSlides = slides && slides.length > 0 ? slides : defaultHeroSlides
+export function HeroSection({ slides, heroBgImage }: HeroSectionProps) {
+  // Filter valid slides with non-empty image_url
+  const validSlides = slides && slides.length > 0 
+    ? slides.filter((s) => s.image_url && s.image_url.trim() !== '')
+    : defaultSlides
+
+  const activeSlides = validSlides.length > 0 ? validSlides : defaultSlides
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [isPlaying, setIsPlaying] = useState(true)
 
-  const handleNext = useCallback(() => {
-    setCurrentIndex((prev) => (prev + 1) % activeSlides.length)
-  }, [activeSlides.length])
-
-  const handlePrev = useCallback(() => {
-    setCurrentIndex((prev) => (prev - 1 + activeSlides.length) % activeSlides.length)
-  }, [activeSlides.length])
-
+  // Auto switch slides if more than 1
   useEffect(() => {
-    if (!isPlaying || activeSlides.length <= 1) return
-
-    const timer = setInterval(() => {
-      handleNext()
-    }, autoPlayInterval)
-
-    return () => clearInterval(timer)
-  }, [isPlaying, activeSlides.length, autoPlayInterval, handleNext])
+    if (activeSlides.length <= 1) return
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % activeSlides.length)
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [activeSlides.length])
 
   const currentSlide = activeSlides[currentIndex] || activeSlides[0]
+  const displayImage = heroBgImage || currentSlide.image_url || '/images/surgical-hero.png'
 
   return (
     <section className="w-full bg-[#F8FAFC] overflow-hidden">
       {/* Hero Banner Container - Full 24", 29", 60" LCD Monitor Responsive */}
       <div className="w-full max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto px-2 sm:px-4 lg:px-6 py-2 sm:py-4">
-        <div 
-          className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border border-slate-200 bg-slate-950 group"
-          onMouseEnter={() => setIsPlaying(false)}
-          onMouseLeave={() => setIsPlaying(true)}
-        >
-          {/* Main Artwork Banner Image Container */}
-          <div className="relative w-full min-h-[220px] sm:min-h-[380px] md:min-h-[480px] lg:min-h-[580px] overflow-hidden">
-            {activeSlides.map((slide, idx) => (
-              <div
-                key={slide.id || idx}
-                className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-                  idx === currentIndex ? 'opacity-100 z-10 pointer-events-auto' : 'opacity-0 z-0 pointer-events-none'
-                }`}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={slide.image_url || '/images/surgical-hero.png'}
-                  alt={slide.title || 'Durable Hospital Supplies Hero Banner'}
-                  className="w-full h-full object-cover object-center block"
-                />
-              </div>
-            ))}
-          </div>
+        <div className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border border-slate-200 bg-white group">
+          
+          {/* Main Artwork Banner Image - Fits 100% on Laptop and LCD screens without cropping */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={displayImage}
+            alt="Every 5 Seconds We Make a Difference - Durable Hospital Supplies"
+            className="w-full h-auto object-contain block"
+          />
 
           {/* Interactive CTA Buttons Overlay (Positioned on Left) */}
           <div className="absolute left-[3%] bottom-[5%] sm:bottom-[8%] flex flex-wrap items-center gap-2 sm:gap-4 z-20">
@@ -140,57 +80,41 @@ export function HeroSection({ slides, autoPlayInterval = 5000 }: HeroSectionProp
             </Link>
           </div>
 
-          {/* Navigation Controls (Left / Right Arrows) */}
+          {/* Navigation Arrows (Only shown when multi-slides are active) */}
           {activeSlides.length > 1 && (
             <>
               <button
                 type="button"
-                onClick={handlePrev}
-                className="absolute left-3 top-1/2 -translate-y-1/2 z-30 p-2 sm:p-3 rounded-full bg-slate-900/60 hover:bg-slate-900 text-white backdrop-blur-md border border-white/20 transition-all opacity-0 group-hover:opacity-100 transform hover:scale-110"
-                aria-label="Previous Hero Image"
+                onClick={() => setCurrentIndex((prev) => (prev - 1 + activeSlides.length) % activeSlides.length)}
+                className="absolute left-3 top-1/2 -translate-y-1/2 z-30 p-2 sm:p-2.5 rounded-full bg-slate-900/40 hover:bg-slate-900 text-white backdrop-blur-xs transition-opacity opacity-0 group-hover:opacity-100"
+                aria-label="Previous Slide"
               >
-                <ChevronLeft className="w-4 h-4 sm:w-6 sm:h-6" />
+                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
 
               <button
                 type="button"
-                onClick={handleNext}
-                className="absolute right-3 top-1/2 -translate-y-1/2 z-30 p-2 sm:p-3 rounded-full bg-slate-900/60 hover:bg-slate-900 text-white backdrop-blur-md border border-white/20 transition-all opacity-0 group-hover:opacity-100 transform hover:scale-110"
-                aria-label="Next Hero Image"
+                onClick={() => setCurrentIndex((prev) => (prev + 1) % activeSlides.length)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 z-30 p-2 sm:p-2.5 rounded-full bg-slate-900/40 hover:bg-slate-900 text-white backdrop-blur-xs transition-opacity opacity-0 group-hover:opacity-100"
+                aria-label="Next Slide"
               >
-                <ChevronRight className="w-4 h-4 sm:w-6 sm:h-6" />
-              </button>
-            </>
-          )}
-
-          {/* Slide Indicator Dots Bar & Play/Pause */}
-          {activeSlides.length > 1 && (
-            <div className="absolute right-[3%] bottom-[5%] sm:bottom-[8%] z-30 flex items-center gap-2 bg-slate-950/70 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
-              <button
-                type="button"
-                onClick={() => setIsPlaying(!isPlaying)}
-                className="text-slate-300 hover:text-white transition p-0.5"
-                title={isPlaying ? 'Pause Auto Play' : 'Play Auto Play'}
-              >
-                {isPlaying ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
+                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
 
-              <div className="h-3 w-[1px] bg-slate-700 mx-0.5" />
-
-              <div className="flex items-center gap-1.5">
+              {/* Navigation Dots */}
+              <div className="absolute right-[3%] bottom-[5%] sm:bottom-[8%] z-30 flex items-center gap-1.5 bg-slate-900/40 backdrop-blur-xs px-2.5 py-1 rounded-full border border-white/20">
                 {activeSlides.map((_, i) => (
                   <button
                     key={i}
                     type="button"
                     onClick={() => setCurrentIndex(i)}
                     className={`h-2 rounded-full transition-all duration-300 ${
-                      i === currentIndex ? 'w-6 bg-[#E31B23]' : 'w-2 bg-slate-400 hover:bg-slate-200'
+                      i === currentIndex ? 'w-5 bg-[#E31B23]' : 'w-2 bg-white/70 hover:bg-white'
                     }`}
-                    aria-label={`Go to slide ${i + 1}`}
                   />
                 ))}
               </div>
-            </div>
+            </>
           )}
 
         </div>
