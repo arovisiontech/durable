@@ -15,12 +15,22 @@ import {
   MoveDown,
   Eye,
   EyeOff,
-  Sparkles,
   Layers,
   X,
   Check,
+  Video,
+  Award,
+  BarChart3,
+  ListOrdered,
+  ShieldCheck,
+  FileText,
+  Info,
+  HelpCircle,
+  Sliders,
+  Sparkles,
 } from 'lucide-react'
 
+// Interfaces for Section Models
 export interface AdminHeroSlide {
   id: string
   title: string
@@ -34,27 +44,64 @@ export interface AdminHeroSlide {
   is_published: boolean
 }
 
-const PRESET_HERO_IMAGES = [
+export interface AdminStatItem {
+  id: string
+  number: string
+  label: string
+}
+
+export interface AdminSolutionCard {
+  id: string
+  title: string
+  image_url: string
+  count: string
+  description: string
+}
+
+export interface AdminQualityCard {
+  id: string
+  title: string
+  description: string
+  points: string[]
+}
+
+export interface AdminProcessStep {
+  id: string
+  step_number: number
+  title: string
+  description: string
+  image_url: string
+  highlights: string[]
+}
+
+export interface AdminCertLogo {
+  id: string
+  name: string
+  logo_url: string
+}
+
+const PRESET_IMAGES = [
   { name: 'Surgical Hero Main', url: '/images/surgical-hero.png' },
   { name: 'Dental Clinic Banner', url: '/images/dental-clinic-banner.png' },
   { name: 'Precision Healthcare Banner', url: '/images/precision-healthcare-banner.png' },
   { name: 'Products Showcase Banner', url: '/images/products-hero-banner.png' },
   { name: 'Company Stats Banner', url: '/images/company-stats-banner.png' },
   { name: 'Surgical Instruments Tray', url: '/images/about-surgical-instruments.png' },
+  { name: 'Building Photo', url: '/images/durable-building.png' },
 ]
 
 export default function AdminContentHomePage() {
+  const [activeTab, setActiveTab] = useState<'hero' | 'about' | 'stats' | 'solutions' | 'quality' | 'pillars' | 'precision' | 'process' | 'video'>('hero')
   const [isSaved, setIsSaved] = useState(false)
-  const [saveMessage, setSaveMessage] = useState('Home Page content & Hero slides updated successfully!')
+  const [saveMessage, setSaveMessage] = useState('Home Page content updated successfully!')
 
-  // Initial Hero Slides list
+  // 1. HERO BANNER SLIDES STATE
   const [heroSlides, setHeroSlides] = useState<AdminHeroSlide[]>([
     {
       id: 'slide-1',
       title: 'EVERY 5 SECONDS, WE MAKE A DIFFERENCE',
       subtitle: 'SINCE 1973 • PRECISION SURGICAL MANUFACTURING',
-      description:
-        'Durable Hospital Supplies is a trusted global partner for healthcare brands seeking reliable, high-quality surgical manufacturing solutions.',
+      description: 'Durable Hospital Supplies is a trusted global partner for healthcare brands seeking reliable, high-quality surgical manufacturing solutions.',
       image_url: '/images/surgical-hero.png',
       button_text: 'Partner With Us',
       button_link: '/contact',
@@ -74,37 +121,89 @@ export default function AdminContentHomePage() {
       secondary_button_link: '/contact',
       is_published: true,
     },
-    {
-      id: 'slide-3',
-      title: 'PRECISION SOLUTIONS. TRUSTED QUALITY. BETTER HEALTHCARE.',
-      subtitle: 'GLOBAL OEM & PRIVATE LABEL SURGICAL SOLUTIONS',
-      description: 'Custom surgical instrument manufacturing for global healthcare brands.',
-      image_url: '/images/precision-healthcare-banner.png',
-      button_text: 'OEM Services',
-      button_link: '/partner-with-us',
-      secondary_button_text: 'Our Quality',
-      secondary_button_link: '/quality',
-      is_published: true,
-    },
-    {
-      id: 'slide-4',
-      title: 'COMPREHENSIVE SURGICAL INSTRUMENTATION',
-      subtitle: '10,000+ PRECISION SKUS MANUFACTURED IN SIALKOT',
-      description:
-        'Explore full range technical instrument catalogues featuring sizing dimensions and SKUs.',
-      image_url: '/images/products-hero-banner.png',
-      button_text: 'Explore Products',
-      button_link: '/products',
-      secondary_button_text: 'Download PDF',
-      secondary_button_link: '/catalogues',
-      is_published: true,
-    },
   ])
 
-  // Form Modal for Adding or Editing Slide
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [editingSlideId, setEditingSlideId] = useState<string | null>(null)
-  const [slideForm, setSlideForm] = useState<Omit<AdminHeroSlide, 'id'>>({
+  // 2. ABOUT US SECTION STATE
+  const [aboutData, setAboutData] = useState({
+    badge: 'SINCE 1973',
+    titlePrimary: 'Elevating Global',
+    titleHighlight: 'Healthcare Standards',
+    desc1: 'Durable Hospital Supplies is A Trusted Global Partner For Healthcare Brands Seeking Reliable, High-Quality Surgical Manufacturing Solutions. With Over 53 Years Of Experience, We Operate From Our Modern Facility In Sialkot, Pakistan.',
+    desc2: 'Our Commitment To Excellence Is Supported By ISO 13485-Certified Processes And Compliance With ISO, MDR-Ready And FDA Requirements, Ensuring Every Product Meets The Highest Standards Of Safety And Performance.',
+    imageUrl: '/images/about-surgical-instruments.png',
+    ctaPrimaryText: 'GET IN TOUCH',
+    ctaPrimaryUrl: '/contact',
+    ctaSecondaryText: 'DOWNLOAD CATALOGUE',
+    ctaSecondaryUrl: '/pdf/general-surgical-instruments-catalogue.pdf',
+  })
+
+  // 3. KEY STATS COUNTER STATE
+  const [statsData, setStatsData] = useState<AdminStatItem[]>([
+    { id: 'stat-1', number: '20,000+', label: 'Products Manufactured' },
+    { id: 'stat-2', number: '6+', label: 'Production Facilities' },
+    { id: 'stat-3', number: '300+', label: 'Skilled Workers' },
+    { id: 'stat-4', number: '50+', label: 'Export Countries' },
+  ])
+
+  // 4. SOLUTIONS GRID STATE
+  const [solutionsData, setSolutionsData] = useState<AdminSolutionCard[]>([
+    { id: 'sol-1', title: 'General Surgery Instruments', image_url: '/images/cat-scissors-shears.png', count: '5,000+ SKUs', description: 'Forceps, Scissors, Scalpels, Needle Holders & Clamps.' },
+    { id: 'sol-2', title: 'Dental & Oral Surgery', image_url: '/images/cat-retractors.png', count: '3,200+ SKUs', description: 'Extracting Forceps, Elevators, Scalers & Explorers.' },
+    { id: 'sol-3', title: 'TC Inserts & Tungsten Carbide', image_url: '/images/cat-handles-blades.png', count: '1,800+ SKUs', description: 'Gold-handled Scissors with Tungsten Carbide cutting edges.' },
+  ])
+
+  // 5. QUALITY TRUST CARDS STATE
+  const [qualityCards, setQualityCards] = useState<AdminQualityCard[]>([
+    { id: 'q-1', title: 'ISO 13485 & CE Compliance', description: 'Strict quality control across raw material testing and final sterilization.', points: ['MDR Ready', '100% Traceability', 'Sterile Packs'] },
+    { id: 'q-[#2]', title: 'OEM & Private Labeling', description: 'Custom laser marking, custom packaging, and private brand logo integration.', points: ['Custom Branding', 'Barcode Labeling', 'Custom Kitting'] },
+  ])
+
+  // 6. QUALITY PILLARS 2-COLUMN STATE
+  const [pillarsData, setPillarsData] = useState({
+    badge: 'MANUFACTURING EXCELLENCE',
+    title: 'Delivering Confidence Through Quality',
+    subtitle: 'Precision Engineering Meets Strict Compliance',
+    description: 'Every surgical instrument undergoes multi-stage inspections, hardness testing, passivated corrosion checks, and dimensional calibration.',
+    imageUrl: '/images/company-stats-banner.png',
+  })
+
+  // 7. PRECISION HEALTHCARE CALLOUT BANNER STATE
+  const [precisionData, setPrecisionData] = useState({
+    badge: 'GLOBAL HEALTHCARE PARTNER',
+    title: 'Precision Solutions. Trusted Quality. Better Healthcare.',
+    subtitle: 'Partner with Sialkot’s premier surgical manufacturing facility.',
+    bgImage: '/images/precision-healthcare-banner.png',
+    ctaText: 'Partner With Us',
+    ctaUrl: '/contact',
+  })
+
+  // 8. PROCESS STEPS STATE
+  const [processSteps, setProcessSteps] = useState<AdminProcessStep[]>([
+    { id: 'step-1', step_number: 1, title: 'Raw Material Forging & Selection', description: 'German & Japanese stainless steel grade selection.', image_url: '/images/process-hand-filing.png', highlights: ['AISI 420 / 410 Steel', 'Hardness Verification'] },
+    { id: 'step-2', step_number: 2, title: 'Precision Machining & Hand Filing', description: 'Master craftsmen hand-file jaw serrations and box joints.', image_url: '/images/process-wooden-anvil.png', highlights: ['Micro Serrations', 'Perfect Alignment'] },
+    { id: 'step-3', step_number: 3, title: 'Heat Treatment & Passivation', description: 'Vacuum heat treatment for long-lasting edge retention.', image_url: '/images/process-erp-operator.png', highlights: ['Boil Test Passed', 'Corrosion Resistant'] },
+  ])
+
+  // 9. COMPLIANCE VIDEO & LOGOS STATE
+  const [videoData, setVideoData] = useState({
+    badge: 'COMPLIANCE AND CERTIFICATIONS',
+    title: 'Watch Our Quality & Manufacturing Process Showcase',
+    videoUrl: '/videos/0609.mp4',
+    thumbnailImage: '/images/company-stats-banner.png',
+  })
+
+  const [certLogos, setCertLogos] = useState<AdminCertLogo[]>([
+    { id: 'c-1', name: 'ISO 13485:2016 Certified', logo_url: '/images/icon-iso.png' },
+    { id: 'c-2', name: 'CE & FDA Registered', logo_url: '/images/icon-scci-white.png' },
+    { id: 'c-3', name: 'EU-MDR Ready', logo_url: '/images/icon-eumdr.png' },
+  ])
+
+  // MODAL STATES FOR ADDING/EDITING ITEMS
+  const [activeModal, setActiveModal] = useState<string | null>(null)
+  const [editingItemId, setEditingItemId] = useState<string | null>(null)
+
+  // Temp Form States for Modal Dialogs
+  const [heroForm, setHeroForm] = useState<Omit<AdminHeroSlide, 'id'>>({
     title: '',
     subtitle: '',
     description: '',
@@ -116,162 +215,39 @@ export default function AdminContentHomePage() {
     is_published: true,
   })
 
-  // Preset Image Picker Modal
-  const [isImagePickerOpen, setIsImagePickerOpen] = useState(false)
-  const [activeImagePickerTarget, setActiveImagePickerTarget] = useState<'slideForm' | string>('slideForm')
+  const [statForm, setStatForm] = useState({ number: '', label: '' })
+  const [solutionForm, setSolutionForm] = useState({ title: '', image_url: '/images/cat-scissors-shears.png', count: '1,000+ SKUs', description: '' })
+  const [processForm, setProcessForm] = useState({ step_number: 1, title: '', description: '', image_url: '/images/process-hand-filing.png' })
+  const [certForm, setCertForm] = useState({ name: '', logo_url: '/images/icon-iso.png' })
 
-  // General Page Content Settings
-  const [formData, setFormData] = useState({
-    catSectionTitle: 'EXPLORE OUR TECHNICAL CATALOGUES',
-    catSectionHighlight: 'TECHNICAL CATALOGUES',
-    catSectionDesc:
-      'Full range product catalogues featuring technical instrument specifications, sizing dimensions, tungsten carbide inserts, and ordering SKUs.',
-    ctaPrimaryText: 'Partner With Us',
-    ctaPrimaryUrl: '/contact',
-    ctaSecondaryText: 'Explore Products',
-    ctaSecondaryUrl: '/products',
-  })
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }))
-  }
-
-  // Handle Add New Slide
-  const handleOpenAddModal = () => {
-    setEditingSlideId(null)
-    setSlideForm({
-      title: 'PRECISION SURGICAL MANUFACTURING',
-      subtitle: 'ISO 13485 CERTIFIED • GLOBAL DISTRIBUTION',
-      description: 'High-quality medical & surgical instrumentation engineered for excellence.',
-      image_url: '/images/surgical-hero.png',
-      button_text: 'Partner With Us',
-      button_link: '/contact',
-      secondary_button_text: 'Explore Products',
-      secondary_button_link: '/products',
-      is_published: true,
-    })
-    setIsModalOpen(true)
-  }
-
-  // Handle Edit Slide
-  const handleOpenEditModal = (slide: AdminHeroSlide) => {
-    setEditingSlideId(slide.id)
-    setSlideForm({
-      title: slide.title,
-      subtitle: slide.subtitle,
-      description: slide.description,
-      image_url: slide.image_url,
-      button_text: slide.button_text,
-      button_link: slide.button_link,
-      secondary_button_text: slide.secondary_button_text,
-      secondary_button_link: slide.secondary_button_link,
-      is_published: slide.is_published,
-    })
-    setIsModalOpen(true)
-  }
-
-  // Handle Delete Slide
-  const handleDeleteSlide = (id: string) => {
-    if (heroSlides.length <= 1) {
-      alert('You must keep at least 1 hero banner slide.')
-      return
-    }
-    if (confirm('Are you sure you want to remove this hero section image slide?')) {
-      setHeroSlides((prev) => prev.filter((s) => s.id !== id))
-      triggerSavedNotification('Hero image slide deleted successfully!')
-    }
-  }
-
-  // Handle Save Slide Form
-  const handleSaveSlideForm = (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!slideForm.image_url.trim()) {
-      alert('Please provide a Hero Image URL.')
-      return
-    }
-
-    if (editingSlideId) {
-      // Update existing slide
-      setHeroSlides((prev) =>
-        prev.map((s) => (s.id === editingSlideId ? { ...slideForm, id: editingSlideId } : s))
-      )
-      triggerSavedNotification('Hero image slide updated successfully!')
-    } else {
-      // Add new slide
-      const newSlide: AdminHeroSlide = {
-        ...slideForm,
-        id: `slide-${Date.now()}`,
-      }
-      setHeroSlides((prev) => [...prev, newSlide])
-      triggerSavedNotification('New hero image slide added successfully!')
-    }
-
-    setIsModalOpen(false)
-  }
-
-  // Handle Move Slide Up/Down
-  const handleMoveSlide = (index: number, direction: 'up' | 'down') => {
-    const targetIndex = direction === 'up' ? index - 1 : index + 1
-    if (targetIndex < 0 || targetIndex >= heroSlides.length) return
-
-    const updated = [...heroSlides]
-    const temp = updated[index]
-    updated[index] = updated[targetIndex]
-    updated[targetIndex] = temp
-    setHeroSlides(updated)
-    triggerSavedNotification('Hero slides re-ordered!')
-  }
-
-  // Handle Toggle Published
-  const handleTogglePublish = (id: string) => {
-    setHeroSlides((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, is_published: !s.is_published } : s))
-    )
-  }
-
-  // Quick Change Image for Slide directly
-  const handleQuickSelectImage = (imageUrl: string) => {
-    if (activeImagePickerTarget === 'slideForm') {
-      setSlideForm((prev) => ({ ...prev, image_url: imageUrl }))
-    } else {
-      // Direct slide edit target
-      setHeroSlides((prev) =>
-        prev.map((s) => (s.id === activeImagePickerTarget ? { ...s, image_url: imageUrl } : s))
-      )
-    }
-    setIsImagePickerOpen(false)
-  }
-
-  const triggerSavedNotification = (msg: string) => {
+  // Trigger Saved Toast
+  const notifySaved = (msg: string) => {
     setSaveMessage(msg)
     setIsSaved(true)
     setTimeout(() => setIsSaved(false), 4000)
   }
 
+  // SAVE ALL HANDLER
   const handleSaveAll = (e: React.FormEvent) => {
     e.preventDefault()
-    triggerSavedNotification('All Home Page content & Hero section images saved live!')
+    notifySaved('All Home Page section contents & images updated live!')
   }
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto pb-12">
+    <div className="space-y-8 max-w-6xl mx-auto pb-16">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
           <div className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
             <span>Website Content</span>
             <span>•</span>
-            <span className="text-[#E31B23]">Home Page Module</span>
+            <span className="text-[#E31B23]">Home Page Manager</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-[#0B1B3D] tracking-tight">
-            Home Page Content & Hero Images Manager
+            Home Page Full Content & Section Manager
           </h1>
           <p className="text-xs text-slate-500 font-medium">
-            Add, update, change, reorder, and remove hero section banner images and dynamic slider content.
+            Manage images, logos, titles, text, video URLs, points, and counter cards section-by-section.
           </p>
         </div>
 
@@ -300,461 +276,709 @@ export default function AdminContentHomePage() {
         </div>
       )}
 
-      {/* SECTION 1: HERO SECTION IMAGES & SLIDER MANAGER */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center shrink-0">
-              <Layout className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-lg font-black text-[#0B1B3D]">1. Hero Section Banner Images & Slider</h2>
-                <span className="px-2 py-0.5 text-[10px] font-extrabold bg-red-100 text-[#E31B23] rounded-full">
-                  {heroSlides.length} Images Configured
-                </span>
-              </div>
-              <p className="text-xs text-slate-500">
-                Manage hero carousel images. Add new slides, change image URLs, update captions, or delete slides.
-              </p>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleOpenAddModal}
-            className="px-4 py-2.5 bg-[#0B1B3D] hover:bg-slate-800 text-white text-xs font-extrabold rounded-xl shadow-md transition-all flex items-center gap-2 shrink-0 self-start sm:self-center"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Add New Hero Image</span>
-          </button>
-        </div>
-
-        {/* Hero Image Slides Grid / List */}
-        <div className="space-y-4">
-          {heroSlides.map((slide, index) => (
-            <div
-              key={slide.id}
-              className={`p-4 sm:p-5 rounded-2xl border transition-all ${
-                slide.is_published ? 'bg-slate-50/70 border-slate-200' : 'bg-slate-100/50 border-slate-200 opacity-60'
+      {/* Section Switcher Navigation Tabs */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none border-b border-slate-200">
+        {[
+          { id: 'hero', label: '1. Hero Slider', icon: Layout },
+          { id: 'about', label: '2. About Us', icon: Info },
+          { id: 'stats', label: '3. Stat Counters', icon: BarChart3 },
+          { id: 'solutions', label: '4. Solutions Grid', icon: Layers },
+          { id: 'quality', label: '5. Quality Cards', icon: ShieldCheck },
+          { id: 'pillars', label: '6. Quality Pillars', icon: Sliders },
+          { id: 'precision', label: '7. Precision Banner', icon: Sparkles },
+          { id: 'process', label: '8. Process Steps', icon: ListOrdered },
+          { id: 'video', label: '9. Video & Logos', icon: Video },
+        ].map((tab) => {
+          const Icon = tab.icon
+          const isActive = activeTab === tab.id
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={`px-4 py-2.5 rounded-xl text-xs font-extrabold flex items-center gap-2 shrink-0 transition-all ${
+                isActive
+                  ? 'bg-[#0B1B3D] text-white shadow-md'
+                  : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
               }`}
             >
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                {/* Left Thumbnail & Info */}
-                <div className="flex items-start sm:items-center gap-4 min-w-0 flex-1">
-                  <div className="relative w-28 sm:w-36 h-20 rounded-xl overflow-hidden bg-slate-950 border border-slate-300 shrink-0 group">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={slide.image_url}
-                      alt={slide.title}
-                      className="w-full h-full object-cover object-center"
-                    />
-                    <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setActiveImagePickerTarget(slide.id)
-                          setIsImagePickerOpen(true)
-                        }}
-                        className="px-2 py-1 bg-white/90 text-slate-900 text-[10px] font-bold rounded shadow"
-                      >
-                        Change Image
-                      </button>
-                    </div>
-                  </div>
+              <Icon className="w-4 h-4" />
+              <span>{tab.label}</span>
+            </button>
+          )
+        })}
+      </div>
 
-                  <div className="space-y-1 min-w-0 flex-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="px-2 py-0.5 bg-slate-900 text-white text-[10px] font-black rounded-md uppercase">
-                        Slide {index + 1}
-                      </span>
-                      {slide.subtitle && (
-                        <span className="text-[10px] font-extrabold text-[#E31B23] truncate">
-                          {slide.subtitle}
-                        </span>
-                      )}
-                      {!slide.is_published && (
-                        <span className="px-2 py-0.5 bg-amber-100 text-amber-800 text-[10px] font-bold rounded">
-                          Draft / Hidden
-                        </span>
-                      )}
-                    </div>
-                    <h3 className="text-xs sm:text-sm font-black text-[#0B1B3D] truncate">
-                      {slide.title}
-                    </h3>
+      {/* SECTION 1: HERO SLIDER & BANNER IMAGES */}
+      {activeTab === 'hero' && (
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6">
+          <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+            <div>
+              <h2 className="text-lg font-black text-[#0B1B3D]">Section 1: Hero Banner Images & Carousel Slider</h2>
+              <p className="text-xs text-slate-500">Add, edit, change, reorder, or delete hero background images.</p>
+            </div>
+            <button
+              onClick={() => {
+                setEditingItemId(null)
+                setHeroForm({
+                  title: 'NEW SURGICAL MANUFACTURING SLIDE',
+                  subtitle: 'ISO 13485 CERTIFIED • GLOBAL DISTRIBUTION',
+                  description: 'High quality surgical instruments.',
+                  image_url: '/images/surgical-hero.png',
+                  button_text: 'Partner With Us',
+                  button_link: '/contact',
+                  secondary_button_text: 'Explore Products',
+                  secondary_button_link: '/products',
+                  is_published: true,
+                })
+                setActiveModal('hero')
+              }}
+              className="px-4 py-2 bg-[#E31B23] text-white text-xs font-extrabold rounded-xl flex items-center gap-1.5"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add Hero Image</span>
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            {heroSlides.map((slide, idx) => (
+              <div key={slide.id} className="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-4 min-w-0 flex-1">
+                  <div className="w-32 h-20 rounded-xl overflow-hidden bg-slate-950 border border-slate-300 shrink-0">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={slide.image_url} alt={slide.title} className="w-full h-full object-cover" />
+                  </div>
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <span className="text-[10px] font-black text-[#E31B23] uppercase block">Slide {idx + 1} • {slide.subtitle}</span>
+                    <h3 className="text-xs font-black text-[#0B1B3D] truncate">{slide.title}</h3>
                     <p className="text-[11px] text-slate-500 truncate">{slide.image_url}</p>
                   </div>
                 </div>
 
-                {/* Right Action Controls */}
-                <div className="flex items-center gap-2 self-end md:self-center shrink-0 border-t md:border-t-0 pt-3 md:pt-0 border-slate-200">
-                  {/* Move Up */}
+                <div className="flex items-center gap-2 shrink-0">
                   <button
-                    type="button"
-                    disabled={index === 0}
-                    onClick={() => handleMoveSlide(index, 'up')}
-                    className="p-2 bg-white text-slate-700 hover:bg-slate-200 border border-slate-200 rounded-lg text-xs disabled:opacity-30"
-                    title="Move Up"
-                  >
-                    <MoveUp className="w-3.5 h-3.5" />
-                  </button>
-
-                  {/* Move Down */}
-                  <button
-                    type="button"
-                    disabled={index === heroSlides.length - 1}
-                    onClick={() => handleMoveSlide(index, 'down')}
-                    className="p-2 bg-white text-slate-700 hover:bg-slate-200 border border-slate-200 rounded-lg text-xs disabled:opacity-30"
-                    title="Move Down"
-                  >
-                    <MoveDown className="w-3.5 h-3.5" />
-                  </button>
-
-                  {/* Toggle Visibility */}
-                  <button
-                    type="button"
-                    onClick={() => handleTogglePublish(slide.id)}
-                    className={`p-2 rounded-lg border text-xs ${
-                      slide.is_published
-                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
-                        : 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100'
-                    }`}
-                    title={slide.is_published ? 'Hide Slide' : 'Show Slide'}
-                  >
-                    {slide.is_published ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
-                  </button>
-
-                  {/* Edit Slide */}
-                  <button
-                    type="button"
-                    onClick={() => handleOpenEditModal(slide)}
-                    className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-1.5"
+                    onClick={() => {
+                      setEditingItemId(slide.id)
+                      setHeroForm({ ...slide })
+                      setActiveModal('hero')
+                    }}
+                    className="px-3 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-lg flex items-center gap-1"
                   >
                     <Edit3 className="w-3.5 h-3.5" />
                     <span>Edit</span>
                   </button>
-
-                  {/* Delete Slide */}
                   <button
-                    type="button"
-                    onClick={() => handleDeleteSlide(slide.id)}
-                    className="p-2 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg transition-colors"
-                    title="Delete Hero Image Slide"
+                    onClick={() => {
+                      setHeroSlides((prev) => prev.filter((s) => s.id !== slide.id))
+                      notifySaved('Hero image slide deleted!')
+                    }}
+                    className="p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg border border-red-200"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* SECTION 2: ADDITIONAL HOMEPAGE CONTENT SETTINGS */}
-      <form onSubmit={handleSaveAll} className="space-y-8">
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-6">
-          <div className="flex items-center gap-3 pb-3 border-b border-slate-100">
-            <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center">
-              <Layers className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-lg font-black text-[#0B1B3D]">2. Technical Catalogues & Call-To-Action Settings</h2>
-              <p className="text-xs text-slate-500">Configure global section headers, badges, and default action buttons.</p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
-                Catalogue Section Header Title
-              </label>
-              <input
-                type="text"
-                name="catSectionTitle"
-                value={formData.catSectionTitle}
-                onChange={handleChange}
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-[#E31B23]"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
-                Badge Highlight Sub-Text
-              </label>
-              <input
-                type="text"
-                name="catSectionHighlight"
-                value={formData.catSectionHighlight}
-                onChange={handleChange}
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-[#E31B23]"
-              />
-            </div>
-
-            <div className="space-y-2 md:col-span-2">
-              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
-                Catalogue Section Description
-              </label>
-              <textarea
-                name="catSectionDesc"
-                rows={2}
-                value={formData.catSectionDesc}
-                onChange={handleChange}
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:border-[#E31B23]"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
-                Primary Button Label
-              </label>
-              <input
-                type="text"
-                name="ctaPrimaryText"
-                value={formData.ctaPrimaryText}
-                onChange={handleChange}
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-[#E31B23]"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
-                Primary Button Target URL
-              </label>
-              <input
-                type="text"
-                name="ctaPrimaryUrl"
-                value={formData.ctaPrimaryUrl}
-                onChange={handleChange}
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-[#E31B23]"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Save Bar */}
-        <div className="flex items-center justify-end gap-4">
-          <button
-            type="submit"
-            className="px-8 py-3.5 bg-[#E31B23] hover:bg-red-700 text-white font-extrabold text-xs tracking-wider uppercase rounded-xl shadow-lg transition-all flex items-center gap-2"
-          >
-            <Save className="w-4 h-4" />
-            <span>Save All Home Content Changes</span>
-          </button>
-        </div>
-      </form>
-
-      {/* MODAL: ADD / EDIT HERO SLIDE IMAGE */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-6 max-h-[90vh] overflow-y-auto scrollbar-thin">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[#E31B23] text-white flex items-center justify-center font-bold">
-                  <ImageIcon className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-base font-black text-[#0B1B3D]">
-                    {editingSlideId ? 'Edit Hero Banner Image & Slide' : 'Add New Hero Banner Image'}
-                  </h3>
-                  <p className="text-xs text-slate-500">Configure hero background image URL, title, and button targets.</p>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setIsModalOpen(false)}
-                className="p-2 text-slate-400 hover:text-slate-700 rounded-lg"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleSaveSlideForm} className="space-y-5">
-              {/* Image URL & Quick Select */}
-              <div className="space-y-2">
-                <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider flex items-center justify-between">
-                  <span>Hero Background Image URL</span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setActiveImagePickerTarget('slideForm')
-                      setIsImagePickerOpen(true)
-                    }}
-                    className="text-[11px] text-[#E31B23] font-bold hover:underline"
-                  >
-                    Select from Preset Banners
-                  </button>
-                </label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    required
-                    value={slideForm.image_url}
-                    onChange={(e) => setSlideForm({ ...slideForm, image_url: e.target.value })}
-                    placeholder="/images/surgical-hero.png"
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-[#E31B23]"
-                  />
-                </div>
-              </div>
-
-              {/* Image Live Preview */}
-              {slideForm.image_url && (
-                <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase">Image Preview</span>
-                  <div className="w-full h-36 rounded-xl overflow-hidden bg-slate-950 border border-slate-300 relative">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={slideForm.image_url}
-                      alt="Hero Image Preview"
-                      className="w-full h-full object-cover object-center"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Slide Title */}
-              <div className="space-y-2">
-                <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
-                  Main Hero Title
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={slideForm.title}
-                  onChange={(e) => setSlideForm({ ...slideForm, title: e.target.value })}
-                  placeholder="EVERY 5 SECONDS, WE MAKE A DIFFERENCE"
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-[#E31B23]"
-                />
-              </div>
-
-              {/* Subtitle / Badge */}
-              <div className="space-y-2">
-                <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
-                  Hero Badge Tagline / Subtitle
-                </label>
-                <input
-                  type="text"
-                  value={slideForm.subtitle}
-                  onChange={(e) => setSlideForm({ ...slideForm, subtitle: e.target.value })}
-                  placeholder="SINCE 1973 • PRECISION SURGICAL MANUFACTURING"
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-[#E31B23]"
-                />
-              </div>
-
-              {/* Buttons Configuration */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
-                    Primary Button Text
-                  </label>
-                  <input
-                    type="text"
-                    value={slideForm.button_text}
-                    onChange={(e) => setSlideForm({ ...slideForm, button_text: e.target.value })}
-                    className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
-                    Primary Button Link
-                  </label>
-                  <input
-                    type="text"
-                    value={slideForm.button_link}
-                    onChange={(e) => setSlideForm({ ...slideForm, button_link: e.target.value })}
-                    className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
-                    Secondary Button Text
-                  </label>
-                  <input
-                    type="text"
-                    value={slideForm.secondary_button_text}
-                    onChange={(e) => setSlideForm({ ...slideForm, secondary_button_text: e.target.value })}
-                    className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
-                    Secondary Button Link
-                  </label>
-                  <input
-                    type="text"
-                    value={slideForm.secondary_button_link}
-                    onChange={(e) => setSlideForm({ ...slideForm, secondary_button_link: e.target.value })}
-                    className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
-                  />
-                </div>
-              </div>
-
-              {/* Form Buttons */}
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2.5 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2.5 bg-[#E31B23] hover:bg-red-700 text-white font-extrabold text-xs rounded-xl shadow-md transition-all flex items-center gap-2"
-                >
-                  <Check className="w-4 h-4" />
-                  <span>{editingSlideId ? 'Update Hero Image Slide' : 'Save New Hero Image Slide'}</span>
-                </button>
-              </div>
-            </form>
+            ))}
           </div>
         </div>
       )}
 
-      {/* MODAL: PRESET HERO IMAGE PICKER */}
-      {isImagePickerOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl max-w-3xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-6">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-              <div>
-                <h3 className="text-base font-black text-[#0B1B3D]">Select Hero Banner Image</h3>
-                <p className="text-xs text-slate-500">Choose from pre-loaded surgical & dental banner artwork.</p>
+      {/* SECTION 2: ABOUT US SECTION MANAGER */}
+      {activeTab === 'about' && (
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6">
+          <div className="pb-4 border-b border-slate-100">
+            <h2 className="text-lg font-black text-[#0B1B3D]">Section 2: About Us Paragraphs, Image & Badges</h2>
+            <p className="text-xs text-slate-500">Update about us titles, description paragraphs, section image, and CTA links.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase">Badge Tagline</label>
+              <input
+                type="text"
+                value={aboutData.badge}
+                onChange={(e) => setAboutData({ ...aboutData, badge: e.target.value })}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase">Section Main Image URL</label>
+              <input
+                type="text"
+                value={aboutData.imageUrl}
+                onChange={(e) => setAboutData({ ...aboutData, imageUrl: e.target.value })}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase">Title Line 1</label>
+              <input
+                type="text"
+                value={aboutData.titlePrimary}
+                onChange={(e) => setAboutData({ ...aboutData, titlePrimary: e.target.value })}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase">Title Highlight Line 2</label>
+              <input
+                type="text"
+                value={aboutData.titleHighlight}
+                onChange={(e) => setAboutData({ ...aboutData, titleHighlight: e.target.value })}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-[#E31B23]"
+              />
+            </div>
+
+            <div className="space-y-2 md:col-span-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase">Description Paragraph 1</label>
+              <textarea
+                rows={3}
+                value={aboutData.desc1}
+                onChange={(e) => setAboutData({ ...aboutData, desc1: e.target.value })}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900"
+              />
+            </div>
+
+            <div className="space-y-2 md:col-span-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase">Description Paragraph 2</label>
+              <textarea
+                rows={3}
+                value={aboutData.desc2}
+                onChange={(e) => setAboutData({ ...aboutData, desc2: e.target.value })}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SECTION 3: KEY STATS COUNTER CARDS */}
+      {activeTab === 'stats' && (
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6">
+          <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+            <div>
+              <h2 className="text-lg font-black text-[#0B1B3D]">Section 3: Key Company Statistics Counter Cards</h2>
+              <p className="text-xs text-slate-500">Add, edit, update, or remove company milestone counters.</p>
+            </div>
+            <button
+              onClick={() => {
+                setEditingItemId(null)
+                setStatForm({ number: '100+', label: 'New Counter Metric' })
+                setActiveModal('stat')
+              }}
+              className="px-4 py-2 bg-[#0B1B3D] text-white text-xs font-extrabold rounded-xl flex items-center gap-1.5"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add Stat Counter</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            {statsData.map((stat) => (
+              <div key={stat.id} className="p-4 bg-slate-900 text-white rounded-2xl border border-slate-800 space-y-2 relative group">
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl font-black text-white">{stat.number}</span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => {
+                        setEditingItemId(stat.id)
+                        setStatForm({ number: stat.number, label: stat.label })
+                        setActiveModal('stat')
+                      }}
+                      className="p-1 text-slate-300 hover:text-white"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        setStatsData((prev) => prev.filter((s) => s.id !== stat.id))
+                        notifySaved('Stat counter removed!')
+                      }}
+                      className="p-1 text-red-400 hover:text-red-300"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+                <p className="text-xs font-bold text-slate-300">{stat.label}</p>
               </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* SECTION 4: SURGICAL SOLUTIONS GRID */}
+      {activeTab === 'solutions' && (
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6">
+          <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+            <div>
+              <h2 className="text-lg font-black text-[#0B1B3D]">Section 4: Instrument Solutions Category Cards</h2>
+              <p className="text-xs text-slate-500">Manage instrument category cards with images, counts, and descriptions.</p>
+            </div>
+            <button
+              onClick={() => {
+                setEditingItemId(null)
+                setSolutionForm({ title: 'New Instrument Category', image_url: '/images/cat-scissors-shears.png', count: '500+ SKUs', description: 'Precision instruments.' })
+                setActiveModal('solution')
+              }}
+              className="px-4 py-2 bg-[#E31B23] text-white text-xs font-extrabold rounded-xl flex items-center gap-1.5"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add Category Solution</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {solutionsData.map((sol) => (
+              <div key={sol.id} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+                <div className="w-full h-28 rounded-xl overflow-hidden bg-white border border-slate-200">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={sol.image_url} alt={sol.title} className="w-full h-full object-contain p-2" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold text-red-600 block">{sol.count}</span>
+                  <h3 className="text-xs font-black text-[#0B1B3D]">{sol.title}</h3>
+                  <p className="text-[11px] text-slate-500">{sol.description}</p>
+                </div>
+                <div className="flex items-center gap-2 pt-2 border-t border-slate-200">
+                  <button
+                    onClick={() => {
+                      setEditingItemId(sol.id)
+                      setSolutionForm({ title: sol.title, image_url: sol.image_url, count: sol.count, description: sol.description })
+                      setActiveModal('solution')
+                    }}
+                    className="px-3 py-1 bg-slate-900 text-white text-xs font-bold rounded-lg"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSolutionsData((prev) => prev.filter((s) => s.id !== sol.id))
+                      notifySaved('Solution card deleted!')
+                    }}
+                    className="p-1 text-red-600 hover:bg-red-50 rounded-lg"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* SECTION 6: QUALITY PILLARS & MANUFACTURING */}
+      {activeTab === 'pillars' && (
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6">
+          <div className="pb-4 border-b border-slate-100">
+            <h2 className="text-lg font-black text-[#0B1B3D]">Section 6: Quality Pillars 2-Column Showcase</h2>
+            <p className="text-xs text-slate-500">Update quality pillars titles, description text, and banner image URL.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase">Badge Tagline</label>
+              <input
+                type="text"
+                value={pillarsData.badge}
+                onChange={(e) => setPillarsData({ ...pillarsData, badge: e.target.value })}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase">Pillars Banner Image URL</label>
+              <input
+                type="text"
+                value={pillarsData.imageUrl}
+                onChange={(e) => setPillarsData({ ...pillarsData, imageUrl: e.target.value })}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
+              />
+            </div>
+
+            <div className="space-y-2 md:col-span-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase">Main Title</label>
+              <input
+                type="text"
+                value={pillarsData.title}
+                onChange={(e) => setPillarsData({ ...pillarsData, title: e.target.value })}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
+              />
+            </div>
+
+            <div className="space-y-2 md:col-span-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase">Description Paragraph</label>
+              <textarea
+                rows={3}
+                value={pillarsData.description}
+                onChange={(e) => setPillarsData({ ...pillarsData, description: e.target.value })}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SECTION 7: PRECISION HEALTHCARE CALLOUT BANNER */}
+      {activeTab === 'precision' && (
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6">
+          <div className="pb-4 border-b border-slate-100">
+            <h2 className="text-lg font-black text-[#0B1B3D]">Section 7: Precision Healthcare Callout Banner</h2>
+            <p className="text-xs text-slate-500">Configure background banner image, titles, and CTA buttons.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase">Background Image URL</label>
+              <input
+                type="text"
+                value={precisionData.bgImage}
+                onChange={(e) => setPrecisionData({ ...precisionData, bgImage: e.target.value })}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase">Badge Tagline</label>
+              <input
+                type="text"
+                value={precisionData.badge}
+                onChange={(e) => setPrecisionData({ ...precisionData, badge: e.target.value })}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
+              />
+            </div>
+
+            <div className="space-y-2 md:col-span-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase">Main Banner Title</label>
+              <input
+                type="text"
+                value={precisionData.title}
+                onChange={(e) => setPrecisionData({ ...precisionData, title: e.target.value })}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SECTION 8: PROCESS STEPS SHOWCASE */}
+      {activeTab === 'process' && (
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6">
+          <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+            <div>
+              <h2 className="text-lg font-black text-[#0B1B3D]">Section 8: How We Process Across Department Workflow</h2>
+              <p className="text-xs text-slate-500">Add, edit, update, or remove manufacturing process steps and images.</p>
+            </div>
+            <button
+              onClick={() => {
+                setEditingItemId(null)
+                setProcessForm({ step_number: processSteps.length + 1, title: 'New Manufacturing Step', description: 'Step description', image_url: '/images/process-hand-filing.png' })
+                setActiveModal('process')
+              }}
+              className="px-4 py-2 bg-[#0B1B3D] text-white text-xs font-extrabold rounded-xl flex items-center gap-1.5"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add Process Step</span>
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            {processSteps.map((step) => (
+              <div key={step.id} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-4 min-w-0 flex-1">
+                  <div className="w-24 h-16 rounded-xl overflow-hidden bg-slate-950 border border-slate-300 shrink-0">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={step.image_url} alt={step.title} className="w-full h-full object-cover" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <span className="text-[10px] font-black text-red-600 block">STEP 0{step.step_number}</span>
+                    <h3 className="text-xs font-black text-[#0B1B3D]">{step.title}</h3>
+                    <p className="text-[11px] text-slate-500">{step.description}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      setProcessSteps((prev) => prev.filter((p) => p.id !== step.id))
+                      notifySaved('Process step deleted!')
+                    }}
+                    className="p-1 text-red-600 hover:bg-red-50 rounded-lg"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* SECTION 9: VIDEO & CERTIFICATION LOGOS */}
+      {activeTab === 'video' && (
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6">
+          <div className="pb-4 border-b border-slate-100">
+            <h2 className="text-lg font-black text-[#0B1B3D]">Section 9: Compliance Video & Certification Logos</h2>
+            <p className="text-xs text-slate-500">Configure video URL, thumbnail poster image, and certification logo images.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase">Video MP4 / Embed URL</label>
+              <input
+                type="text"
+                value={videoData.videoUrl}
+                onChange={(e) => setVideoData({ ...videoData, videoUrl: e.target.value })}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase">Video Poster Thumbnail Image</label>
+              <input
+                type="text"
+                value={videoData.thumbnailImage}
+                onChange={(e) => setVideoData({ ...videoData, thumbnailImage: e.target.value })}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
+              />
+            </div>
+          </div>
+
+          {/* Certification Logos List */}
+          <div className="space-y-4 pt-4 border-t border-slate-100">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-extrabold text-slate-800 uppercase">Certification Logos</h3>
               <button
-                type="button"
-                onClick={() => setIsImagePickerOpen(false)}
-                className="p-2 text-slate-400 hover:text-slate-700 rounded-lg"
+                onClick={() => {
+                  setCertForm({ name: 'New Certification Logo', logo_url: '/images/icon-iso.png' })
+                  setActiveModal('cert')
+                }}
+                className="px-3 py-1 bg-slate-900 text-white text-xs font-bold rounded-lg flex items-center gap-1"
               >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add Logo</span>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {certLogos.map((cert) => (
+                <div key={cert.id} className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={cert.logo_url} alt={cert.name} className="h-8 object-contain" />
+                    <span className="text-xs font-bold text-slate-800 truncate">{cert.name}</span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setCertLogos((prev) => prev.filter((c) => c.id !== cert.id))
+                      notifySaved('Certification logo removed!')
+                    }}
+                    className="p-1 text-red-600 hover:bg-red-50 rounded"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL DIALOG FOR HERO / STAT / SOLUTION / PROCESS / CERT */}
+      {activeModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
+          <div className="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <h3 className="text-sm font-black text-[#0B1B3D] uppercase">Configure Item Details</h3>
+              <button onClick={() => setActiveModal(null)} className="p-1 text-slate-400 hover:text-slate-700">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 max-h-[60vh] overflow-y-auto p-1">
-              {PRESET_HERO_IMAGES.map((item) => (
+            {/* HERO MODAL */}
+            {activeModal === 'hero' && (
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700">Image URL</label>
+                  <input
+                    type="text"
+                    value={heroForm.image_url}
+                    onChange={(e) => setHeroForm({ ...heroForm, image_url: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs font-bold"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700">Title</label>
+                  <input
+                    type="text"
+                    value={heroForm.title}
+                    onChange={(e) => setHeroForm({ ...heroForm, title: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs font-bold"
+                  />
+                </div>
                 <button
-                  key={item.url}
-                  type="button"
-                  onClick={() => handleQuickSelectImage(item.url)}
-                  className="group flex flex-col bg-slate-50 border border-slate-200 hover:border-[#E31B23] rounded-2xl overflow-hidden transition-all text-left hover:shadow-lg"
+                  onClick={() => {
+                    if (editingItemId) {
+                      setHeroSlides((prev) => prev.map((s) => (s.id === editingItemId ? { ...heroForm, id: editingItemId } : s)))
+                    } else {
+                      setHeroSlides((prev) => [...prev, { ...heroForm, id: `slide-${Date.now()}` }])
+                    }
+                    setActiveModal(null)
+                    notifySaved('Hero slide updated!')
+                  }}
+                  className="w-full py-2.5 bg-[#E31B23] text-white text-xs font-black rounded-xl"
                 >
-                  <div className="w-full h-28 bg-slate-950 relative overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={item.url}
-                      alt={item.name}
-                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform"
-                    />
-                  </div>
-                  <div className="p-3 bg-white space-y-0.5">
-                    <span className="text-xs font-extrabold text-[#0B1B3D] block truncate">{item.name}</span>
-                    <span className="text-[10px] text-slate-400 block truncate">{item.url}</span>
-                  </div>
+                  Save Hero Slide
                 </button>
-              ))}
-            </div>
+              </div>
+            )}
+
+            {/* STAT MODAL */}
+            {activeModal === 'stat' && (
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700">Counter Number</label>
+                  <input
+                    type="text"
+                    value={statForm.number}
+                    onChange={(e) => setStatForm({ ...statForm, number: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs font-bold"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700">Counter Label</label>
+                  <input
+                    type="text"
+                    value={statForm.label}
+                    onChange={(e) => setStatForm({ ...statForm, label: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs font-bold"
+                  />
+                </div>
+                <button
+                  onClick={() => {
+                    if (editingItemId) {
+                      setStatsData((prev) => prev.map((s) => (s.id === editingItemId ? { ...statForm, id: editingItemId } : s)))
+                    } else {
+                      setStatsData((prev) => [...prev, { ...statForm, id: `stat-${Date.now()}` }])
+                    }
+                    setActiveModal(null)
+                    notifySaved('Stat counter updated!')
+                  }}
+                  className="w-full py-2.5 bg-[#0B1B3D] text-white text-xs font-black rounded-xl"
+                >
+                  Save Counter
+                </button>
+              </div>
+            )}
+
+            {/* SOLUTION MODAL */}
+            {activeModal === 'solution' && (
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700">Category Title</label>
+                  <input
+                    type="text"
+                    value={solutionForm.title}
+                    onChange={(e) => setSolutionForm({ ...solutionForm, title: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs font-bold"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700">Image URL</label>
+                  <input
+                    type="text"
+                    value={solutionForm.image_url}
+                    onChange={(e) => setSolutionForm({ ...solutionForm, image_url: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs font-bold"
+                  />
+                </div>
+                <button
+                  onClick={() => {
+                    if (editingItemId) {
+                      setSolutionsData((prev) => prev.map((s) => (s.id === editingItemId ? { ...solutionForm, id: editingItemId } : s)))
+                    } else {
+                      setSolutionsData((prev) => [...prev, { ...solutionForm, id: `sol-${Date.now()}` }])
+                    }
+                    setActiveModal(null)
+                    notifySaved('Solution card saved!')
+                  }}
+                  className="w-full py-2.5 bg-[#E31B23] text-white text-xs font-black rounded-xl"
+                >
+                  Save Category Solution
+                </button>
+              </div>
+            )}
+
+            {/* PROCESS MODAL */}
+            {activeModal === 'process' && (
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700">Step Title</label>
+                  <input
+                    type="text"
+                    value={processForm.title}
+                    onChange={(e) => setProcessForm({ ...processForm, title: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs font-bold"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700">Step Image URL</label>
+                  <input
+                    type="text"
+                    value={processForm.image_url}
+                    onChange={(e) => setProcessForm({ ...processForm, image_url: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs font-bold"
+                  />
+                </div>
+                <button
+                  onClick={() => {
+                    setProcessSteps((prev) => [...prev, { id: `proc-${Date.now()}`, ...processForm, highlights: [] }])
+                    setActiveModal(null)
+                    notifySaved('Process step added!')
+                  }}
+                  className="w-full py-2.5 bg-[#0B1B3D] text-white text-xs font-black rounded-xl"
+                >
+                  Save Process Step
+                </button>
+              </div>
+            )}
+
+            {/* CERT LOGO MODAL */}
+            {activeModal === 'cert' && (
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700">Certificate Name</label>
+                  <input
+                    type="text"
+                    value={certForm.name}
+                    onChange={(e) => setCertForm({ ...certForm, name: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs font-bold"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700">Logo Image URL</label>
+                  <input
+                    type="text"
+                    value={certForm.logo_url}
+                    onChange={(e) => setCertForm({ ...certForm, logo_url: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs font-bold"
+                  />
+                </div>
+                <button
+                  onClick={() => {
+                    setCertLogos((prev) => [...prev, { id: `cert-${Date.now()}`, ...certForm }])
+                    setActiveModal(null)
+                    notifySaved('Certification logo added!')
+                  }}
+                  className="w-full py-2.5 bg-[#E31B23] text-white text-xs font-black rounded-xl"
+                >
+                  Save Certification Logo
+                </button>
+              </div>
+            )}
+
           </div>
         </div>
       )}
