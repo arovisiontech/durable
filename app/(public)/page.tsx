@@ -8,44 +8,42 @@ import { PrecisionHealthcareSection } from '@/src/components/public/PrecisionHea
 import { ProcessAcrossSection } from '@/src/components/public/ProcessAcrossSection'
 import { ComplianceVideoSection } from '@/src/components/public/ComplianceVideoSection'
 import { LatestBlogsSection } from '@/src/components/public/LatestBlogsSection'
-import { fetchPublicHeroSlides } from '@/app/actions/public'
 
 export const revalidate = 60
 
-export default async function HomePage() {
-  const slides = await fetchPublicHeroSlides()
-
+export default function HomePage() {
   return (
     <div className="pb-4 sm:pb-8 space-y-0">
-      {/* 1. Dynamic Multi-Image Hero Section Slider */}
-      <HeroSection slides={slides && slides.length > 0 ? slides : undefined} />
+      {/* 1. Hero Section (Untouched - Same as original) */}
+      <HeroSection />
 
-      {/* 2. About Us Section */}
+      {/* 2. About Us Section (Compact length) */}
       <AboutSection />
 
-      {/* 3. Company Key Statistics Counter Section */}
+      {/* 3. Company Key Statistics Counter Section (Compact length) */}
       <StatsSection />
 
-      {/* 4. Comprehensive Surgical & Medical Instrument Solutions Grid */}
+      {/* 4. Comprehensive Surgical & Medical Instrument Solutions Grid (Compact length) */}
       <SolutionsSection />
 
-      {/* 5. Quality You Can Trust Feature Grid */}
+      {/* 5. Quality You Can Trust Feature Grid (Compact length) */}
       <QualityTrustSection />
 
-      {/* 6. Delivering Confidence Through Quality 2-Column Section */}
+      {/* 6. Delivering Confidence Through Quality 2-Column Section (Compact length) */}
       <QualityPillarsSection />
 
-      {/* 7. Precision Solutions. Trusted Quality. Better Healthcare Banner */}
+      {/* 7. Precision Solutions. Trusted Quality. Better Healthcare Banner (Compact length) */}
       <PrecisionHealthcareSection />
 
-      {/* 8. How We Process Across Department Showcase */}
+      {/* 8. How We Process Across Department Showcase (Compact length) */}
       <ProcessAcrossSection />
 
-      {/* 9. Compliance & Certifications Video Showcase */}
+      {/* 9. Compliance & Certifications Video Showcase (Compact length) */}
       <ComplianceVideoSection />
 
-      {/* 10. Insights From Our Latest Blogs Section */}
+      {/* 10. Insights From Our Latest Blogs Section (Compact length) */}
       <LatestBlogsSection limit={2} />
     </div>
   )
 }
+
