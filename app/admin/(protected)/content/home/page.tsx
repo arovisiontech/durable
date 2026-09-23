@@ -94,10 +94,10 @@ export default function AdminContentHomePage() {
       subtitle: 'SINCE 1973 • PRECISION SURGICAL MANUFACTURING',
       description: 'Durable Hospital Supplies is a trusted global partner for healthcare brands seeking reliable, high-quality surgical manufacturing solutions.',
       image_url: '/images/surgical-hero.png',
-      button_text: 'Partner With Us',
-      button_link: '/contact',
-      secondary_button_text: 'Explore Products',
-      secondary_button_link: '/products',
+      button_text: 'EXPLORE PRODUCTS',
+      button_link: '/products',
+      secondary_button_text: 'VIEW CATALOGUE',
+      secondary_button_link: '/catalogues',
       is_published: true,
     },
     {
@@ -106,10 +106,10 @@ export default function AdminContentHomePage() {
       subtitle: 'ISO 13485 CERTIFIED • DENTAL & SURGICAL EXCELLENCE',
       description: 'Engineered for precision surgeons and dental professionals worldwide.',
       image_url: '/images/dental-clinic-banner.png',
-      button_text: 'Dental Catalogues',
-      button_link: '/catalogues',
-      secondary_button_text: 'Contact Sales',
-      secondary_button_link: '/contact',
+      button_text: 'EXPLORE PRODUCTS',
+      button_link: '/products',
+      secondary_button_text: 'VIEW CATALOGUE',
+      secondary_button_link: '/catalogues',
       is_published: true,
     },
   ])
@@ -193,10 +193,10 @@ export default function AdminContentHomePage() {
     subtitle: '',
     description: '',
     image_url: '/images/surgical-hero.png',
-    button_text: 'Partner With Us',
-    button_link: '/contact',
-    secondary_button_text: 'Explore Products',
-    secondary_button_link: '/products',
+    button_text: 'EXPLORE PRODUCTS',
+    button_link: '/products',
+    secondary_button_text: 'VIEW CATALOGUE',
+    secondary_button_link: '/catalogues',
     is_published: true,
   })
 
@@ -363,14 +363,14 @@ export default function AdminContentHomePage() {
               onClick={() => {
                 setEditingItemId(null)
                 setHeroForm({
-                  title: 'NEW SURGICAL MANUFACTURING SLIDE',
-                  subtitle: 'ISO 13485 CERTIFIED • GLOBAL DISTRIBUTION',
+                  title: 'EVERY 5 SECONDS, WE MAKE A DIFFERENCE',
+                  subtitle: 'SINCE 1973 • PRECISION SURGICAL MANUFACTURING',
                   description: 'High quality surgical instruments.',
                   image_url: '/images/surgical-hero.png',
-                  button_text: 'Partner With Us',
-                  button_link: '/contact',
-                  secondary_button_text: 'Explore Products',
-                  secondary_button_link: '/products',
+                  button_text: 'EXPLORE PRODUCTS',
+                  button_link: '/products',
+                  secondary_button_text: 'VIEW CATALOGUE',
+                  secondary_button_link: '/catalogues',
                   is_published: true,
                 })
                 setActiveModal('hero')
@@ -853,6 +853,7 @@ export default function AdminContentHomePage() {
                   onChange={(url) => setHeroForm({ ...heroForm, image_url: url })}
                   placeholderText="Click or Drop to Upload Hero Image from Gallery"
                 />
+
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-700">Main Title</label>
                   <input
@@ -860,8 +861,69 @@ export default function AdminContentHomePage() {
                     value={heroForm.title}
                     onChange={(e) => setHeroForm({ ...heroForm, title: e.target.value })}
                     className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs font-bold"
+                    placeholder="e.g. EVERY 5 SECONDS, WE MAKE A DIFFERENCE"
                   />
                 </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700">Subtitle / Tagline</label>
+                  <input
+                    type="text"
+                    value={heroForm.subtitle || ''}
+                    onChange={(e) => setHeroForm({ ...heroForm, subtitle: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs font-bold"
+                    placeholder="e.g. SINCE 1973 • PRECISION SURGICAL MANUFACTURING"
+                  />
+                </div>
+
+                {/* Button 1 Configuration */}
+                <div className="grid grid-cols-2 gap-3 p-3 bg-red-50/50 border border-red-100 rounded-xl">
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-extrabold text-[#E31B23] uppercase">Button 1 Text (Solid Red)</label>
+                    <input
+                      type="text"
+                      value={heroForm.button_text}
+                      onChange={(e) => setHeroForm({ ...heroForm, button_text: e.target.value })}
+                      className="w-full px-3 py-1.5 bg-white border rounded-lg text-xs font-bold text-slate-900"
+                      placeholder="EXPLORE PRODUCTS"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-extrabold text-slate-700 uppercase">Button 1 Link</label>
+                    <input
+                      type="text"
+                      value={heroForm.button_link}
+                      onChange={(e) => setHeroForm({ ...heroForm, button_link: e.target.value })}
+                      className="w-full px-3 py-1.5 bg-white border rounded-lg text-xs font-medium text-slate-900"
+                      placeholder="/products"
+                    />
+                  </div>
+                </div>
+
+                {/* Button 2 Configuration */}
+                <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-extrabold text-[#E31B23] uppercase">Button 2 Text (Outline Red)</label>
+                    <input
+                      type="text"
+                      value={heroForm.secondary_button_text}
+                      onChange={(e) => setHeroForm({ ...heroForm, secondary_button_text: e.target.value })}
+                      className="w-full px-3 py-1.5 bg-white border rounded-lg text-xs font-bold text-slate-900"
+                      placeholder="VIEW CATALOGUE"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-extrabold text-slate-700 uppercase">Button 2 Link</label>
+                    <input
+                      type="text"
+                      value={heroForm.secondary_button_link}
+                      onChange={(e) => setHeroForm({ ...heroForm, secondary_button_link: e.target.value })}
+                      className="w-full px-3 py-1.5 bg-white border rounded-lg text-xs font-medium text-slate-900"
+                      placeholder="/catalogues"
+                    />
+                  </div>
+                </div>
+
                 <button
                   onClick={() => {
                     let updated: AdminHeroSlide[] = []
@@ -875,7 +937,7 @@ export default function AdminContentHomePage() {
                     setActiveModal(null)
                     notifySaved('Hero slide updated & saved!')
                   }}
-                  className="w-full py-2.5 bg-[#E31B23] text-white text-xs font-black rounded-xl"
+                  className="w-full py-2.5 bg-[#E31B23] text-white text-xs font-black rounded-xl cursor-pointer hover:bg-red-700 transition-all shadow-md"
                 >
                   Save Hero Slide
                 </button>

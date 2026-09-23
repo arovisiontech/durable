@@ -11,6 +11,8 @@ export interface HeroSlideInput {
   image_url: string
   button_text?: string | null
   button_link?: string | null
+  secondary_button_text?: string | null
+  secondary_button_link?: string | null
   sort_order?: number
   is_published?: boolean
 }
@@ -44,8 +46,10 @@ export async function createHeroSlideAction(input: HeroSlideInput) {
         subtitle: input.subtitle || null,
         description: input.description || null,
         image_url: input.image_url,
-        button_text: input.button_text || 'Partner With Us',
-        button_link: input.button_link || '/contact',
+        button_text: input.button_text || 'EXPLORE PRODUCTS',
+        button_link: input.button_link || '/products',
+        secondary_button_text: input.secondary_button_text || 'VIEW CATALOGUE',
+        secondary_button_link: input.secondary_button_link || '/catalogues',
         sort_order: input.sort_order || 0,
         is_published: input.is_published !== undefined ? input.is_published : true,
       })
