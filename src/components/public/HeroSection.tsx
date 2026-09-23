@@ -26,10 +26,21 @@ const DEFAULT_SLIDES: HeroSlide[] = [
     subtitle: 'SINCE 1973 • PRECISION SURGICAL MANUFACTURING',
     description: 'Durable Hospital Supplies is a trusted global partner for healthcare brands seeking reliable, high-quality surgical manufacturing solutions.',
     image_url: DEFAULT_HERO_IMAGE,
-    button_text: 'Partner With Us',
-    button_link: '/contact',
-    secondary_button_text: 'Explore Products',
-    secondary_button_link: '/products',
+    button_text: 'EXPLORE PRODUCTS',
+    button_link: '/products',
+    secondary_button_text: 'DOWNLOAD CATALOGUE',
+    secondary_button_link: '/pdf/general-surgical-instruments-catalogue.pdf',
+  },
+  {
+    id: 'slide-2',
+    title: 'WORLD-CLASS DENTAL & SURGICAL INSTRUMENTS',
+    subtitle: 'ISO 13485 CERTIFIED • DENTAL & SURGICAL EXCELLENCE',
+    description: 'Engineered for precision surgeons and dental professionals worldwide.',
+    image_url: '/images/dental-clinic-banner.png',
+    button_text: 'EXPLORE PRODUCTS',
+    button_link: '/products',
+    secondary_button_text: 'DOWNLOAD CATALOGUE',
+    secondary_button_link: '/pdf/general-surgical-instruments-catalogue.pdf',
   },
 ]
 
@@ -38,8 +49,8 @@ export function HeroSection() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({})
 
-  useEffect(() => {
-    // 1. Client-side localStorage sync fallback
+  const loadHeroSlides = () => {
+    // 1. LocalStorage Sync
     try {
       const saved = localStorage.getItem('durable_hero_slides')
       if (saved) {
@@ -63,24 +74,31 @@ export function HeroSection() {
             subtitle: item.subtitle,
             description: item.description,
             image_url: item.image_url || DEFAULT_HERO_IMAGE,
-            button_text: item.button_text || 'Partner With Us',
-            button_link: item.button_link || '/contact',
-            secondary_button_text: item.secondary_button_text || 'Explore Products',
-            secondary_button_link: item.secondary_button_link || '/products',
+            button_text: item.button_text || 'EXPLORE PRODUCTS',
+            button_link: item.button_link || '/products',
+            secondary_button_text: item.secondary_button_text || 'DOWNLOAD CATALOGUE',
+            secondary_button_link: item.secondary_button_link || '/pdf/general-surgical-instruments-catalogue.pdf',
           }))
         if (mapped.length > 0) {
           setSlides(mapped)
         }
       }
     })
+  }
+
+  useEffect(() => {
+    loadHeroSlides()
+    const handleUpdate = () => loadHeroSlides()
+    window.addEventListener('durable_content_updated', handleUpdate)
+    return () => window.removeEventListener('durable_content_updated', handleUpdate)
   }, [])
 
-  // Auto-play slide carousel timer (6 seconds per slide)
+  // Auto-play slide carousel timer (5 seconds per slide)
   useEffect(() => {
     if (slides.length <= 1) return
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % slides.length)
-    }, 6000)
+    }, 5000)
     return () => clearInterval(interval)
   }, [slides.length])
 
@@ -101,9 +119,9 @@ export function HeroSection() {
 
   return (
     <section className="w-full bg-[#F8FAFC] overflow-hidden">
-      {/* Hero Banner Container - Full 24", 29", 60" LCD Monitor Responsive */}
-      <div className="w-full max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto px-2 sm:px-4 lg:px-6 py-2 sm:py-4">
-        <div className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border border-slate-200 bg-white group min-h-[220px] sm:min-h-[380px] lg:min-h-[500px] flex items-center justify-center">
+      {/* Hero Banner Container - 100% Fluid Width for 24", 29", 36", 64" LCD Monitors */}
+      <div className="w-full px-0 sm:px-2 lg:px-4 py-0 sm:py-2">
+        <div className="relative w-full rounded-none sm:rounded-3xl overflow-hidden shadow-2xl border border-slate-200/80 bg-white group min-h-[240px] sm:min-h-[420px] lg:min-h-[580px] xl:min-h-[680px] 2xl:min-h-[780px] flex items-center justify-center">
           
           {/* Main Artwork Banner Image - Dynamic Uploaded URL with Fallback */}
           <div key={currentSlide.id || currentIndex} className="relative w-full h-full transition-all duration-500 animate-in fade-in flex items-center justify-center">
@@ -114,26 +132,31 @@ export function HeroSection() {
               onError={() => {
                 setFailedImages((prev) => ({ ...prev, [currentSlide.id]: true }))
               }}
-              className="w-full h-auto object-contain block max-h-[85vh] mx-auto"
+              className="w-full h-auto object-contain block max-h-[90vh] mx-auto min-w-full"
             />
 
             {/* Interactive CTA Buttons Overlay (Positioned on Left) */}
-            <div className="absolute left-[3%] bottom-[5%] sm:bottom-[8%] flex flex-wrap items-center gap-2 sm:gap-4 z-20">
+            <div className="absolute left-[3%] bottom-[5%] sm:bottom-[8%] flex flex-wrap items-center gap-2.5 sm:gap-4 z-20">
+              {/* Button 1: EXPLORE PRODUCTS (Red Solid Pill) */}
               <Link
-                href={currentSlide.button_link || '/contact'}
-                className="px-3 sm:px-6 lg:px-8 py-2 sm:py-3.5 text-[10px] sm:text-xs lg:text-sm font-black text-white bg-[#E31B23] hover:bg-[#c9141b] rounded-full shadow-lg shadow-red-600/30 transition-all transform hover:scale-105 flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider"
+                href={currentSlide.button_link || '/products'}
+                className="px-4 sm:px-7 lg:px-9 py-2.5 sm:py-3.5 text-[10px] sm:text-xs lg:text-sm font-black text-white bg-[#E31B23] hover:bg-[#c9141b] rounded-full shadow-lg shadow-red-600/30 transition-all transform hover:scale-105 flex items-center gap-2 uppercase tracking-wider"
               >
-                <span>{currentSlide.button_text || 'Partner With Us'}</span>
-                <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span>{currentSlide.button_text || 'EXPLORE PRODUCTS'}</span>
+                <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </Link>
 
-              <Link
-                href={currentSlide.secondary_button_link || '/products'}
-                className="px-3 sm:px-6 lg:px-8 py-2 sm:py-3.5 text-[10px] sm:text-xs lg:text-sm font-black text-[#E31B23] bg-white border-2 border-[#E31B23] hover:bg-red-50 rounded-full transition-all transform hover:scale-105 flex items-center gap-1.5 sm:gap-2 shadow-xs uppercase tracking-wider"
+              {/* Button 2: DOWNLOAD CATALOGUE (Red Outline Pill) */}
+              <a
+                href={currentSlide.secondary_button_link || '/pdf/general-surgical-instruments-catalogue.pdf'}
+                target="_blank"
+                rel="noopener noreferrer"
+                download
+                className="px-4 sm:px-7 lg:px-9 py-2.5 sm:py-3.5 text-[10px] sm:text-xs lg:text-sm font-black text-[#E31B23] bg-white border-2 border-[#E31B23] hover:bg-red-50 rounded-full transition-all transform hover:scale-105 flex items-center gap-2 shadow-xs uppercase tracking-wider"
               >
-                <span>{currentSlide.secondary_button_text || 'Explore Products'}</span>
-                <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
-              </Link>
+                <span>{currentSlide.secondary_button_text || 'DOWNLOAD CATALOGUE'}</span>
+                <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              </a>
             </div>
           </div>
 
@@ -143,30 +166,30 @@ export function HeroSection() {
               <button
                 type="button"
                 onClick={prevSlide}
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-slate-950/60 hover:bg-[#E31B23] text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 z-30 shadow-md"
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-slate-950/70 hover:bg-[#E31B23] text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 z-30 shadow-xl"
                 aria-label="Previous Slide"
               >
-                <ChevronLeft className="w-5 h-5" />
+                <ChevronLeft className="w-6 h-6" />
               </button>
 
               <button
                 type="button"
                 onClick={nextSlide}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-slate-950/60 hover:bg-[#E31B23] text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 z-30 shadow-md"
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-slate-950/70 hover:bg-[#E31B23] text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 z-30 shadow-xl"
                 aria-label="Next Slide"
               >
-                <ChevronRight className="w-5 h-5" />
+                <ChevronRight className="w-6 h-6" />
               </button>
 
               {/* Indicator Dots */}
-              <div className="absolute right-4 bottom-3 sm:bottom-4 flex items-center gap-1.5 z-30 bg-slate-950/40 backdrop-blur-xs px-3 py-1.5 rounded-full">
+              <div className="absolute right-6 bottom-4 sm:bottom-6 flex items-center gap-2 z-30 bg-slate-950/50 backdrop-blur-md px-4 py-2 rounded-full border border-white/20">
                 {slides.map((_, i) => (
                   <button
                     key={i}
                     type="button"
                     onClick={() => setCurrentIndex(i)}
-                    className={`h-2 rounded-full transition-all ${
-                      i === currentIndex ? 'w-6 bg-[#E31B23]' : 'w-2 bg-white/70 hover:bg-white'
+                    className={`h-2.5 rounded-full transition-all ${
+                      i === currentIndex ? 'w-8 bg-[#E31B23]' : 'w-2.5 bg-white/70 hover:bg-white'
                     }`}
                     aria-label={`Go to slide ${i + 1}`}
                   />

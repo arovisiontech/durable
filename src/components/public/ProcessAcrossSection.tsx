@@ -1,9 +1,49 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+
+const DEFAULT_PROCESS = [
+  {
+    id: '1',
+    title: 'Raw Material Selection',
+    category: 'Material Sourcing',
+    image: '/images/process-wooden-anvil.png',
+  },
+  {
+    id: '2',
+    title: 'Quality Inspection & Traveler Cards',
+    category: 'Quality Inspection',
+    image: '/images/process-traveler-card.png',
+  },
+  {
+    id: '3',
+    title: 'ERP Operator Tracking',
+    category: 'Research & Development',
+    image: '/images/process-erp-operator.png',
+  },
+  {
+    id: '4',
+    title: 'Precision Hand Filing & Jaw Serrations',
+    category: 'Precision Manufacturing',
+    image: '/images/process-hand-filing.png',
+  },
+  {
+    id: '5',
+    title: 'Surface Anodizing & Polishing',
+    category: 'Surface Finishing',
+    image: '/images/process-wooden-anvil.png',
+  },
+  {
+    id: '6',
+    title: 'Ultrasonic Sterilization & Cleaning',
+    category: 'Testing & Validation',
+    image: '/images/about-surgical-instruments.png',
+  },
+]
 
 export function ProcessAcrossSection() {
   const [activeTab, setActiveTab] = useState('All')
+  const [processItems, setProcessItems] = useState(DEFAULT_PROCESS)
 
   const tabs = [
     'All',
@@ -16,44 +56,32 @@ export function ProcessAcrossSection() {
     'Testing & Validation',
   ]
 
-  const processItems = [
-    {
-      id: 1,
-      title: 'Material Selection',
-      category: 'Material Sourcing',
-      image: '/images/process-wooden-anvil.png',
-    },
-    {
-      id: 2,
-      title: 'Material Selection',
-      category: 'Quality Inspection',
-      image: '/images/process-traveler-card.png',
-    },
-    {
-      id: 3,
-      title: 'Material Selection',
-      category: 'Research & Development',
-      image: '/images/process-erp-operator.png',
-    },
-    {
-      id: 4,
-      title: 'Material Selection',
-      category: 'Precision Manufacturing',
-      image: '/images/process-hand-filing.png',
-    },
-    {
-      id: 5,
-      title: 'Material Selection',
-      category: 'Surface Finishing',
-      image: '/images/process-wooden-anvil.png',
-    },
-    {
-      id: 6,
-      title: 'Material Selection',
-      category: 'Testing & Validation',
-      image: '/images/about-surgical-instruments.png',
-    },
-  ]
+  const loadData = () => {
+    try {
+      const saved = localStorage.getItem('durable_process_data')
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const mapped = parsed.map((item: any) => ({
+            id: item.id || `p-${Math.random()}`,
+            title: item.title,
+            category: item.category || 'Precision Manufacturing',
+            image: item.image_url || item.image || '/images/process-hand-filing.png',
+          }))
+          setProcessItems(mapped)
+        }
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  useEffect(() => {
+    loadData()
+    const handleUpdate = () => loadData()
+    window.addEventListener('durable_content_updated', handleUpdate)
+    return () => window.removeEventListener('durable_content_updated', handleUpdate)
+  }, [])
 
   const filteredItems =
     activeTab === 'All'

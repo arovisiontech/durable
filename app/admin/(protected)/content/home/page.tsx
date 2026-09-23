@@ -205,24 +205,58 @@ export default function AdminContentHomePage() {
   const [processForm, setProcessForm] = useState({ step_number: 1, title: '', description: '', image_url: '/images/process-hand-filing.png' })
   const [certForm, setCertForm] = useState({ name: '', logo_url: '/images/icon-iso.png' })
 
-  // Sync Hero Slides from LocalStorage on mount
+  // Sync All Sections from LocalStorage on mount
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('durable_hero_slides')
-      if (saved) {
-        const parsed = JSON.parse(saved)
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setHeroSlides(parsed)
-        }
+      const savedHero = localStorage.getItem('durable_hero_slides')
+      if (savedHero) {
+        const parsed = JSON.parse(savedHero)
+        if (Array.isArray(parsed) && parsed.length > 0) setHeroSlides(parsed)
+      }
+
+      const savedAbout = localStorage.getItem('durable_about_data')
+      if (savedAbout) {
+        const parsed = JSON.parse(savedAbout)
+        if (parsed && typeof parsed === 'object') setAboutData((prev) => ({ ...prev, ...parsed }))
+      }
+
+      const savedStats = localStorage.getItem('durable_stats_data')
+      if (savedStats) {
+        const parsed = JSON.parse(savedStats)
+        if (Array.isArray(parsed) && parsed.length > 0) setStatsData(parsed)
+      }
+
+      const savedPrecision = localStorage.getItem('durable_precision_data')
+      if (savedPrecision) {
+        const parsed = JSON.parse(savedPrecision)
+        if (parsed && typeof parsed === 'object') setPrecisionData((prev) => ({ ...prev, ...parsed }))
+      }
+
+      const savedProcess = localStorage.getItem('durable_process_data')
+      if (savedProcess) {
+        const parsed = JSON.parse(savedProcess)
+        if (Array.isArray(parsed) && parsed.length > 0) setProcessSteps(parsed)
+      }
+
+      const savedVideo = localStorage.getItem('durable_video_data')
+      if (savedVideo) {
+        const parsed = JSON.parse(savedVideo)
+        if (parsed && typeof parsed === 'object') setVideoData((prev) => ({ ...prev, ...parsed }))
       }
     } catch (e) {
       console.error('LocalStorage read error:', e)
     }
   }, [])
 
-  const saveHeroSlidesToStorage = (slides: AdminHeroSlide[]) => {
+  const saveAllToStorage = (overrideHero?: AdminHeroSlide[]) => {
     try {
-      localStorage.setItem('durable_hero_slides', JSON.stringify(slides))
+      localStorage.setItem('durable_hero_slides', JSON.stringify(overrideHero || heroSlides))
+      localStorage.setItem('durable_about_data', JSON.stringify(aboutData))
+      localStorage.setItem('durable_stats_data', JSON.stringify(statsData))
+      localStorage.setItem('durable_precision_data', JSON.stringify(precisionData))
+      localStorage.setItem('durable_process_data', JSON.stringify(processSteps))
+      localStorage.setItem('durable_video_data', JSON.stringify(videoData))
+      window.dispatchEvent(new Event('durable_content_updated'))
     } catch (e) {
       console.error('LocalStorage write error:', e)
     }
@@ -230,6 +264,7 @@ export default function AdminContentHomePage() {
 
   // Trigger Saved Toast
   const notifySaved = (msg: string) => {
+    saveAllToStorage()
     setSaveMessage(msg)
     setIsSaved(true)
     setTimeout(() => setIsSaved(false), 4000)
@@ -238,8 +273,8 @@ export default function AdminContentHomePage() {
   // SAVE ALL HANDLER
   const handleSaveAll = (e: React.FormEvent) => {
     e.preventDefault()
-    saveHeroSlidesToStorage(heroSlides)
-    notifySaved('All Home Page section contents & images updated live!')
+    saveAllToStorage()
+    notifySaved('All Home Page sections & uploaded images saved live!')
   }
 
   return (
@@ -378,7 +413,7 @@ export default function AdminContentHomePage() {
                     onClick={() => {
                       const updated = heroSlides.filter((s) => s.id !== slide.id)
                       setHeroSlides(updated)
-                      saveHeroSlidesToStorage(updated)
+                      saveAllToStorage(updated)
                       notifySaved('Hero image slide deleted!')
                     }}
                     className="p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg border border-red-200"
@@ -836,7 +871,7 @@ export default function AdminContentHomePage() {
                       updated = [...heroSlides, { ...heroForm, id: `slide-${Date.now()}` }]
                     }
                     setHeroSlides(updated)
-                    saveHeroSlidesToStorage(updated)
+                    saveAllToStorage(updated)
                     setActiveModal(null)
                     notifySaved('Hero slide updated & saved!')
                   }}

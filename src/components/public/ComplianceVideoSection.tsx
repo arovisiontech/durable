@@ -1,10 +1,39 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
+
+const DEFAULT_VIDEO = {
+  badge: 'COMPLIANCE AND CERTIFICATIONS',
+  title: 'Committed To Global Standards',
+  description: 'Durable Hospital Supplies Operates In Full Compliance With Internationally Recognized Medical Device Regulations And Quality Management Standards. Our Surgical, Dental, And Medical Instruments Are Manufactured, Inspected, And Validated To Meet Global Healthcare Markets Requirements.',
+  videoUrl: '/videos/0609.mp4',
+}
 
 export function ComplianceVideoSection() {
   const [isPlaying, setIsPlaying] = useState(false)
+  const [videoData, setVideoData] = useState(DEFAULT_VIDEO)
   const videoRef = useRef<HTMLVideoElement>(null)
+
+  const loadData = () => {
+    try {
+      const saved = localStorage.getItem('durable_video_data')
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (parsed && typeof parsed === 'object') {
+          setVideoData((prev) => ({ ...prev, ...parsed }))
+        }
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  useEffect(() => {
+    loadData()
+    const handleUpdate = () => loadData()
+    window.addEventListener('durable_content_updated', handleUpdate)
+    return () => window.removeEventListener('durable_content_updated', handleUpdate)
+  }, [])
 
   const handlePlayPause = () => {
     if (videoRef.current) {
@@ -24,7 +53,7 @@ export function ComplianceVideoSection() {
       <div className="w-full relative shadow-2xl bg-slate-950 overflow-hidden h-[260px] sm:h-[380px] lg:h-[480px] group">
         <video
           ref={videoRef}
-          src="/videos/0609.mp4"
+          src={videoData.videoUrl || '/videos/0609.mp4'}
           className="w-full h-full object-cover min-w-full min-h-full block"
           style={{ objectFit: 'cover' }}
           controls={isPlaying}
@@ -32,12 +61,12 @@ export function ComplianceVideoSection() {
           onPause={() => setIsPlaying(false)}
         />
 
-        {/* Overlapping Red Pill Badge on Bottom Right of Video matching SS 2 */}
+        {/* Overlapping Red Pill Badge on Bottom Right of Video */}
         {!isPlaying && (
           <div className="absolute bottom-3 right-3 sm:bottom-5 sm:right-6 lg:right-10 z-20 pointer-events-none">
             <div className="inline-flex items-center gap-1.5 bg-[#E31B23] text-white text-[9px] sm:text-xs font-black tracking-widest uppercase px-3.5 py-1.5 rounded-full shadow-xl">
               <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-              COMPLIANCE AND CERTIFICATIONS
+              {videoData.badge || 'COMPLIANCE AND CERTIFICATIONS'}
             </div>
           </div>
         )}
@@ -72,13 +101,12 @@ export function ComplianceVideoSection() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 items-start">
           <div className="lg:col-span-6">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight leading-tight">
-              Committed To Global <br className="hidden sm:inline" />
-              Standards
+              {videoData.title || 'Committed To Global Standards'}
             </h2>
           </div>
           <div className="lg:col-span-6">
             <p className="text-xs font-semibold text-slate-300 leading-relaxed">
-              Durable Hospital Supplies Operates In Full Compliance With Internationally Recognized Medical Device Regulations And Quality Management Standards. Our Surgical, Dental, And Medical Instruments Are Manufactured, Inspected, And Validated To Meet Global Healthcare Markets Requirements.
+              {videoData.description}
             </p>
           </div>
         </div>
