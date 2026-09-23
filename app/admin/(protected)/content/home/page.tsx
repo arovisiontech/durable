@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import {
   Save,
@@ -205,6 +205,29 @@ export default function AdminContentHomePage() {
   const [processForm, setProcessForm] = useState({ step_number: 1, title: '', description: '', image_url: '/images/process-hand-filing.png' })
   const [certForm, setCertForm] = useState({ name: '', logo_url: '/images/icon-iso.png' })
 
+  // Sync Hero Slides from LocalStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('durable_hero_slides')
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setHeroSlides(parsed)
+        }
+      }
+    } catch (e) {
+      console.error('LocalStorage read error:', e)
+    }
+  }, [])
+
+  const saveHeroSlidesToStorage = (slides: AdminHeroSlide[]) => {
+    try {
+      localStorage.setItem('durable_hero_slides', JSON.stringify(slides))
+    } catch (e) {
+      console.error('LocalStorage write error:', e)
+    }
+  }
+
   // Trigger Saved Toast
   const notifySaved = (msg: string) => {
     setSaveMessage(msg)
@@ -215,6 +238,7 @@ export default function AdminContentHomePage() {
   // SAVE ALL HANDLER
   const handleSaveAll = (e: React.FormEvent) => {
     e.preventDefault()
+    saveHeroSlidesToStorage(heroSlides)
     notifySaved('All Home Page section contents & images updated live!')
   }
 
@@ -352,7 +376,9 @@ export default function AdminContentHomePage() {
                   </button>
                   <button
                     onClick={() => {
-                      setHeroSlides((prev) => prev.filter((s) => s.id !== slide.id))
+                      const updated = heroSlides.filter((s) => s.id !== slide.id)
+                      setHeroSlides(updated)
+                      saveHeroSlidesToStorage(updated)
                       notifySaved('Hero image slide deleted!')
                     }}
                     className="p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg border border-red-200"
@@ -803,13 +829,16 @@ export default function AdminContentHomePage() {
                 </div>
                 <button
                   onClick={() => {
+                    let updated: AdminHeroSlide[] = []
                     if (editingItemId) {
-                      setHeroSlides((prev) => prev.map((s) => (s.id === editingItemId ? { ...heroForm, id: editingItemId } : s)))
+                      updated = heroSlides.map((s) => (s.id === editingItemId ? { ...heroForm, id: editingItemId } : s))
                     } else {
-                      setHeroSlides((prev) => [...prev, { ...heroForm, id: `slide-${Date.now()}` }])
+                      updated = [...heroSlides, { ...heroForm, id: `slide-${Date.now()}` }]
                     }
+                    setHeroSlides(updated)
+                    saveHeroSlidesToStorage(updated)
                     setActiveModal(null)
-                    notifySaved('Hero slide updated!')
+                    notifySaved('Hero slide updated & saved!')
                   }}
                   className="w-full py-2.5 bg-[#E31B23] text-white text-xs font-black rounded-xl"
                 >
