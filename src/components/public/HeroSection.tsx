@@ -17,34 +17,26 @@ export interface HeroSlide {
   secondary_button_link?: string | null
 }
 
+const DEFAULT_HERO_IMAGE = '/images/surgical-hero.png'
+
 const DEFAULT_SLIDES: HeroSlide[] = [
   {
     id: 'slide-1',
     title: 'EVERY 5 SECONDS, WE MAKE A DIFFERENCE',
     subtitle: 'SINCE 1973 • PRECISION SURGICAL MANUFACTURING',
     description: 'Durable Hospital Supplies is a trusted global partner for healthcare brands seeking reliable, high-quality surgical manufacturing solutions.',
-    image_url: '/images/surgical-hero.png',
+    image_url: DEFAULT_HERO_IMAGE,
     button_text: 'Partner With Us',
     button_link: '/contact',
     secondary_button_text: 'Explore Products',
     secondary_button_link: '/products',
-  },
-  {
-    id: 'slide-2',
-    title: 'WORLD-CLASS DENTAL & SURGICAL INSTRUMENTS',
-    subtitle: 'ISO 13485 CERTIFIED • DENTAL & SURGICAL EXCELLENCE',
-    description: 'Engineered for precision surgeons and dental professionals worldwide.',
-    image_url: '/images/dental-clinic-banner.png',
-    button_text: 'Dental Catalogues',
-    button_link: '/catalogues',
-    secondary_button_text: 'Contact Sales',
-    secondary_button_link: '/contact',
   },
 ]
 
 export function HeroSection() {
   const [slides, setSlides] = useState<HeroSlide[]>(DEFAULT_SLIDES)
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
     // 1. Client-side localStorage sync fallback
@@ -70,7 +62,7 @@ export function HeroSection() {
             title: item.title,
             subtitle: item.subtitle,
             description: item.description,
-            image_url: item.image_url,
+            image_url: item.image_url || DEFAULT_HERO_IMAGE,
             button_text: item.button_text || 'Partner With Us',
             button_link: item.button_link || '/contact',
             secondary_button_text: item.secondary_button_text || 'Explore Products',
@@ -102,18 +94,26 @@ export function HeroSection() {
 
   const currentSlide = slides[currentIndex] || slides[0] || DEFAULT_SLIDES[0]
 
+  // Active image URL with automatic fallback to default hero banner if image fails
+  const activeImage = failedImages[currentSlide.id]
+    ? DEFAULT_HERO_IMAGE
+    : currentSlide.image_url || DEFAULT_HERO_IMAGE
+
   return (
     <section className="w-full bg-[#F8FAFC] overflow-hidden">
       {/* Hero Banner Container - Full 24", 29", 60" LCD Monitor Responsive */}
       <div className="w-full max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto px-2 sm:px-4 lg:px-6 py-2 sm:py-4">
-        <div className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border border-slate-200 bg-white group">
+        <div className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border border-slate-200 bg-white group min-h-[220px] sm:min-h-[380px] lg:min-h-[500px] flex items-center justify-center">
           
-          {/* Main Artwork Banner Image - Dynamic Uploaded URL */}
-          <div key={currentSlide.id || currentIndex} className="relative w-full transition-all duration-500 animate-in fade-in">
+          {/* Main Artwork Banner Image - Dynamic Uploaded URL with Fallback */}
+          <div key={currentSlide.id || currentIndex} className="relative w-full h-full transition-all duration-500 animate-in fade-in flex items-center justify-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={currentSlide.image_url}
+              src={activeImage}
               alt={currentSlide.title || 'Durable Hospital Supplies Hero Banner'}
+              onError={() => {
+                setFailedImages((prev) => ({ ...prev, [currentSlide.id]: true }))
+              }}
               className="w-full h-auto object-contain block max-h-[85vh] mx-auto"
             />
 
