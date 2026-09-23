@@ -76,46 +76,47 @@ export function HeroSection() {
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({})
 
   const loadHeroSlides = () => {
-    let loadedSlides: HeroSlide[] = DEFAULT_SLIDES.map(sanitizeSlide)
+    let hasLocalCustom = false
 
-    // 1. LocalStorage Sync
+    // 1. LocalStorage Sync (Priority for user updates across refresh)
     try {
       const saved = localStorage.getItem('durable_hero_slides')
       if (saved) {
         const parsed = JSON.parse(saved)
         if (Array.isArray(parsed) && parsed.length > 0) {
-          loadedSlides = parsed.map(sanitizeSlide)
+          setSlides(parsed.map(sanitizeSlide))
+          hasLocalCustom = true
         }
       }
     } catch (e) {
       console.error('LocalStorage hero read error:', e)
     }
 
-    setSlides(loadedSlides)
-
-    // 2. Database Supabase Sync
-    getAdminHeroSlides().then((dbSlides) => {
-      if (dbSlides && dbSlides.length > 0) {
-        const mapped: HeroSlide[] = dbSlides
-          .filter((s: any) => s.is_published !== false)
-          .map((item: any) =>
-            sanitizeSlide({
-              id: item.id,
-              title: item.title,
-              subtitle: item.subtitle,
-              description: item.description,
-              image_url: item.image_url || DEFAULT_HERO_IMAGE,
-              button_text: item.button_text || 'EXPLORE PRODUCTS',
-              button_link: item.button_link || '/products',
-              secondary_button_text: item.secondary_button_text || 'VIEW CATALOGUE',
-              secondary_button_link: item.secondary_button_link || '/catalogues',
-            })
-          )
-        if (mapped.length > 0) {
-          setSlides(mapped)
+    // 2. Database Supabase Sync (Only if LocalStorage has no custom data)
+    if (!hasLocalCustom) {
+      getAdminHeroSlides().then((dbSlides) => {
+        if (dbSlides && dbSlides.length > 0) {
+          const mapped: HeroSlide[] = dbSlides
+            .filter((s: any) => s.is_published !== false)
+            .map((item: any) =>
+              sanitizeSlide({
+                id: item.id,
+                title: item.title,
+                subtitle: item.subtitle,
+                description: item.description,
+                image_url: item.image_url || DEFAULT_HERO_IMAGE,
+                button_text: item.button_text || 'EXPLORE PRODUCTS',
+                button_link: item.button_link || '/products',
+                secondary_button_text: item.secondary_button_text || 'VIEW CATALOGUE',
+                secondary_button_link: item.secondary_button_link || '/catalogues',
+              })
+            )
+          if (mapped.length > 0) {
+            setSlides(mapped)
+          }
         }
-      }
-    })
+      })
+    }
   }
 
   useEffect(() => {
@@ -151,11 +152,11 @@ export function HeroSection() {
 
   return (
     <section className="w-full bg-[#051026] overflow-hidden p-0 m-0">
-      {/* Hero Banner Container - 100% Fluid Width Edge-to-Edge for 24", 29", 36", 64" LCD Monitors */}
-      <div className="relative w-full overflow-hidden bg-slate-950 group flex items-center justify-center min-h-[300px] sm:min-h-[460px] lg:min-h-[620px] xl:min-h-[740px] 2xl:min-h-[860px]">
+      {/* Hero Banner Container - 100% Full Width Proportional Scaling without Side Cropping */}
+      <div className="relative w-full overflow-hidden bg-[#051026] group flex items-center justify-center">
         
         {/* Main Artwork Banner Image - Dynamic Uploaded URL with Fallback */}
-        <div key={currentSlide.id || currentIndex} className="relative w-full h-full min-h-[300px] sm:min-h-[460px] lg:min-h-[620px] xl:min-h-[740px] 2xl:min-h-[860px] transition-all duration-500 animate-in fade-in flex items-center justify-center">
+        <div key={currentSlide.id || currentIndex} className="relative w-full h-auto transition-all duration-500 animate-in fade-in flex items-center justify-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={activeImage}
@@ -163,27 +164,27 @@ export function HeroSection() {
             onError={() => {
               setFailedImages((prev) => ({ ...prev, [currentSlide.id]: true }))
             }}
-            className="w-full h-full object-cover block min-w-full min-h-[300px] sm:min-h-[460px] lg:min-h-[620px] xl:min-h-[740px] 2xl:min-h-[860px]"
+            className="w-full h-auto block object-contain max-w-full select-none"
           />
 
           {/* Interactive CTA Buttons Overlay (Positioned on Left) */}
-          <div className="absolute left-[3%] bottom-[5%] sm:bottom-[8%] flex flex-wrap items-center gap-2.5 sm:gap-4 z-20">
+          <div className="absolute left-[3%] bottom-[4%] sm:bottom-[6%] flex flex-wrap items-center gap-2 sm:gap-4 z-20">
             {/* Button 1: EXPLORE PRODUCTS (Red Solid Pill) */}
             <Link
               href={currentSlide.button_link || '/products'}
-              className="px-4 sm:px-7 lg:px-9 py-2.5 sm:py-3.5 text-[10px] sm:text-xs lg:text-sm font-black text-white bg-[#E31B23] hover:bg-[#c9141b] rounded-full shadow-lg shadow-red-600/30 transition-all transform hover:scale-105 flex items-center gap-2 uppercase tracking-wider"
+              className="px-3.5 sm:px-7 lg:px-9 py-2 sm:py-3.5 text-[9px] sm:text-xs lg:text-sm font-black text-white bg-[#E31B23] hover:bg-[#c9141b] rounded-full shadow-lg shadow-red-600/30 transition-all transform hover:scale-105 flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider"
             >
               <span>{currentSlide.button_text || 'EXPLORE PRODUCTS'}</span>
-              <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
             </Link>
 
             {/* Button 2: VIEW CATALOGUE (Red Outline Pill) */}
             <Link
               href={currentSlide.secondary_button_link || '/catalogues'}
-              className="px-4 sm:px-7 lg:px-9 py-2.5 sm:py-3.5 text-[10px] sm:text-xs lg:text-sm font-black text-[#E31B23] bg-white hover:bg-slate-50 border-2 border-[#E31B23] rounded-full transition-all transform hover:scale-105 flex items-center gap-2 shadow-xs uppercase tracking-wider"
+              className="px-3.5 sm:px-7 lg:px-9 py-2 sm:py-3.5 text-[9px] sm:text-xs lg:text-sm font-black text-[#E31B23] bg-white hover:bg-slate-50 border-2 border-[#E31B23] rounded-full transition-all transform hover:scale-105 flex items-center gap-1.5 sm:gap-2 shadow-xs uppercase tracking-wider"
             >
               <span>{currentSlide.secondary_button_text || 'VIEW CATALOGUE'}</span>
-              <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
             </Link>
           </div>
         </div>
