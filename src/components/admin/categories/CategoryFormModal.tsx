@@ -9,6 +9,7 @@ import { CategoryItem, CategoryFormData, categorySchema } from '@/src/types/cate
 import { createCategoryAction, updateCategoryAction } from '@/app/admin/actions/categories'
 import { CategorySelect } from '@/src/components/admin/CategorySelect'
 import { MediaPicker } from '@/src/components/admin/MediaPicker'
+import { AdminMediaUploadPlaceholder } from '@/src/components/admin/AdminMediaUploadPlaceholder'
 
 interface CategoryFormModalProps {
   isOpen: boolean
@@ -217,52 +218,14 @@ export function CategoryFormModal({
           </div>
 
           {/* Category Image */}
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-900 uppercase tracking-wider block">
-              Category Image
-            </label>
-            <div className="flex items-center gap-3">
-              {imageUrlValue ? (
-                <div className="relative w-16 h-16 rounded-xl border border-slate-200 overflow-hidden bg-slate-900 shrink-0">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={imageUrlValue}
-                    alt="Selected Category"
-                    className="w-full h-full object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setValue('image_url', '')}
-                    className="absolute top-1 right-1 p-0.5 rounded-full bg-red-600 text-white hover:bg-red-700"
-                    title="Remove Image"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </div>
-              ) : (
-                <div className="w-16 h-16 rounded-xl bg-slate-100 border border-dashed border-slate-300 flex items-center justify-center text-slate-400 shrink-0">
-                  <ImageIcon className="w-6 h-6" />
-                </div>
-              )}
-
-              <div className="space-y-1 flex-1">
-                <button
-                  type="button"
-                  onClick={() => setShowMediaPicker(true)}
-                  className="px-3 py-1.5 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors border border-slate-200 flex items-center gap-1.5"
-                >
-                  <ImageIcon className="w-3.5 h-3.5 text-red-600" />
-                  Select from Media Library
-                </button>
-                <input
-                  type="text"
-                  {...register('image_url')}
-                  placeholder="Or enter image URL..."
-                  className="w-full text-xs px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800"
-                />
-              </div>
-            </div>
-          </div>
+          <AdminMediaUploadPlaceholder
+            label="Category Cover Image"
+            value={imageUrlValue}
+            onChange={(url) => setValue('image_url', url, { shouldValidate: true })}
+            mediaType="image"
+            aspectRatio="square"
+            helperText="Upload or choose category thumbnail image (JPEG, PNG, WEBP, SVG)"
+          />
 
           {/* Description */}
           <div className="space-y-1.5">

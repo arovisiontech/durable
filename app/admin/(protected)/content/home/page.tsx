@@ -29,6 +29,7 @@ import {
   Sliders,
   Sparkles,
 } from 'lucide-react'
+import { AdminMediaUploadPlaceholder } from '@/src/components/admin/AdminMediaUploadPlaceholder'
 
 // Interfaces for Section Models
 export interface AdminHeroSlide {
@@ -79,16 +80,6 @@ export interface AdminCertLogo {
   name: string
   logo_url: string
 }
-
-const PRESET_IMAGES = [
-  { name: 'Surgical Hero Main', url: '/images/surgical-hero.png' },
-  { name: 'Dental Clinic Banner', url: '/images/dental-clinic-banner.png' },
-  { name: 'Precision Healthcare Banner', url: '/images/precision-healthcare-banner.png' },
-  { name: 'Products Showcase Banner', url: '/images/products-hero-banner.png' },
-  { name: 'Company Stats Banner', url: '/images/company-stats-banner.png' },
-  { name: 'Surgical Instruments Tray', url: '/images/about-surgical-instruments.png' },
-  { name: 'Building Photo', url: '/images/durable-building.png' },
-]
 
 export default function AdminContentHomePage() {
   const [activeTab, setActiveTab] = useState<'hero' | 'about' | 'stats' | 'solutions' | 'quality' | 'pillars' | 'precision' | 'process' | 'video'>('hero')
@@ -150,12 +141,6 @@ export default function AdminContentHomePage() {
     { id: 'sol-1', title: 'General Surgery Instruments', image_url: '/images/cat-scissors-shears.png', count: '5,000+ SKUs', description: 'Forceps, Scissors, Scalpels, Needle Holders & Clamps.' },
     { id: 'sol-2', title: 'Dental & Oral Surgery', image_url: '/images/cat-retractors.png', count: '3,200+ SKUs', description: 'Extracting Forceps, Elevators, Scalers & Explorers.' },
     { id: 'sol-3', title: 'TC Inserts & Tungsten Carbide', image_url: '/images/cat-handles-blades.png', count: '1,800+ SKUs', description: 'Gold-handled Scissors with Tungsten Carbide cutting edges.' },
-  ])
-
-  // 5. QUALITY TRUST CARDS STATE
-  const [qualityCards, setQualityCards] = useState<AdminQualityCard[]>([
-    { id: 'q-1', title: 'ISO 13485 & CE Compliance', description: 'Strict quality control across raw material testing and final sterilization.', points: ['MDR Ready', '100% Traceability', 'Sterile Packs'] },
-    { id: 'q-[#2]', title: 'OEM & Private Labeling', description: 'Custom laser marking, custom packaging, and private brand logo integration.', points: ['Custom Branding', 'Barcode Labeling', 'Custom Kitting'] },
   ])
 
   // 6. QUALITY PILLARS 2-COLUMN STATE
@@ -247,7 +232,7 @@ export default function AdminContentHomePage() {
             Home Page Full Content & Section Manager
           </h1>
           <p className="text-xs text-slate-500 font-medium">
-            Manage images, logos, titles, text, video URLs, points, and counter cards section-by-section.
+            Upload images from device/gallery, update video MP4s, titles, text, stats, and badges section-by-section.
           </p>
         </div>
 
@@ -283,11 +268,10 @@ export default function AdminContentHomePage() {
           { id: 'about', label: '2. About Us', icon: Info },
           { id: 'stats', label: '3. Stat Counters', icon: BarChart3 },
           { id: 'solutions', label: '4. Solutions Grid', icon: Layers },
-          { id: 'quality', label: '5. Quality Cards', icon: ShieldCheck },
-          { id: 'pillars', label: '6. Quality Pillars', icon: Sliders },
-          { id: 'precision', label: '7. Precision Banner', icon: Sparkles },
-          { id: 'process', label: '8. Process Steps', icon: ListOrdered },
-          { id: 'video', label: '9. Video & Logos', icon: Video },
+          { id: 'pillars', label: '5. Quality Pillars', icon: Sliders },
+          { id: 'precision', label: '6. Precision Banner', icon: Sparkles },
+          { id: 'process', label: '7. Process Steps', icon: ListOrdered },
+          { id: 'video', label: '8. Video & Logos', icon: Video },
         ].map((tab) => {
           const Icon = tab.icon
           const isActive = activeTab === tab.id
@@ -314,7 +298,7 @@ export default function AdminContentHomePage() {
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
               <h2 className="text-lg font-black text-[#0B1B3D]">Section 1: Hero Banner Images & Carousel Slider</h2>
-              <p className="text-xs text-slate-500">Add, edit, change, reorder, or delete hero background images.</p>
+              <p className="text-xs text-slate-500">Upload new hero banner images directly from your computer/gallery.</p>
             </div>
             <button
               onClick={() => {
@@ -335,7 +319,7 @@ export default function AdminContentHomePage() {
               className="px-4 py-2 bg-[#E31B23] text-white text-xs font-extrabold rounded-xl flex items-center gap-1.5"
             >
               <Plus className="w-4 h-4" />
-              <span>Add Hero Image</span>
+              <span>Upload Hero Image</span>
             </button>
           </div>
 
@@ -364,7 +348,7 @@ export default function AdminContentHomePage() {
                     className="px-3 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-lg flex items-center gap-1"
                   >
                     <Edit3 className="w-3.5 h-3.5" />
-                    <span>Edit</span>
+                    <span>Edit Slide</span>
                   </button>
                   <button
                     onClick={() => {
@@ -386,27 +370,27 @@ export default function AdminContentHomePage() {
       {activeTab === 'about' && (
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6">
           <div className="pb-4 border-b border-slate-100">
-            <h2 className="text-lg font-black text-[#0B1B3D]">Section 2: About Us Paragraphs, Image & Badges</h2>
-            <p className="text-xs text-slate-500">Update about us titles, description paragraphs, section image, and CTA links.</p>
+            <h2 className="text-lg font-black text-[#0B1B3D]">Section 2: About Us Paragraphs, Image Upload & Badges</h2>
+            <p className="text-xs text-slate-500">Upload section image directly from device and update description paragraphs.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4 md:col-span-2">
+              <AdminMediaUploadPlaceholder
+                label="About Us Section Main Image"
+                type="image"
+                value={aboutData.imageUrl}
+                onChange={(url) => setAboutData({ ...aboutData, imageUrl: url })}
+                placeholderText="Click or Drop to Upload About Us Section Image from Gallery"
+              />
+            </div>
+
             <div className="space-y-2">
               <label className="text-xs font-extrabold text-slate-800 uppercase">Badge Tagline</label>
               <input
                 type="text"
                 value={aboutData.badge}
                 onChange={(e) => setAboutData({ ...aboutData, badge: e.target.value })}
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-xs font-extrabold text-slate-800 uppercase">Section Main Image URL</label>
-              <input
-                type="text"
-                value={aboutData.imageUrl}
-                onChange={(e) => setAboutData({ ...aboutData, imageUrl: e.target.value })}
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
               />
             </div>
@@ -421,7 +405,7 @@ export default function AdminContentHomePage() {
               />
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 md:col-span-2">
               <label className="text-xs font-extrabold text-slate-800 uppercase">Title Highlight Line 2</label>
               <input
                 type="text"
@@ -515,7 +499,7 @@ export default function AdminContentHomePage() {
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
               <h2 className="text-lg font-black text-[#0B1B3D]">Section 4: Instrument Solutions Category Cards</h2>
-              <p className="text-xs text-slate-500">Manage instrument category cards with images, counts, and descriptions.</p>
+              <p className="text-xs text-slate-500">Upload category images from device and manage descriptions.</p>
             </div>
             <button
               onClick={() => {
@@ -551,7 +535,7 @@ export default function AdminContentHomePage() {
                     }}
                     className="px-3 py-1 bg-slate-900 text-white text-xs font-bold rounded-lg"
                   >
-                    Edit
+                    Edit Card
                   </button>
                   <button
                     onClick={() => {
@@ -569,31 +553,31 @@ export default function AdminContentHomePage() {
         </div>
       )}
 
-      {/* SECTION 6: QUALITY PILLARS & MANUFACTURING */}
+      {/* SECTION 5: QUALITY PILLARS & MANUFACTURING */}
       {activeTab === 'pillars' && (
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6">
           <div className="pb-4 border-b border-slate-100">
-            <h2 className="text-lg font-black text-[#0B1B3D]">Section 6: Quality Pillars 2-Column Showcase</h2>
-            <p className="text-xs text-slate-500">Update quality pillars titles, description text, and banner image URL.</p>
+            <h2 className="text-lg font-black text-[#0B1B3D]">Section 5: Quality Pillars 2-Column Showcase</h2>
+            <p className="text-xs text-slate-500">Upload quality pillars banner image directly from computer.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4 md:col-span-2">
+              <AdminMediaUploadPlaceholder
+                label="Quality Pillars Banner Image"
+                type="image"
+                value={pillarsData.imageUrl}
+                onChange={(url) => setPillarsData({ ...pillarsData, imageUrl: url })}
+                placeholderText="Click or Drop to Upload Pillars Banner Image from Device"
+              />
+            </div>
+
             <div className="space-y-2">
               <label className="text-xs font-extrabold text-slate-800 uppercase">Badge Tagline</label>
               <input
                 type="text"
                 value={pillarsData.badge}
                 onChange={(e) => setPillarsData({ ...pillarsData, badge: e.target.value })}
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-xs font-extrabold text-slate-800 uppercase">Pillars Banner Image URL</label>
-              <input
-                type="text"
-                value={pillarsData.imageUrl}
-                onChange={(e) => setPillarsData({ ...pillarsData, imageUrl: e.target.value })}
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
               />
             </div>
@@ -621,22 +605,22 @@ export default function AdminContentHomePage() {
         </div>
       )}
 
-      {/* SECTION 7: PRECISION HEALTHCARE CALLOUT BANNER */}
+      {/* SECTION 6: PRECISION HEALTHCARE CALLOUT BANNER */}
       {activeTab === 'precision' && (
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6">
           <div className="pb-4 border-b border-slate-100">
-            <h2 className="text-lg font-black text-[#0B1B3D]">Section 7: Precision Healthcare Callout Banner</h2>
-            <p className="text-xs text-slate-500">Configure background banner image, titles, and CTA buttons.</p>
+            <h2 className="text-lg font-black text-[#0B1B3D]">Section 6: Precision Healthcare Callout Banner</h2>
+            <p className="text-xs text-slate-500">Upload background banner image directly and edit callout text.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-xs font-extrabold text-slate-800 uppercase">Background Image URL</label>
-              <input
-                type="text"
+            <div className="space-y-4 md:col-span-2">
+              <AdminMediaUploadPlaceholder
+                label="Precision Callout Banner Background Image"
+                type="image"
                 value={precisionData.bgImage}
-                onChange={(e) => setPrecisionData({ ...precisionData, bgImage: e.target.value })}
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
+                onChange={(url) => setPrecisionData({ ...precisionData, bgImage: url })}
+                placeholderText="Click or Drop to Upload Precision Banner Image from Computer"
               />
             </div>
 
@@ -663,13 +647,13 @@ export default function AdminContentHomePage() {
         </div>
       )}
 
-      {/* SECTION 8: PROCESS STEPS SHOWCASE */}
+      {/* SECTION 7: PROCESS STEPS SHOWCASE */}
       {activeTab === 'process' && (
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
-              <h2 className="text-lg font-black text-[#0B1B3D]">Section 8: How We Process Across Department Workflow</h2>
-              <p className="text-xs text-slate-500">Add, edit, update, or remove manufacturing process steps and images.</p>
+              <h2 className="text-lg font-black text-[#0B1B3D]">Section 7: How We Process Across Department Workflow</h2>
+              <p className="text-xs text-slate-500">Upload step images directly and manage process step details.</p>
             </div>
             <button
               onClick={() => {
@@ -716,32 +700,33 @@ export default function AdminContentHomePage() {
         </div>
       )}
 
-      {/* SECTION 9: VIDEO & CERTIFICATION LOGOS */}
+      {/* SECTION 8: VIDEO & CERTIFICATION LOGOS */}
       {activeTab === 'video' && (
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6">
           <div className="pb-4 border-b border-slate-100">
-            <h2 className="text-lg font-black text-[#0B1B3D]">Section 9: Compliance Video & Certification Logos</h2>
-            <p className="text-xs text-slate-500">Configure video URL, thumbnail poster image, and certification logo images.</p>
+            <h2 className="text-lg font-black text-[#0B1B3D]">Section 8: Compliance Video & Certification Logos Upload</h2>
+            <p className="text-xs text-slate-500">Upload MP4 videos, video thumbnail poster image, and certification logo images.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-xs font-extrabold text-slate-800 uppercase">Video MP4 / Embed URL</label>
-              <input
-                type="text"
+            <div className="space-y-4">
+              <AdminMediaUploadPlaceholder
+                label="Compliance Showcase Video File (MP4/WebM)"
+                type="video"
+                accept="video/mp4,video/webm"
                 value={videoData.videoUrl}
-                onChange={(e) => setVideoData({ ...videoData, videoUrl: e.target.value })}
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
+                onChange={(url) => setVideoData({ ...videoData, videoUrl: url })}
+                placeholderText="Click or Drop to Upload MP4 Video File from Device"
               />
             </div>
 
-            <div className="space-y-2">
-              <label className="text-xs font-extrabold text-slate-800 uppercase">Video Poster Thumbnail Image</label>
-              <input
-                type="text"
+            <div className="space-y-4">
+              <AdminMediaUploadPlaceholder
+                label="Video Thumbnail Poster Image"
+                type="image"
                 value={videoData.thumbnailImage}
-                onChange={(e) => setVideoData({ ...videoData, thumbnailImage: e.target.value })}
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
+                onChange={(url) => setVideoData({ ...videoData, thumbnailImage: url })}
+                placeholderText="Click or Drop to Upload Video Thumbnail Poster"
               />
             </div>
           </div>
@@ -758,7 +743,7 @@ export default function AdminContentHomePage() {
                 className="px-3 py-1 bg-slate-900 text-white text-xs font-bold rounded-lg flex items-center gap-1"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>Add Logo</span>
+                <span>Upload Logo</span>
               </button>
             </div>
 
@@ -786,12 +771,12 @@ export default function AdminContentHomePage() {
         </div>
       )}
 
-      {/* MODAL DIALOG FOR HERO / STAT / SOLUTION / PROCESS / CERT */}
+      {/* MODAL DIALOGS FOR ITEM EDITING WITH DIRECT UPLOAD PLACEHOLDERS */}
       {activeModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
-          <div className="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+          <div className="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="text-sm font-black text-[#0B1B3D] uppercase">Configure Item Details</h3>
+              <h3 className="text-sm font-black text-[#0B1B3D] uppercase">Configure Item Details & Image Upload</h3>
               <button onClick={() => setActiveModal(null)} className="p-1 text-slate-400 hover:text-slate-700">
                 <X className="w-5 h-5" />
               </button>
@@ -800,17 +785,15 @@ export default function AdminContentHomePage() {
             {/* HERO MODAL */}
             {activeModal === 'hero' && (
               <div className="space-y-4">
+                <AdminMediaUploadPlaceholder
+                  label="Hero Banner Image"
+                  type="image"
+                  value={heroForm.image_url}
+                  onChange={(url) => setHeroForm({ ...heroForm, image_url: url })}
+                  placeholderText="Click or Drop to Upload Hero Image from Gallery"
+                />
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Image URL</label>
-                  <input
-                    type="text"
-                    value={heroForm.image_url}
-                    onChange={(e) => setHeroForm({ ...heroForm, image_url: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs font-bold"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Title</label>
+                  <label className="text-xs font-bold text-slate-700">Main Title</label>
                   <input
                     type="text"
                     value={heroForm.title}
@@ -876,21 +859,19 @@ export default function AdminContentHomePage() {
             {/* SOLUTION MODAL */}
             {activeModal === 'solution' && (
               <div className="space-y-4">
+                <AdminMediaUploadPlaceholder
+                  label="Category Card Image"
+                  type="image"
+                  value={solutionForm.image_url}
+                  onChange={(url) => setSolutionForm({ ...solutionForm, image_url: url })}
+                  placeholderText="Upload Category Image from Gallery"
+                />
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-700">Category Title</label>
                   <input
                     type="text"
                     value={solutionForm.title}
                     onChange={(e) => setSolutionForm({ ...solutionForm, title: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs font-bold"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Image URL</label>
-                  <input
-                    type="text"
-                    value={solutionForm.image_url}
-                    onChange={(e) => setSolutionForm({ ...solutionForm, image_url: e.target.value })}
                     className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs font-bold"
                   />
                 </div>
@@ -914,21 +895,19 @@ export default function AdminContentHomePage() {
             {/* PROCESS MODAL */}
             {activeModal === 'process' && (
               <div className="space-y-4">
+                <AdminMediaUploadPlaceholder
+                  label="Process Step Image"
+                  type="image"
+                  value={processForm.image_url}
+                  onChange={(url) => setProcessForm({ ...processForm, image_url: url })}
+                  placeholderText="Upload Process Image from Gallery"
+                />
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-700">Step Title</label>
                   <input
                     type="text"
                     value={processForm.title}
                     onChange={(e) => setProcessForm({ ...processForm, title: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs font-bold"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Step Image URL</label>
-                  <input
-                    type="text"
-                    value={processForm.image_url}
-                    onChange={(e) => setProcessForm({ ...processForm, image_url: e.target.value })}
                     className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs font-bold"
                   />
                 </div>
@@ -948,21 +927,19 @@ export default function AdminContentHomePage() {
             {/* CERT LOGO MODAL */}
             {activeModal === 'cert' && (
               <div className="space-y-4">
+                <AdminMediaUploadPlaceholder
+                  label="Certification Logo Image"
+                  type="image"
+                  value={certForm.logo_url}
+                  onChange={(url) => setCertForm({ ...certForm, logo_url: url })}
+                  placeholderText="Upload Certificate Logo Image"
+                />
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-700">Certificate Name</label>
                   <input
                     type="text"
                     value={certForm.name}
                     onChange={(e) => setCertForm({ ...certForm, name: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs font-bold"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Logo Image URL</label>
-                  <input
-                    type="text"
-                    value={certForm.logo_url}
-                    onChange={(e) => setCertForm({ ...certForm, logo_url: e.target.value })}
                     className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs font-bold"
                   />
                 </div>

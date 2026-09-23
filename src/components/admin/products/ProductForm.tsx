@@ -27,6 +27,7 @@ import { createProductAction, updateProductAction } from '@/app/admin/actions/pr
 import { fetchCategoriesAction } from '@/app/admin/actions/categories'
 import { CategorySelect } from '@/src/components/admin/CategorySelect'
 import { MediaPicker } from '@/src/components/admin/MediaPicker'
+import { AdminMediaUploadPlaceholder } from '@/src/components/admin/AdminMediaUploadPlaceholder'
 
 interface ProductFormProps {
   productToEdit?: ProductItem | null
@@ -353,52 +354,14 @@ export function ProductForm({ productToEdit }: ProductFormProps) {
           </div>
 
           {/* Featured Main Image */}
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-900 uppercase tracking-wider block">
-              Main Featured Cover Image
-            </label>
-            <div className="flex items-center gap-3">
-              {featuredImageValue ? (
-                <div className="relative w-20 h-20 rounded-xl border border-slate-200 overflow-hidden bg-slate-900 shrink-0">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={featuredImageValue}
-                    alt="Featured Image"
-                    className="w-full h-full object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setValue('featured_image', '')}
-                    className="absolute top-1 right-1 p-1 rounded-full bg-red-600 text-white hover:bg-red-700"
-                    title="Remove Image"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </div>
-              ) : (
-                <div className="w-20 h-20 rounded-xl bg-slate-100 border border-dashed border-slate-300 flex items-center justify-center text-slate-400 shrink-0">
-                  <ImageIcon className="w-7 h-7" />
-                </div>
-              )}
-
-              <div className="space-y-1.5 flex-1">
-                <button
-                  type="button"
-                  onClick={() => setShowFeaturedMediaPicker(true)}
-                  className="px-3.5 py-1.5 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors border border-slate-200 flex items-center gap-1.5"
-                >
-                  <ImageIcon className="w-3.5 h-3.5 text-red-600" />
-                  Select Main Image from Media Library
-                </button>
-                <input
-                  type="text"
-                  {...register('featured_image')}
-                  placeholder="Or paste image URL..."
-                  className="w-full text-xs px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800"
-                />
-              </div>
-            </div>
-          </div>
+          <AdminMediaUploadPlaceholder
+            label="Main Featured Product Image"
+            value={featuredImageValue}
+            onChange={(url) => setValue('featured_image', url, { shouldValidate: true })}
+            mediaType="image"
+            aspectRatio="square"
+            helperText="Upload or choose main instrument cover photo for catalog grids and product page (JPEG, PNG, WEBP, SVG)"
+          />
 
           {/* Additional Gallery Images */}
           <div className="space-y-3 pt-3 border-t border-slate-100">
@@ -599,16 +562,14 @@ export function ProductForm({ productToEdit }: ProductFormProps) {
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {/* Catalogue PDF URL */}
-            <div className="space-y-1.5 sm:col-span-2 lg:col-span-1">
-              <label className="text-xs font-bold text-slate-900 uppercase tracking-wider block">
-                Catalogue PDF Document URL
-              </label>
-              <input
-                type="text"
-                {...register('catalogue_pdf')}
-                placeholder="https://.../catalogues/surgical-scissors.pdf"
-                className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900"
+            {/* Catalogue PDF Document */}
+            <div className="sm:col-span-2 lg:col-span-1">
+              <AdminMediaUploadPlaceholder
+                label="Product Technical Specification PDF"
+                value={watch('catalogue_pdf') || ''}
+                onChange={(url) => setValue('catalogue_pdf', url, { shouldValidate: true })}
+                mediaType="document"
+                helperText="Upload product specification datasheet or brochure PDF (Any size supported)"
               />
             </div>
 

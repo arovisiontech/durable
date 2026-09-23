@@ -13,6 +13,7 @@ import {
   Share2,
   Image as ImageIcon,
 } from 'lucide-react'
+import { AdminMediaUploadPlaceholder } from '@/src/components/admin/AdminMediaUploadPlaceholder'
 
 export default function AdminSettingsPage() {
   const [isSaved, setIsSaved] = useState(false)
@@ -177,6 +178,39 @@ export default function AdminSettingsPage() {
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800"
               />
             </div>
+          </div>
+        </div>
+
+        {/* Website Logos & Branding */}
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-6">
+          <div className="flex items-center gap-3 pb-3 border-b border-slate-100">
+            <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center">
+              <ImageIcon className="w-5 h-5 text-[#E31B23]" />
+            </div>
+            <div>
+              <h2 className="text-lg font-black text-[#0B1B3D]">3. Header & Footer Logos</h2>
+              <p className="text-xs text-slate-500">Upload or change primary company logos for header navigation and footer.</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <AdminMediaUploadPlaceholder
+              label="Website Header & Sidebar Logo"
+              value={formData.logoUrl}
+              onChange={(url) => setFormData((prev) => ({ ...prev, logoUrl: url }))}
+              mediaType="image"
+              aspectRatio="wide"
+              helperText="Main corporate logo displayed on navigation bar & admin panel (SVG, PNG, WEBP)"
+            />
+
+            <AdminMediaUploadPlaceholder
+              label="Footer Logo (Dark/Light Background)"
+              value={formData.logoUrl}
+              onChange={(url) => setFormData((prev) => ({ ...prev, logoUrl: url }))}
+              mediaType="image"
+              aspectRatio="wide"
+              helperText="Transparent PNG or SVG logo for website footer section"
+            />
           </div>
         </div>
 

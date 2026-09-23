@@ -13,6 +13,7 @@ import {
   X,
   FileCheck,
 } from 'lucide-react'
+import { AdminMediaUploadPlaceholder } from '@/src/components/admin/AdminMediaUploadPlaceholder'
 
 export interface CertificationItem {
   id: string
@@ -288,6 +289,15 @@ export default function AdminCertificationsPage() {
                   className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800"
                 />
               </div>
+
+              {/* Certificate Document PDF Upload */}
+              <AdminMediaUploadPlaceholder
+                label="Certificate PDF / Image Document"
+                value={newCert.documentUrl}
+                onChange={(url) => setNewCert({ ...newCert, documentUrl: url })}
+                mediaType="document"
+                helperText="Upload official ISO or CE certificate PDF/Image (Unlimited MBs)"
+              />
 
               <div className="pt-4 flex items-center justify-end gap-3">
                 <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 text-xs font-bold text-slate-600 bg-slate-100 rounded-xl">

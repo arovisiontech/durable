@@ -11,6 +11,7 @@ import { CategoryItem } from '@/src/types/category'
 import { createCatalogueAction, updateCatalogueAction } from '@/app/admin/actions/catalogues'
 import { CategorySelect } from '@/src/components/admin/CategorySelect'
 import { MediaPicker } from '@/src/components/admin/MediaPicker'
+import { AdminMediaUploadPlaceholder } from '@/src/components/admin/AdminMediaUploadPlaceholder'
 
 interface CatalogueFormModalProps {
   isOpen: boolean
@@ -410,52 +411,14 @@ export function CatalogueFormModal({
           </div>
 
           {/* Cover Image Selection */}
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-900 uppercase tracking-wider block">
-              Catalogue Cover Image
-            </label>
-            <div className="flex items-center gap-3">
-              {coverImageValue ? (
-                <div className="relative w-16 h-20 rounded-xl border border-slate-200 overflow-hidden bg-slate-900 shrink-0">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={coverImageValue}
-                    alt="Catalogue Cover"
-                    className="w-full h-full object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setValue('cover_image', '')}
-                    className="absolute top-1 right-1 p-0.5 rounded-full bg-red-600 text-white hover:bg-red-700"
-                    title="Remove Cover"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </div>
-              ) : (
-                <div className="w-16 h-20 rounded-xl bg-slate-100 border border-dashed border-slate-300 flex items-center justify-center text-slate-400 shrink-0">
-                  <ImageIcon className="w-6 h-6" />
-                </div>
-              )}
-
-              <div className="space-y-1 flex-1">
-                <button
-                  type="button"
-                  onClick={() => setShowMediaPicker(true)}
-                  className="px-3 py-1.5 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors border border-slate-200 flex items-center gap-1.5"
-                >
-                  <ImageIcon className="w-3.5 h-3.5 text-red-600" />
-                  Select Cover from Media Library
-                </button>
-                <input
-                  type="text"
-                  {...register('cover_image')}
-                  placeholder="Or enter cover image URL..."
-                  className="w-full text-xs px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800"
-                />
-              </div>
-            </div>
-          </div>
+          <AdminMediaUploadPlaceholder
+            label="Catalogue Cover Image"
+            value={coverImageValue}
+            onChange={(url) => setValue('cover_image', url, { shouldValidate: true })}
+            mediaType="image"
+            aspectRatio="portrait"
+            helperText="Upload or choose cover image for catalogue card preview (JPEG, PNG, WEBP, SVG)"
+          />
 
           {/* Description */}
           <div className="space-y-1.5">
