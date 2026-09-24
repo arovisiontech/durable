@@ -70,6 +70,7 @@ export interface AdminProcessStep {
   id: string
   step_number: number
   title: string
+  category: string
   description: string
   image_url: string
   highlights: string[]
@@ -82,7 +83,7 @@ export interface AdminCertLogo {
 }
 
 export default function AdminContentHomePage() {
-  const [activeTab, setActiveTab] = useState<'hero' | 'about' | 'stats' | 'solutions' | 'quality' | 'pillars' | 'precision' | 'process' | 'video'>('hero')
+  const [activeTab, setActiveTab] = useState<'hero' | 'about' | 'stats' | 'solutions' | 'qualitytrust' | 'pillars' | 'precision' | 'process' | 'video'>('hero')
   const [isSaved, setIsSaved] = useState(false)
   const [saveMessage, setSaveMessage] = useState('Home Page content updated successfully!')
 
@@ -136,12 +137,48 @@ export default function AdminContentHomePage() {
     { id: 'stat-4', number: '50+', label: 'Export Countries' },
   ])
 
-  // 4. SOLUTIONS GRID STATE
+  // 4. SOLUTIONS GRID STATE (All 6 Solution Cards)
   const [solutionsData, setSolutionsData] = useState<AdminSolutionCard[]>([
-    { id: 'sol-1', title: 'General Surgery Instruments', image_url: '/images/cat-scissors-shears.png', count: '5,000+ SKUs', description: 'Forceps, Scissors, Scalpels, Needle Holders & Clamps.' },
-    { id: 'sol-2', title: 'Dental & Oral Surgery', image_url: '/images/cat-retractors.png', count: '3,200+ SKUs', description: 'Extracting Forceps, Elevators, Scalers & Explorers.' },
-    { id: 'sol-3', title: 'TC Inserts & Tungsten Carbide', image_url: '/images/cat-handles-blades.png', count: '1,800+ SKUs', description: 'Gold-handled Scissors with Tungsten Carbide cutting edges.' },
+    { id: 'sol-1', title: 'General Surgery', image_url: '/images/cat-scissors-shears.png', count: '01', description: 'Precision Instruments For All Surgical Discipline' },
+    { id: 'sol-2', title: 'Dental', image_url: '/images/cat-retractors.png', count: '02', description: 'Complete Dental Solutions For Every Specialty' },
+    { id: 'sol-3', title: 'Medical Hollowware', image_url: '/images/cat-handles-blades.png', count: '03', description: 'Instrument Storage & Sterilization Solutions' },
+    { id: 'sol-4', title: 'Ophthalmic', image_url: '/images/cat-scissors-shears.png', count: '04', description: 'Complete Ophthalmic Instrument Range' },
+    { id: 'sol-5', title: 'Hospital Furniture', image_url: '/images/cat-retractors.png', count: '05', description: 'Functional Solutions For Hospitals' },
+    { id: 'sol-6', title: 'Single Use Instruments', image_url: '/images/cat-handles-blades.png', count: '06', description: 'Reliable Single-Use Solutions' },
   ])
+
+  // 5. QUALITY TRUST CARDS STATE (4 Cards Section)
+  const [qualityTrustData, setQualityTrustData] = useState({
+    badge: 'BUILT FOR SAFETY. DESIGNED FOR EXCELLENCE.',
+    title: 'Quality You Can Trust, Every Time',
+    subtitle: 'From Raw Material To Final Inspection - Every Step Is Controlled, So You Can Focus On What Matters Most: Your Patients',
+    cards: [
+      {
+        id: 'qt-1',
+        title: 'Premium Reusable Solutions',
+        description: 'High-Quality Reusable Instruments Engineered For Lasting Precision And Dependable Performance.',
+        icon: '/images/icon-premium-reusable.png',
+      },
+      {
+        id: 'qt-2',
+        title: 'One-Time Use Instruments',
+        description: 'Single-Use Solutions Ensuring Optimal Hygiene And Performance.',
+        icon: '/images/icon-single-use.png',
+      },
+      {
+        id: 'qt-3',
+        title: 'Qualified Or Licensed',
+        description: 'Manufactured Under Certified Quality Systems And International Standards.',
+        icon: '/images/icon-qualified.png',
+      },
+      {
+        id: 'qt-4',
+        title: 'Reliable',
+        description: 'Engineered For Consistent Performance You Can Trust.',
+        icon: '/images/icon-reliable.png',
+      },
+    ],
+  })
 
   // 6. QUALITY PILLARS 2-COLUMN STATE
   const [pillarsData, setPillarsData] = useState({
@@ -162,11 +199,15 @@ export default function AdminContentHomePage() {
     ctaUrl: '/contact',
   })
 
-  // 8. PROCESS STEPS STATE
+  // 8. PROCESS STEPS STATE (7 Departments)
   const [processSteps, setProcessSteps] = useState<AdminProcessStep[]>([
-    { id: 'step-1', step_number: 1, title: 'Raw Material Forging & Selection', description: 'German & Japanese stainless steel grade selection.', image_url: '/images/process-hand-filing.png', highlights: ['AISI 420 / 410 Steel', 'Hardness Verification'] },
-    { id: 'step-2', step_number: 2, title: 'Precision Machining & Hand Filing', description: 'Master craftsmen hand-file jaw serrations and box joints.', image_url: '/images/process-wooden-anvil.png', highlights: ['Micro Serrations', 'Perfect Alignment'] },
-    { id: 'step-3', step_number: 3, title: 'Heat Treatment & Passivation', description: 'Vacuum heat treatment for long-lasting edge retention.', image_url: '/images/process-erp-operator.png', highlights: ['Boil Test Passed', 'Corrosion Resistant'] },
+    { id: 'step-1', step_number: 1, title: 'Computer Aided R&D & CAD Prototyping', category: 'Research & Development', description: '3D modeling, CAD prototyping and ergonomic testing.', image_url: '/images/process-erp-operator.png', highlights: ['SolidWorks Design', 'Ergonomic Testing'] },
+    { id: 'step-2', step_number: 2, title: 'German & Japanese Stainless Steel Sourcing', category: 'Material Sourcing', description: 'German & Japanese stainless steel grade selection.', image_url: '/images/process-hand-filing.png', highlights: ['AISI 420 / 410 Steel', 'Hardness Verification'] },
+    { id: 'step-3', step_number: 3, title: 'Precision Machining & Hand Filing', category: 'Precision Manufacturing', description: 'Master craftsmen hand-file jaw serrations and box joints.', image_url: '/images/process-wooden-anvil.png', highlights: ['Micro Serrations', 'Perfect Alignment'] },
+    { id: 'step-4', step_number: 4, title: 'Hardness Testing & Dimensional Inspection', category: 'Quality Inspection', description: 'Microscopic inspection and Rockwell C hardness verification.', image_url: '/images/process-traveler-card.png', highlights: ['Rockwell C Scale', 'Laser Calibration'] },
+    { id: 'step-5', step_number: 5, title: 'Electro-Polishing & Satin Surface Finish', category: 'Surface Finishing', description: 'Passivated satin finish preventing glare under surgical lamps.', image_url: '/images/process-hand-filing.png', highlights: ['Anti-Glare Finish', 'Passivation'] },
+    { id: 'step-6', step_number: 6, title: 'Ultrasonic Sterilization & Decontamination', category: 'Sterilization & Cleaning', description: 'ISO Class 7 cleanroom ultrasonic wash and residue removal.', image_url: '/images/about-surgical-instruments.png', highlights: ['Ultrasonic Bath', 'ISO Cleanroom'] },
+    { id: 'step-7', step_number: 7, title: 'Boil & Corrosion Passivation Testing', category: 'Testing & Validation', description: 'Autoclave testing and chemical passivation validation.', image_url: '/images/process-erp-operator.png', highlights: ['Boil Test Passed', 'Zero Oxidation'] },
   ])
 
   // 9. COMPLIANCE VIDEO & LOGOS STATE
@@ -201,9 +242,10 @@ export default function AdminContentHomePage() {
   })
 
   const [statForm, setStatForm] = useState({ number: '', label: '' })
-  const [solutionForm, setSolutionForm] = useState({ title: '', image_url: '/images/cat-scissors-shears.png', count: '1,000+ SKUs', description: '' })
-  const [processForm, setProcessForm] = useState({ step_number: 1, title: '', description: '', image_url: '/images/process-hand-filing.png' })
+  const [solutionForm, setSolutionForm] = useState({ title: '', image_url: '/images/cat-scissors-shears.png', count: '01', description: '' })
+  const [processForm, setProcessForm] = useState({ step_number: 1, title: '', category: 'Research & Development', description: '', image_url: '/images/process-hand-filing.png' })
   const [certForm, setCertForm] = useState({ name: '', logo_url: '/images/icon-iso.png' })
+  const [qualityCardForm, setQualityCardForm] = useState({ title: '', description: '', icon: '/images/icon-premium-reusable.png' })
 
   // Sync All Sections from LocalStorage on mount
   useEffect(() => {
@@ -224,6 +266,18 @@ export default function AdminContentHomePage() {
       if (savedStats) {
         const parsed = JSON.parse(savedStats)
         if (Array.isArray(parsed) && parsed.length > 0) setStatsData(parsed)
+      }
+
+      const savedSolutions = localStorage.getItem('durable_solutions_data')
+      if (savedSolutions) {
+        const parsed = JSON.parse(savedSolutions)
+        if (Array.isArray(parsed) && parsed.length > 0) setSolutionsData(parsed)
+      }
+
+      const savedQualityTrust = localStorage.getItem('durable_quality_trust_data')
+      if (savedQualityTrust) {
+        const parsed = JSON.parse(savedQualityTrust)
+        if (parsed && typeof parsed === 'object') setQualityTrustData((prev) => ({ ...prev, ...parsed }))
       }
 
       const savedPrecision = localStorage.getItem('durable_precision_data')
@@ -253,6 +307,8 @@ export default function AdminContentHomePage() {
       localStorage.setItem('durable_hero_slides', JSON.stringify(overrideHero || heroSlides))
       localStorage.setItem('durable_about_data', JSON.stringify(aboutData))
       localStorage.setItem('durable_stats_data', JSON.stringify(statsData))
+      localStorage.setItem('durable_solutions_data', JSON.stringify(solutionsData))
+      localStorage.setItem('durable_quality_trust_data', JSON.stringify(qualityTrustData))
       localStorage.setItem('durable_precision_data', JSON.stringify(precisionData))
       localStorage.setItem('durable_process_data', JSON.stringify(processSteps))
       localStorage.setItem('durable_video_data', JSON.stringify(videoData))
@@ -326,11 +382,12 @@ export default function AdminContentHomePage() {
           { id: 'hero', label: '1. Hero Slider', icon: Layout },
           { id: 'about', label: '2. About Us', icon: Info },
           { id: 'stats', label: '3. Stat Counters', icon: BarChart3 },
-          { id: 'solutions', label: '4. Solutions Grid', icon: Layers },
-          { id: 'pillars', label: '5. Quality Pillars', icon: Sliders },
-          { id: 'precision', label: '6. Precision Banner', icon: Sparkles },
-          { id: 'process', label: '7. Process Steps', icon: ListOrdered },
-          { id: 'video', label: '8. Video & Logos', icon: Video },
+          { id: 'solutions', label: '4. Solutions Grid (6 Cards)', icon: Layers },
+          { id: 'qualitytrust', label: '5. Quality Trust (4 Cards)', icon: ShieldCheck },
+          { id: 'pillars', label: '6. Quality Pillars', icon: Sliders },
+          { id: 'precision', label: '7. Precision Banner', icon: Sparkles },
+          { id: 'process', label: '8. Department Process (7 Steps)', icon: ListOrdered },
+          { id: 'video', label: '9. Video & Logos', icon: Video },
         ].map((tab) => {
           const Icon = tab.icon
           const isActive = activeTab === tab.id
@@ -614,11 +671,98 @@ export default function AdminContentHomePage() {
         </div>
       )}
 
-      {/* SECTION 5: QUALITY PILLARS & MANUFACTURING */}
+      {/* SECTION 5: QUALITY TRUST CARDS MANAGER */}
+      {activeTab === 'qualitytrust' && (
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6">
+          <div className="pb-4 border-b border-slate-100">
+            <h2 className="text-lg font-black text-[#0B1B3D]">Section 5: Quality You Can Trust (4 Feature Cards)</h2>
+            <p className="text-xs text-slate-500">Edit tagline, title, subtitle, and upload custom icons for all 4 feature cards.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase">Tagline Badge</label>
+              <input
+                type="text"
+                value={qualityTrustData.badge}
+                onChange={(e) => setQualityTrustData({ ...qualityTrustData, badge: e.target.value })}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase">Main Section Title</label>
+              <input
+                type="text"
+                value={qualityTrustData.title}
+                onChange={(e) => setQualityTrustData({ ...qualityTrustData, title: e.target.value })}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
+              />
+            </div>
+
+            <div className="space-y-2 md:col-span-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase">Subtitle Paragraph</label>
+              <textarea
+                rows={2}
+                value={qualityTrustData.subtitle}
+                onChange={(e) => setQualityTrustData({ ...qualityTrustData, subtitle: e.target.value })}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900"
+              />
+            </div>
+          </div>
+
+          {/* 4 Feature Cards Editor List */}
+          <div className="space-y-4 pt-4 border-t border-slate-100">
+            <h3 className="text-xs font-extrabold text-slate-800 uppercase">Edit Feature Cards</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {qualityTrustData.cards.map((card, idx) => (
+                <div key={card.id || idx} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+                  <AdminMediaUploadPlaceholder
+                    label={`Card ${idx + 1} Icon`}
+                    type="image"
+                    value={card.icon}
+                    onChange={(url) => {
+                      const updated = qualityTrustData.cards.map((c, i) => (i === idx ? { ...c, icon: url } : c))
+                      setQualityTrustData({ ...qualityTrustData, cards: updated })
+                    }}
+                    placeholderText="Upload Icon Image"
+                  />
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-bold text-slate-700">Card Title</label>
+                    <input
+                      type="text"
+                      value={card.title}
+                      onChange={(e) => {
+                        const updated = qualityTrustData.cards.map((c, i) => (i === idx ? { ...c, title: e.target.value } : c))
+                        setQualityTrustData({ ...qualityTrustData, cards: updated })
+                      }}
+                      className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-900"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-bold text-slate-700">Card Description</label>
+                    <textarea
+                      rows={2}
+                      value={card.description}
+                      onChange={(e) => {
+                        const updated = qualityTrustData.cards.map((c, i) => (i === idx ? { ...c, description: e.target.value } : c))
+                        setQualityTrustData({ ...qualityTrustData, cards: updated })
+                      }}
+                      className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-900"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SECTION 6: QUALITY PILLARS & MANUFACTURING */}
       {activeTab === 'pillars' && (
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6">
           <div className="pb-4 border-b border-slate-100">
-            <h2 className="text-lg font-black text-[#0B1B3D]">Section 5: Quality Pillars 2-Column Showcase</h2>
+            <h2 className="text-lg font-black text-[#0B1B3D]">Section 6: Quality Pillars 2-Column Showcase</h2>
             <p className="text-xs text-slate-500">Upload quality pillars banner image directly from computer.</p>
           </div>
 
@@ -666,11 +810,11 @@ export default function AdminContentHomePage() {
         </div>
       )}
 
-      {/* SECTION 6: PRECISION HEALTHCARE CALLOUT BANNER */}
+      {/* SECTION 7: PRECISION HEALTHCARE CALLOUT BANNER */}
       {activeTab === 'precision' && (
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6">
           <div className="pb-4 border-b border-slate-100">
-            <h2 className="text-lg font-black text-[#0B1B3D]">Section 6: Precision Healthcare Callout Banner</h2>
+            <h2 className="text-lg font-black text-[#0B1B3D]">Section 7: Precision Healthcare Callout Banner</h2>
             <p className="text-xs text-slate-500">Upload background banner image directly and edit callout text.</p>
           </div>
 
@@ -708,21 +852,21 @@ export default function AdminContentHomePage() {
         </div>
       )}
 
-      {/* SECTION 7: PROCESS STEPS SHOWCASE */}
+      {/* SECTION 8: PROCESS STEPS SHOWCASE */}
       {activeTab === 'process' && (
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
-              <h2 className="text-lg font-black text-[#0B1B3D]">Section 7: How We Process Across Department Workflow</h2>
-              <p className="text-xs text-slate-500">Upload step images directly and manage process step details.</p>
+              <h2 className="text-lg font-black text-[#0B1B3D]">Section 8: How We Process Across Department Workflow (7 Departments)</h2>
+              <p className="text-xs text-slate-500">Upload step images directly and manage process step details across all 7 departments.</p>
             </div>
             <button
               onClick={() => {
                 setEditingItemId(null)
-                setProcessForm({ step_number: processSteps.length + 1, title: 'New Manufacturing Step', description: 'Step description', image_url: '/images/process-hand-filing.png' })
+                setProcessForm({ step_number: processSteps.length + 1, title: 'New Manufacturing Step', category: 'Research & Development', description: 'Step description', image_url: '/images/process-hand-filing.png' })
                 setActiveModal('process')
               }}
-              className="px-4 py-2 bg-[#0B1B3D] text-white text-xs font-extrabold rounded-xl flex items-center gap-1.5"
+              className="px-4 py-2 bg-[#0B1B3D] text-white text-xs font-extrabold rounded-xl flex items-center gap-1.5 cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>Add Process Step</span>
@@ -738,7 +882,7 @@ export default function AdminContentHomePage() {
                     <img src={step.image_url} alt={step.title} className="w-full h-full object-cover" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <span className="text-[10px] font-black text-red-600 block">STEP 0{step.step_number}</span>
+                    <span className="text-[10px] font-black text-[#E31B23] uppercase block">STEP 0{step.step_number} • {step.category || 'Precision Manufacturing'}</span>
                     <h3 className="text-xs font-black text-[#0B1B3D]">{step.title}</h3>
                     <p className="text-[11px] text-slate-500">{step.description}</p>
                   </div>
@@ -750,7 +894,7 @@ export default function AdminContentHomePage() {
                       setProcessSteps((prev) => prev.filter((p) => p.id !== step.id))
                       notifySaved('Process step deleted!')
                     }}
-                    className="p-1 text-red-600 hover:bg-red-50 rounded-lg"
+                    className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg cursor-pointer border border-red-200"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -1028,6 +1172,24 @@ export default function AdminContentHomePage() {
                   onChange={(url) => setProcessForm({ ...processForm, image_url: url })}
                   placeholderText="Upload Process Image from Gallery"
                 />
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700">Department Category</label>
+                  <select
+                    value={processForm.category}
+                    onChange={(e) => setProcessForm({ ...processForm, category: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
+                  >
+                    <option value="Research & Development">Research & Development</option>
+                    <option value="Material Sourcing">Material Sourcing</option>
+                    <option value="Precision Manufacturing">Precision Manufacturing</option>
+                    <option value="Quality Inspection">Quality Inspection</option>
+                    <option value="Surface Finishing">Surface Finishing</option>
+                    <option value="Sterilization & Cleaning">Sterilization & Cleaning</option>
+                    <option value="Testing & Validation">Testing & Validation</option>
+                  </select>
+                </div>
+
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-700">Step Title</label>
                   <input
@@ -1037,13 +1199,14 @@ export default function AdminContentHomePage() {
                     className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs font-bold"
                   />
                 </div>
+
                 <button
                   onClick={() => {
                     setProcessSteps((prev) => [...prev, { id: `proc-${Date.now()}`, ...processForm, highlights: [] }])
                     setActiveModal(null)
                     notifySaved('Process step added!')
                   }}
-                  className="w-full py-2.5 bg-[#0B1B3D] text-white text-xs font-black rounded-xl"
+                  className="w-full py-2.5 bg-[#0B1B3D] text-white text-xs font-black rounded-xl cursor-pointer hover:bg-slate-900 transition-all shadow-md"
                 >
                   Save Process Step
                 </button>
