@@ -214,7 +214,7 @@ export default function AdminContentHomePage() {
   const [videoData, setVideoData] = useState({
     badge: 'COMPLIANCE AND CERTIFICATIONS',
     title: 'Watch Our Quality & Manufacturing Process Showcase',
-    videoUrl: '/videos/0609.mp4',
+    videoUrl: 'https://vimeo.com/1230520070?fl=ip&fe=ec',
     thumbnailImage: '/images/company-stats-banner.png',
   })
 
@@ -923,6 +923,16 @@ export default function AdminContentHomePage() {
                 onChange={(url) => setVideoData({ ...videoData, videoUrl: url })}
                 placeholderText="Click or Drop to Upload MP4 Video File from Device"
               />
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-700">Video Link / Vimeo URL</label>
+                <input
+                  type="text"
+                  value={videoData.videoUrl}
+                  onChange={(e) => setVideoData({ ...videoData, videoUrl: e.target.value })}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900"
+                  placeholder="https://vimeo.com/1230520070"
+                />
+              </div>
             </div>
 
             <div className="space-y-4">
