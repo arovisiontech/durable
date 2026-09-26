@@ -23,11 +23,11 @@ export function QualityPillarsSection() {
   ]
 
   return (
-    <section className="w-full bg-white py-8 sm:py-10 relative overflow-hidden border-b border-slate-200">
+    <section className="w-full bg-white py-10 sm:py-14 relative overflow-hidden border-b border-slate-200">
       {/* Background Subtle Halftone Grid Pattern */}
       <div className="absolute inset-0 opacity-[0.025] pointer-events-none bg-[radial-gradient(#0B1B3D_1.5px,transparent_1.5px)] [background-size:20px_20px]" />
 
-      <div className="max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-6 sm:space-y-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-8 sm:space-y-10">
         {/* Section Headline matching SS 1 */}
         <div className="text-center max-w-3xl mx-auto">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight">
@@ -36,29 +36,29 @@ export function QualityPillarsSection() {
           </h2>
         </div>
 
-        {/* 2-Column Content Layout (Image Left + 3 Pillars Right) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
-          {/* Left Column: Surgical Tray Photo with Embroidered DURABLE Patch */}
+        {/* 2-Column Content Layout (Image Left + 3 Pillars Right) - items-start so text starts from top of image row */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+          {/* Left Column: Surgical Tray Photo with Controlled Compact Height */}
           <div className="lg:col-span-5 relative">
-            <div className="relative rounded-2xl overflow-hidden shadow-xl border border-slate-200/80 group max-w-md mx-auto lg:max-w-none">
+            <div className="relative rounded-2xl overflow-hidden shadow-md border border-slate-200/80 group max-h-[380px] sm:max-h-[440px] w-full bg-slate-100">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/images/surgical-tray-durable.png"
                 alt="Delivering Confidence Through Quality - Surgical Tray"
-                className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-500"
+                className="w-full h-full max-h-[380px] sm:max-h-[440px] object-cover transform group-hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/20 via-transparent to-transparent opacity-60" />
             </div>
           </div>
 
-          {/* Right Column: 3 Pillar Blocks matching SS 1 */}
-          <div className="lg:col-span-7 space-y-5 sm:space-y-6">
+          {/* Right Column: 3 Pillar Blocks starting aligned from top of image row */}
+          <div className="lg:col-span-7 space-y-6">
             {pillars.map((pillar) => (
-              <div key={pillar.id} className="space-y-1">
+              <div key={pillar.id} className="space-y-1.5">
                 <h3 className="text-sm sm:text-base font-black text-[#0B1B3D] tracking-wider uppercase">
                   {pillar.title}
                 </h3>
-                <p className="text-xs font-semibold text-slate-400 leading-relaxed max-w-3xl">
+                <p className="text-xs sm:text-sm font-medium text-slate-600 leading-relaxed max-w-3xl">
                   {pillar.description}
                 </p>
               </div>

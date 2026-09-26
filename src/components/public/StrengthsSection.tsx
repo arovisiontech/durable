@@ -227,13 +227,13 @@ export function StrengthsSection() {
           </div>
         )}
 
-        {/* SECTION 2: Feature Block 1 ("Precision Driven Manufacturing") matching SS 2 */}
+        {/* SECTION 2: Feature Block 1 ("Precision Driven Manufacturing") - items-start & compact image */}
         {data.feature && (
-          <div className="bg-white rounded-xl shadow-xs border border-slate-200/80 overflow-hidden">
-            <div className="grid grid-cols-1 md:grid-cols-12 items-center">
+          <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-xs border border-slate-200/80 overflow-hidden">
+            <div className="grid grid-cols-1 md:grid-cols-12 items-start gap-8">
               
               {/* Image Column */}
-              <div className="md:col-span-5 relative h-64 sm:h-80 md:h-full min-h-[300px] w-full bg-slate-100">
+              <div className="md:col-span-5 relative h-[300px] sm:h-[360px] md:h-[400px] w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-xs">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={data.feature.image_url || '/images/process-hand-filing.png'}
@@ -242,8 +242,8 @@ export function StrengthsSection() {
                 />
               </div>
 
-              {/* Text Column */}
-              <div className="md:col-span-7 p-6 sm:p-10 lg:p-12 space-y-4">
+              {/* Text Column - Starts aligned with top row of image */}
+              <div className="md:col-span-7 space-y-4 pt-1">
                 {data.feature.subheading && (
                   <span className="text-xs font-black uppercase tracking-widest text-[#E31B23]">
                     {data.feature.subheading}
@@ -268,7 +268,7 @@ export function StrengthsSection() {
               <div key={card.id} className="space-y-4 flex flex-col h-full">
                 
                 {/* Card Top Image Block matching SS 3 */}
-                <div className="relative h-64 sm:h-72 w-full rounded-2xl overflow-hidden bg-slate-200 border border-slate-200 shadow-xs group">
+                <div className="relative h-60 sm:h-72 w-full rounded-2xl overflow-hidden bg-slate-200 border border-slate-200 shadow-xs group">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={card.image_url || '/images/blog-instruments-tray.png'}
@@ -295,8 +295,8 @@ export function StrengthsSection() {
         {/* SECTION 4: In-House Section ("Our strength is being In-House") matching SS 4 */}
         {data.inHouse && (
           <div className="space-y-6 pt-4">
-            {/* Top Large Factory Image with Rounded Corners matching SS 4 */}
-            <div className="relative h-72 sm:h-96 md:h-[480px] w-full rounded-2xl overflow-hidden bg-slate-200 border border-slate-200 shadow-xs">
+            {/* Top Factory Image with Controlled Height */}
+            <div className="relative h-64 sm:h-80 md:h-[400px] w-full rounded-2xl overflow-hidden bg-slate-200 border border-slate-200 shadow-xs">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={data.inHouse.image_url || '/images/process-erp-operator.png'}
@@ -325,7 +325,7 @@ export function StrengthsSection() {
                 <div key={card.id} className="space-y-4 flex flex-col h-full">
                   
                   {/* Card Image Box */}
-                  <div className="relative h-60 sm:h-72 w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-xs group">
+                  <div className="relative h-56 sm:h-64 w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-xs group">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={card.image_url || '/images/process-traveler-card.png'}
@@ -350,13 +350,13 @@ export function StrengthsSection() {
           </div>
         )}
 
-        {/* SECTION 6: EO & Sterilization matching SS 1 */}
+        {/* SECTION 6: EO & Sterilization (SS 1) - items-start & aligned with top of image */}
         {data.eoSterilization && (
-          <div className="bg-white rounded-2xl shadow-xs border border-slate-200/80 overflow-hidden">
-            <div className="grid grid-cols-1 md:grid-cols-12 items-center">
+          <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-xs border border-slate-200/80 overflow-hidden">
+            <div className="grid grid-cols-1 md:grid-cols-12 items-start gap-8">
               
-              {/* Left Tall Image Column (SS 1) */}
-              <div className="md:col-span-5 relative h-72 sm:h-96 md:h-full min-h-[360px] w-full bg-slate-100">
+              {/* Left Image Column (SS 1) - Compact controlled height */}
+              <div className="md:col-span-5 relative h-[300px] sm:h-[360px] md:h-[400px] w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-xs">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={data.eoSterilization.image_url || '/images/about-surgical-instruments.png'}
@@ -365,8 +365,8 @@ export function StrengthsSection() {
                 />
               </div>
 
-              {/* Right Text Column (SS 1) */}
-              <div className="md:col-span-7 p-6 sm:p-10 lg:p-12 space-y-4">
+              {/* Right Text Column (SS 1) - Starts aligned from top of image row */}
+              <div className="md:col-span-7 space-y-4 pt-1">
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#0B1B3D] tracking-tight leading-tight">
                   {data.eoSterilization.title}
                 </h2>
@@ -379,13 +379,13 @@ export function StrengthsSection() {
           </div>
         )}
 
-        {/* SECTION 7: Partner Connect Portal matching SS 2 */}
+        {/* SECTION 7: Partner Connect Portal (SS 2) - items-start & aligned with top of image */}
         {data.partnerConnect && (
-          <div className="bg-white rounded-2xl shadow-xs border border-slate-200/80 overflow-hidden">
-            <div className="grid grid-cols-1 md:grid-cols-12 items-center">
+          <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-xs border border-slate-200/80 overflow-hidden">
+            <div className="grid grid-cols-1 md:grid-cols-12 items-start gap-8">
               
-              {/* Left Text & CTA Column (SS 2) */}
-              <div className="md:col-span-7 p-6 sm:p-10 lg:p-12 space-y-6">
+              {/* Left Text & CTA Column (SS 2) - Starts aligned with top of image */}
+              <div className="md:col-span-7 space-y-6 pt-1">
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#0B1B3D] tracking-tight leading-tight">
                   {data.partnerConnect.title}
                 </h2>
@@ -404,8 +404,8 @@ export function StrengthsSection() {
                 )}
               </div>
 
-              {/* Right Image/Portal Preview Column (SS 2) */}
-              <div className="md:col-span-5 relative h-72 sm:h-96 md:h-full min-h-[360px] w-full bg-slate-100 border-l border-slate-200">
+              {/* Right Image Column (SS 2) - Compact controlled height */}
+              <div className="md:col-span-5 relative h-[300px] sm:h-[360px] md:h-[400px] w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-xs">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={data.partnerConnect.image_url || '/images/process-erp-operator.png'}
@@ -421,8 +421,8 @@ export function StrengthsSection() {
         {/* SECTION 8: Continuous Improvement Mindset matching SS 3 */}
         {data.continuousImprovement && (
           <div className="bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs space-y-8 p-6 sm:p-10">
-            {/* Top Banner Image (SS 3) */}
-            <div className="relative h-64 sm:h-80 md:h-[400px] w-full rounded-2xl overflow-hidden bg-slate-100">
+            {/* Top Banner Image (SS 3) - Controlled Height */}
+            <div className="relative h-60 sm:h-72 md:h-[360px] w-full rounded-2xl overflow-hidden bg-slate-100">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={data.continuousImprovement.image_url || '/images/company-stats-banner.png'}
@@ -443,13 +443,13 @@ export function StrengthsSection() {
           </div>
         )}
 
-        {/* SECTION 9: Corporate Social Responsibility matching SS 4 */}
+        {/* SECTION 9: Corporate Social Responsibility (SS 4) - items-start & aligned with top of image */}
         {data.csr && (
-          <div className="bg-white rounded-2xl shadow-xs border border-slate-200/80 overflow-hidden">
-            <div className="grid grid-cols-1 md:grid-cols-12 items-center">
+          <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-xs border border-slate-200/80 overflow-hidden">
+            <div className="grid grid-cols-1 md:grid-cols-12 items-start gap-8">
               
-              {/* Left Text Column (SS 4) */}
-              <div className="md:col-span-7 p-6 sm:p-10 lg:p-12 space-y-4">
+              {/* Left Text Column (SS 4) - Starts aligned from top of image row */}
+              <div className="md:col-span-7 space-y-4 pt-1">
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#0B1B3D] tracking-tight leading-tight">
                   {data.csr.title}
                 </h2>
@@ -458,8 +458,8 @@ export function StrengthsSection() {
                 </p>
               </div>
 
-              {/* Right Vertical Image Column (SS 4) */}
-              <div className="md:col-span-5 relative h-72 sm:h-96 md:h-full min-h-[360px] w-full bg-slate-100">
+              {/* Right Vertical Image Column (SS 4) - Compact controlled height */}
+              <div className="md:col-span-5 relative h-[300px] sm:h-[360px] md:h-[400px] w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-xs">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={data.csr.image_url || '/images/durable-building.jpg'}
@@ -474,7 +474,7 @@ export function StrengthsSection() {
 
         {/* SECTION 10: Explore FAQs Banner matching SS 5 */}
         {data.faqsBanner && (
-          <div className="relative w-full rounded-3xl overflow-hidden min-h-[380px] sm:min-h-[440px] flex items-center justify-center p-6 sm:p-12 border border-slate-300/80 shadow-lg">
+          <div className="relative w-full rounded-3xl overflow-hidden min-h-[360px] sm:min-h-[400px] flex items-center justify-center p-6 sm:p-12 border border-slate-300/80 shadow-lg">
             {/* Background Hallway Image (SS 5) */}
             <div
               className="absolute inset-0 bg-cover bg-center bg-no-repeat z-0"
