@@ -40,6 +40,7 @@ export function PublicHeader({ navigation = [] }: PublicHeaderProps) {
   const defaultNavLinks: NavItem[] = [
     { label: 'Home', url: '/' },
     { label: 'About', url: '/about' },
+    { label: 'Strengths', url: '/strengths' },
     { label: 'Products', url: '/products' },
     {
       label: 'Events',

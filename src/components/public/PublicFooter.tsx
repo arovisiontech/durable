@@ -203,6 +203,12 @@ export function PublicFooter({ settings }: PublicFooterProps) {
                 </Link>
               </li>
               <li>
+                <Link href="/strengths" prefetch={true} className="hover:text-[#E31B23] transition-colors flex items-center gap-1.5">
+                  <span className="text-slate-500">•</span>
+                  <span>Our Strengths</span>
+                </Link>
+              </li>
+              <li>
                 <Link href="/history" prefetch={true} className="hover:text-[#E31B23] transition-colors flex items-center gap-1.5">
                   <span className="text-slate-500">•</span>
                   <span>History</span>
