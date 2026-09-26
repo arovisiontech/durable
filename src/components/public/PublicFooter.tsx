@@ -292,9 +292,12 @@ export function PublicFooter({ settings }: PublicFooterProps) {
         <div className="w-full h-[1px] bg-slate-700/60" />
 
         {/* Bottom Copyright Bar */}
-        <div className="pt-0.5 pb-1 text-center sm:text-left text-xs sm:text-sm font-medium text-slate-400">
+        <div className="pt-0.5 pb-1 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs sm:text-sm font-medium text-slate-400">
           <p>
             © 2026 Durable Hospital Supplies All Rights Reserved
+          </p>
+          <p className="text-slate-400">
+            Designed by <span className="font-bold text-white hover:text-[#E31B23] transition-colors">Brandie Design Agency</span>
           </p>
         </div>
 

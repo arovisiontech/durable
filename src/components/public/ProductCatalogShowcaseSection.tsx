@@ -130,22 +130,20 @@ export function ProductCatalogShowcaseSection() {
           </p>
         </div>
 
-        {/* 6 Showcase Cards with Compact Size, Animations & 4-Side Light Beam */}
-        <div className="space-y-8 sm:space-y-10">
-          {catalogList.map((item, index) => {
-            const isEven = index % 2 === 1
-
+        {/* 6 Showcase Cards with 2 Columns per Row Grid Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+          {catalogList.map((item) => {
             return (
               <div
                 key={item.id}
                 id={`cat-${item.number}`}
-                className="scroll-mt-24 group relative"
+                className="scroll-mt-24 group relative h-full flex"
               >
                 {/* 4-Side Ambient Aura Glow Shadow behind card */}
                 <div className="absolute -inset-1 bg-gradient-to-r from-[#E31B23]/30 via-[#3B82F6]/30 to-[#E31B23]/30 rounded-3xl blur-xl opacity-40 group-hover:opacity-90 transition-opacity duration-500" />
 
-                {/* 4-Side Animated Light Beam Running Around Border (The aesthetic 4-side light effect) */}
-                <div className="relative p-[2px] rounded-3xl overflow-hidden bg-slate-200 group-hover:shadow-[0_15px_40px_rgba(227,27,35,0.2)] transition-all duration-500">
+                {/* 4-Side Animated Light Beam Running Around Border */}
+                <div className="relative p-[2px] rounded-3xl overflow-hidden bg-slate-200 group-hover:shadow-[0_15px_40px_rgba(227,27,35,0.2)] transition-all duration-500 w-full flex flex-col justify-between">
                   
                   {/* Rotating Conic Light Layer */}
                   <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-3xl z-0">
@@ -153,41 +151,37 @@ export function ProductCatalogShowcaseSection() {
                   </div>
 
                   {/* Inner Sleek Card Body */}
-                  <div className="relative z-10 bg-white rounded-[22px] p-5 sm:p-7 shadow-md group-hover:shadow-2xl transition-all duration-500">
-                    <div className={`grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center ${isEven ? 'lg:flex-row-reverse' : ''}`}>
+                  <div className="relative z-10 bg-white rounded-[22px] p-5 sm:p-6 shadow-md group-hover:shadow-2xl transition-all duration-500 h-full flex flex-col justify-between">
+                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-5 sm:gap-6 items-center">
                       
                       {/* Text Content Column */}
-                      <div
-                        className={`space-y-4 ${
-                          isEven ? 'lg:col-span-7 lg:order-2' : 'lg:col-span-7 lg:order-1'
-                        }`}
-                      >
+                      <div className="sm:col-span-7 space-y-3">
                         {/* Big Number & Title */}
                         <div className="space-y-1">
-                          <span className="text-4xl sm:text-5xl font-black text-[#0B1B3D] font-mono tracking-tighter leading-none block group-hover:text-[#E31B23] transition-colors duration-300">
+                          <span className="text-3xl sm:text-4xl font-black text-[#0B1B3D] font-mono tracking-tighter leading-none block group-hover:text-[#E31B23] transition-colors duration-300">
                             {item.number}
                           </span>
-                          <h3 className="text-xl sm:text-2xl font-black text-[#0B1B3D] leading-tight">
+                          <h3 className="text-lg sm:text-xl font-black text-[#0B1B3D] leading-tight">
                             {item.title}
                           </h3>
                         </div>
 
                         {/* Compact Description */}
-                        <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal line-clamp-3 sm:line-clamp-none">
+                        <p className="text-xs text-slate-600 leading-relaxed font-normal line-clamp-4">
                           {item.description}
                         </p>
 
                         {/* Action Buttons */}
-                        <div className="pt-2 flex flex-wrap items-center gap-2.5">
+                        <div className="pt-2 flex flex-wrap items-center gap-2">
                           {/* View PDF Button */}
                           <a
                             href={item.pdfUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold text-white bg-[#0B1B3D] hover:bg-slate-800 rounded-xl transition-all shadow-xs hover:shadow-md hover:scale-[1.02] active:scale-95"
+                            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-white bg-[#0B1B3D] hover:bg-slate-800 rounded-xl transition-all shadow-xs hover:shadow-md hover:scale-[1.02] active:scale-95"
                           >
                             <ExternalLink className="w-3.5 h-3.5 text-red-400" />
-                            <span>View Catalog PDF</span>
+                            <span>View PDF</span>
                           </a>
 
                           {/* Download PDF Button */}
@@ -196,7 +190,7 @@ export function ProductCatalogShowcaseSection() {
                             download
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold text-white bg-[#E31B23] hover:bg-red-700 rounded-xl transition-all shadow-xs hover:shadow-md hover:scale-[1.02] active:scale-95"
+                            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-white bg-[#E31B23] hover:bg-red-700 rounded-xl transition-all shadow-xs hover:shadow-md hover:scale-[1.02] active:scale-95"
                           >
                             <Download className="w-3.5 h-3.5" />
                             <span>Download PDF</span>
@@ -205,21 +199,17 @@ export function ProductCatalogShowcaseSection() {
                           {/* Category Link */}
                           <Link
                             href={`/category/${item.categorySlug}`}
-                            className="inline-flex items-center gap-1 px-3.5 py-2.5 text-xs font-bold text-slate-700 hover:text-[#E31B23] transition-colors group/link"
+                            className="inline-flex items-center gap-1 px-3 py-2 text-xs font-bold text-slate-700 hover:text-[#E31B23] transition-colors group/link"
                           >
-                            <span>Explore {item.number} Products</span>
+                            <span>Explore {item.number}</span>
                             <ArrowRight className="w-3.5 h-3.5 text-[#E31B23] group-hover/link:translate-x-1 transition-transform" />
                           </Link>
                         </div>
                       </div>
 
                       {/* Compact 3D Book Cover Card Column with Light Beam */}
-                      <div
-                        className={`flex items-center justify-center ${
-                          isEven ? 'lg:col-span-5 lg:order-1' : 'lg:col-span-5 lg:order-2'
-                        }`}
-                      >
-                        <div className="relative w-full max-w-[240px] sm:max-w-[270px] group/book perspective-1000">
+                      <div className="sm:col-span-5 flex items-center justify-center">
+                        <div className="relative w-full max-w-[200px] sm:max-w-[220px] group/book perspective-1000">
                           
                           {/* Book Outer Light Beam Wrapper */}
                           <div className="relative p-[1.5px] rounded-2xl overflow-hidden bg-slate-200 shadow-xl group-hover/book:shadow-2xl transition-all duration-500">
@@ -233,14 +223,14 @@ export function ProductCatalogShowcaseSection() {
                             <div className="relative z-10 rounded-[14px] overflow-hidden bg-white group-hover/book:scale-[1.03] group-hover/book:-rotate-1 transition-all duration-500">
                               
                               {/* Top Foil Band */}
-                              <div className="bg-[#0B1B3D] text-white px-4 py-2.5 flex items-center justify-between border-b border-slate-700">
+                              <div className="bg-[#0B1B3D] text-white px-3 py-2 flex items-center justify-between border-b border-slate-700">
                                 <div className="flex items-center gap-1.5">
                                   <span className="w-2 h-2 rounded-full bg-[#E31B23] animate-pulse" />
-                                  <span className="text-[9px] font-black uppercase tracking-wider text-slate-200 truncate max-w-[170px]">
+                                  <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-wider text-slate-200 truncate max-w-[130px]">
                                     {item.badgeText}
                                   </span>
                                 </div>
-                                <div className="text-[10px] font-black tracking-widest text-[#E31B23]">
+                                <div className="text-[9px] font-black tracking-widest text-[#E31B23]">
                                   DURABLE
                                 </div>
                               </div>
@@ -258,14 +248,14 @@ export function ProductCatalogShowcaseSection() {
                                 <div className="absolute inset-0 bg-gradient-to-t from-[#0B1B3D] via-[#0B1B3D]/40 to-transparent" />
 
                                 {/* Book Overlay Content */}
-                                <div className="absolute bottom-4 left-4 right-4 space-y-1 text-white">
-                                  <div className="text-2xl font-black font-mono opacity-40">
+                                <div className="absolute bottom-3 left-3 right-3 space-y-0.5 text-white">
+                                  <div className="text-xl font-black font-mono opacity-40">
                                     {item.number}
                                   </div>
-                                  <h4 className="text-sm font-black leading-snug uppercase text-white drop-shadow-sm line-clamp-2">
+                                  <h4 className="text-xs font-black leading-snug uppercase text-white drop-shadow-sm line-clamp-2">
                                     {item.title}
                                   </h4>
-                                  <div className="pt-0.5 flex items-center gap-1.5 text-[9px] font-semibold text-slate-300">
+                                  <div className="pt-0.5 flex items-center gap-1 text-[8px] font-semibold text-slate-300">
                                     <ShieldCheck className="w-3 h-3 text-emerald-400 shrink-0" />
                                     <span className="truncate">ISO 13485 & CE MDR</span>
                                   </div>
@@ -273,14 +263,14 @@ export function ProductCatalogShowcaseSection() {
                               </div>
 
                               {/* Bottom Spine Edge */}
-                              <div className="bg-[#051026] text-slate-400 text-[9px] font-bold text-center py-1.5 border-t border-slate-800 tracking-wider uppercase">
+                              <div className="bg-[#051026] text-slate-400 text-[8px] font-bold text-center py-1 border-t border-slate-800 tracking-wider uppercase">
                                 DURABLE HOSPITAL SUPPLIES
                               </div>
                             </div>
                           </div>
 
                           {/* Soft Floor Shadow */}
-                          <div className="w-3/4 h-3 bg-slate-900/15 mx-auto rounded-full blur-xs mt-3 group-hover/book:w-4/5 transition-all" />
+                          <div className="w-3/4 h-2.5 bg-slate-900/15 mx-auto rounded-full blur-xs mt-2 group-hover/book:w-4/5 transition-all" />
                         </div>
                       </div>
 
