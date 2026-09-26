@@ -1,10 +1,15 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Image from 'next/image'
 
 export interface StrengthCard {
   id: string
+  title: string
+  description: string
+  image_url: string
+}
+
+export interface InHouseSectionData {
   title: string
   description: string
   image_url: string
@@ -26,7 +31,9 @@ export interface StrengthsPageData {
     description: string
     image_url: string
   }
-  cards: StrengthCard[]
+  cardsGrid1: StrengthCard[]
+  inHouse: InHouseSectionData
+  cardsGrid2: StrengthCard[]
   customBlocks: CustomBlock[]
 }
 
@@ -40,20 +47,56 @@ const DEFAULT_STRENGTHS_DATA: StrengthsPageData = {
       'Everything begins with design. We meticulously plan and establish dimensions, tolerances, and metallurgical requirements before production even starts. Our state-of-the-art CNC machinery combined with skilled craftsmanship guarantees that every instrument conforms to exact specifications and international standards.',
     image_url: '/images/process-hand-filing.png',
   },
-  cards: [
+  cardsGrid1: [
     {
-      id: 'card-1',
+      id: 'card-team',
       title: 'Our Team',
       description:
         "Our team is the backbone of our success. We are a cohesive group of professionals, technicians, and engineers united by a shared goal: to create exceptional products. Their expertise, dedication, and collaboration are the driving force behind everything we achieve. Our team's passion for excellence is what sets us apart, making them the bloodline of our company and the key to our continued growth and success. We are more than a team; we are Dr Frigz family.",
       image_url: '/images/blog-instruments-tray.png',
     },
     {
-      id: 'card-2',
+      id: 'card-mastery',
       title: 'Passion for technical mastery',
       description:
         'We have a deep understanding of technicalities, standards, and compliance, and we thrive on challenges that push us to excel. Our ability to see the nuances and subtleties that distinguish a great instrument from a nominal one sets us apart. As technical people with a passion for manufacturing, we embrace the complexities of our industry. This passion is woven into our ethos and reflected in the precision and quality of our products.',
       image_url: '/images/process-wooden-anvil.png',
+    },
+  ],
+  inHouse: {
+    title: 'Our strength is being In-House',
+    description:
+      'We control every aspect of production, from crafting our own forging dies and forging units to machining, vacuum hardening, polishing, setting, finishing, coatings, and laser marking—all within our factory premises. Afterwards, we package the products in our cleanroom, sterilize them with EO, and ship them directly to our customers. Due to our in-house processes, we maintain strict quality control at every step and meet delivery deadlines with confidence. Additionally, we are committed to continually improving our processes and expanding our capacities to better serve our customers.',
+    image_url: '/images/process-erp-operator.png',
+  },
+  cardsGrid2: [
+    {
+      id: 'card-cert',
+      title: 'Certifications & Compliance',
+      description:
+        'Our instruments and manufacturing facilities are fully compliant with ISO 9001, ISO 13485, and SA 8000 standards. We are in process of getting our MDR and are equipped with an ISO Class 8 cleanroom and EO sterilization capabilities. Additionally, we hold FDA and a wide range of country-specific certifications to meet the diverse needs of our customers',
+      image_url: '/images/process-traveler-card.png',
+    },
+    {
+      id: 'card-quality',
+      title: 'No Compromise on Quality',
+      description:
+        "Quality is non-negotiable. We adhere to the highest industry standards, ensuring that every instrument we produce is crafted with precision, reliability, and excellence. Our commitment to quality extends through every stage of the manufacturing process, from sourcing premium materials to implementing rigorous quality control checks.  For us, there is no compromise on quality—it's the foundation of our reputation and the trust our customers place in us.",
+      image_url: '/images/blog-scissors-highres.png',
+    },
+    {
+      id: 'card-capacity',
+      title: 'Scalability & Capacity',
+      description:
+        'Scalability and capacity are at the heart of our operations. With the ability to supply millions of pieces each month already, we are actively increasing our production capacities across all categories, including reusable, disposable, and sterile instruments. This ongoing expansion ensures that we not only meet the current demands of our customers but are also well-positioned to scale further as market needs evolve.',
+      image_url: '/images/cat-forceps-clamps.png',
+    },
+    {
+      id: 'card-erp',
+      title: 'Oracle ERP',
+      description:
+        'One of our greatest strengths is our robust ERP system. It enables us to effectively manage customer requirements, handle high business volumes, and oversee diverse operations and compliance with ease. Manufacturing at this scale would be impossible without accurate, real-time information, and Oracle ERP empowers us to achieve this seamlessly',
+      image_url: '/images/durable-building.png',
     },
   ],
   customBlocks: [],
@@ -70,7 +113,13 @@ export function StrengthsSection() {
         setData((prev) => ({
           introText: parsed.introText ?? prev.introText,
           feature: { ...prev.feature, ...(parsed.feature || {}) },
-          cards: Array.isArray(parsed.cards) ? parsed.cards : prev.cards,
+          cardsGrid1: Array.isArray(parsed.cardsGrid1)
+            ? parsed.cardsGrid1
+            : Array.isArray(parsed.cards)
+            ? parsed.cards
+            : prev.cardsGrid1,
+          inHouse: { ...prev.inHouse, ...(parsed.inHouse || {}) },
+          cardsGrid2: Array.isArray(parsed.cardsGrid2) ? parsed.cardsGrid2 : prev.cardsGrid2,
           customBlocks: Array.isArray(parsed.customBlocks) ? parsed.customBlocks : prev.customBlocks,
         }))
       }
@@ -92,7 +141,7 @@ export function StrengthsSection() {
         
         {/* SECTION 1: Intro Overview Paragraph matching SS 2 */}
         {data.introText && (
-          <div className="max-w-5xl mx-auto text-center font-serif sm:font-sans">
+          <div className="max-w-5xl mx-auto text-center">
             <p className="text-base sm:text-lg lg:text-xl font-normal text-slate-800 leading-relaxed text-left sm:text-center">
               {data.introText}
             </p>
@@ -133,13 +182,13 @@ export function StrengthsSection() {
           </div>
         )}
 
-        {/* SECTION 3: Cards Grid ("Our Team" & "Passion for technical mastery") matching SS 3 & SS 4 */}
-        {data.cards && data.cards.length > 0 && (
+        {/* SECTION 3: Cards Grid 1 ("Our Team" & "Passion for technical mastery") matching SS 3 */}
+        {data.cardsGrid1 && data.cardsGrid1.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10">
-            {data.cards.map((card) => (
+            {data.cardsGrid1.map((card) => (
               <div key={card.id} className="space-y-4 flex flex-col h-full">
                 
-                {/* Card Top Image Block with Rounded Corners matching SS 3 */}
+                {/* Card Top Image Block matching SS 3 */}
                 <div className="relative h-64 sm:h-72 w-full rounded-2xl overflow-hidden bg-slate-200 border border-slate-200 shadow-xs group">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -164,7 +213,65 @@ export function StrengthsSection() {
           </div>
         )}
 
-        {/* SECTION 4: Additional Custom Content Blocks (Dynamically added from Admin) */}
+        {/* SECTION 4: In-House Section ("Our strength is being In-House") matching SS 4 */}
+        {data.inHouse && (
+          <div className="space-y-6 pt-4">
+            {/* Top Large Factory Image with Rounded Corners matching SS 4 */}
+            <div className="relative h-72 sm:h-96 md:h-[480px] w-full rounded-2xl overflow-hidden bg-slate-200 border border-slate-200 shadow-xs">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={data.inHouse.image_url || '/images/process-erp-operator.png'}
+                alt={data.inHouse.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+
+            {/* Title & Description matching SS 4 */}
+            <div className="space-y-3 pt-2">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#0B1B3D] tracking-tight">
+                {data.inHouse.title}
+              </h2>
+              <p className="text-xs sm:text-sm lg:text-base font-normal text-slate-700 leading-relaxed">
+                {data.inHouse.description}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* SECTION 5: 2x2 Grid of 4 Cards (Certifications, Quality, Capacity, Oracle ERP) matching SS 5 */}
+        {data.cardsGrid2 && data.cardsGrid2.length > 0 && (
+          <div className="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200/90 shadow-xs space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10">
+              {data.cardsGrid2.map((card) => (
+                <div key={card.id} className="space-y-4 flex flex-col h-full">
+                  
+                  {/* Card Image Box */}
+                  <div className="relative h-60 sm:h-72 w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-xs group">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={card.image_url || '/images/process-traveler-card.png'}
+                      alt={card.title}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+
+                  {/* Card Text Content */}
+                  <div className="space-y-2 pt-1 flex-1">
+                    <h3 className="text-xl sm:text-2xl font-black text-[#0B1B3D] tracking-tight">
+                      {card.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm font-normal text-slate-700 leading-relaxed">
+                      {card.description}
+                    </p>
+                  </div>
+
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* SECTION 6: Additional Custom Content Blocks */}
         {data.customBlocks && data.customBlocks.length > 0 && (
           <div className="space-y-10 pt-4 border-t border-slate-300/60">
             {data.customBlocks.map((block) => (

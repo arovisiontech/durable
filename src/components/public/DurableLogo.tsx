@@ -12,8 +12,8 @@ export function DurableLogo({ className = '', heightClass = 'h-10 sm:h-12' }: Du
     <Link href="/" className={`inline-flex items-center group ${className}`}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/image 237.svg"
-        alt="Durable Medical"
+        src="/Asset 1.svg"
+        alt="Durable Hospital Supplies"
         className={`${heightClass} w-auto object-contain transition-opacity hover:opacity-95`}
       />
     </Link>

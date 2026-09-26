@@ -11,7 +11,7 @@ interface HeroBannerData {
 
 const DEFAULT_HERO: HeroBannerData = {
   badge: 'OUR STRENGTHS',
-  title: 'Our Strengths',
+  title: 'OUR STRENGTHS',
   subtitle: 'PRECISION IN EVERY INSTRUMENT. TRUST IN EVERY DETAIL.',
   bgImage: '/images/about-hero-banner.png',
 }
@@ -41,40 +41,40 @@ export function StrengthsHeroBanner() {
   }, [])
 
   return (
-    <section className="w-full relative bg-[#090D16] overflow-hidden border-b border-slate-800">
-      {/* Background Banner Container - Responsive across all screens */}
-      <div className="w-full max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto min-h-[300px] sm:min-h-[380px] lg:min-h-[440px] xl:min-h-[480px] relative flex items-center justify-center text-center">
+    <section className="w-full relative bg-white overflow-hidden border-b border-slate-200">
+      {/* Background Banner Container matching SS 2 */}
+      <div className="w-full max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto min-h-[360px] sm:min-h-[420px] lg:min-h-[480px] xl:min-h-[540px] relative flex items-center">
         
-        {/* Background Image Layer */}
+        {/* Right Side Background Image */}
         <div 
-          className="absolute inset-0 bg-center bg-cover bg-no-repeat z-0 opacity-40 mix-blend-luminosity"
+          className="absolute inset-0 bg-right bg-cover bg-no-repeat z-0"
           style={{ backgroundImage: `url('${heroData.bgImage || '/images/about-hero-banner.png'}')` }}
         />
 
-        {/* Gradient Overlay for Sleek Contrast */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#090D16] via-[#090D16]/60 to-transparent z-10" />
+        {/* White Fade Gradient Overlay from Left to Right */}
+        <div className="absolute inset-0 bg-gradient-to-r from-white via-white/95 sm:via-white/85 via-50% to-transparent z-10" />
 
-        {/* Content Overlay */}
-        <div className="relative z-20 max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto px-6 sm:px-10 lg:px-16 py-12 sm:py-20 w-full flex flex-col items-center">
-          <div className="max-w-4xl space-y-4 text-center">
+        {/* Text Content Overlay matching SS 2 */}
+        <div className="relative z-20 max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto px-6 sm:px-10 lg:px-16 py-10 sm:py-16 w-full">
+          <div className="max-w-3xl space-y-4">
             
             {/* Pill Badge */}
             {heroData.badge && (
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 shadow-md">
-                <span className="w-2 h-2 rounded-full bg-[#E31B23] animate-pulse" />
-                <span className="text-[11px] sm:text-xs font-black uppercase tracking-widest text-white">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#F1F5F9] border border-slate-200 shadow-2xs">
+                <span className="w-2 h-2 rounded-full bg-[#E31B23]" />
+                <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-slate-800">
                   {heroData.badge}
                 </span>
               </div>
             )}
 
-            {/* Main Title matching SS 1 */}
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.1] uppercase drop-shadow-md">
+            {/* Main Title matching SS 2 */}
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-[#0B1B3D] tracking-tight leading-[1.12] uppercase">
               {heroData.title}
             </h1>
 
             {heroData.subtitle && (
-              <p className="text-xs sm:text-sm font-semibold tracking-wider text-slate-300 uppercase max-w-2xl mx-auto pt-1">
+              <p className="text-xs sm:text-sm font-semibold tracking-wider text-slate-600 uppercase max-w-2xl pt-1">
                 {heroData.subtitle}
               </p>
             )}
