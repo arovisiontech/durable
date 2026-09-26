@@ -9,8 +9,6 @@ import {
   Plus,
   Trash2,
   Edit3,
-  MoveUp,
-  MoveDown,
   ShieldCheck,
   Building2,
   Layers,
@@ -19,9 +17,23 @@ import {
   Check,
   Award,
   Factory,
+  CheckCircle,
+  HelpCircle,
+  HeartHandshake,
+  TrendingUp,
+  Globe,
 } from 'lucide-react'
 import { AdminMediaUploadPlaceholder } from '@/src/components/admin/AdminMediaUploadPlaceholder'
-import { StrengthCard, CustomBlock, InHouseSectionData } from '@/src/components/public/StrengthsSection'
+import {
+  StrengthCard,
+  CustomBlock,
+  InHouseSectionData,
+  EoSterilizationData,
+  PartnerConnectData,
+  ContinuousImprovementData,
+  CsrData,
+  FaqsBannerData,
+} from '@/src/components/public/StrengthsSection'
 
 export default function AdminContentStrengthsPage() {
   const [isSaved, setIsSaved] = useState(false)
@@ -37,7 +49,7 @@ export default function AdminContentStrengthsPage() {
 
   // 2. Intro Overview Text State
   const [introText, setIntroText] = useState(
-    'Dr. Frigz is a vertically integrated OEM surgical instrument manufacturer and medical device supply chain partner based in Sialkot, Pakistan, working directly with surgical equipment suppliers, surgical instrument distributors and dental instruments suppliers across the US, EU & UK. From precision forging and CNC machining to EO sterilization and global distribution, every step of our manufacturing process is performed in-house. This gives our distributors, hospital procurement teams and private label healthcare brands complete confidence in quality, compliance and supply chain reliability.'
+    'Durable Hospital Supplies is a vertically integrated OEM surgical instrument manufacturer and medical device supply chain partner based in Sialkot, Pakistan, working directly with surgical equipment suppliers, surgical instrument distributors and dental instruments suppliers across the US, EU & UK. From precision forging and CNC machining to EO sterilization and global distribution, every step of our manufacturing process is performed in-house. This gives our distributors, hospital procurement teams and private label healthcare brands complete confidence in quality, compliance and supply chain reliability.'
   )
 
   // 3. Feature Section State ("Precision Driven Manufacturing")
@@ -55,7 +67,7 @@ export default function AdminContentStrengthsPage() {
       id: 'card-team',
       title: 'Our Team',
       description:
-        "Our team is the backbone of our success. We are a cohesive group of professionals, technicians, and engineers united by a shared goal: to create exceptional products. Their expertise, dedication, and collaboration are the driving force behind everything we achieve. Our team's passion for excellence is what sets us apart, making them the bloodline of our company and the key to our continued growth and success. We are more than a team; we are Dr Frigz family.",
+        "Our team is the backbone of our success. We are a cohesive group of professionals, technicians, and engineers united by a shared goal: to create exceptional products. Their expertise, dedication, and collaboration are the driving force behind everything we achieve. Our team's passion for excellence is what sets us apart, making them the bloodline of our company and the key to our continued growth and success. We are more than a team; we are Durable family.",
       image_url: '/images/blog-instruments-tray.png',
     },
     {
@@ -107,7 +119,51 @@ export default function AdminContentStrengthsPage() {
     },
   ])
 
-  // 7. Custom Blocks State
+  // 7. EO & Sterilization Section State (SS 1)
+  const [eoSterilizationForm, setEoSterilizationForm] = useState<EoSterilizationData>({
+    title: 'EO & Sterilization',
+    description:
+      'At Durable Hospital Supplies, one of our core strengths lies in our comprehensive sterilization solutions, which include Ethylene Oxide (EO) Sterilization within our ISO Class 7 Clean Room facility. This ensures that our instruments meet the highest safety and hygiene standards. Additionally, we specialize in a variety of packaging solutions, including blister packs and Tyvek pouches, tailored to our customers’ needs. By offering sterile instruments in various packaging formats, we help our clients save both time and costs, ensuring ready-to-use products. All of our processes are certified, guaranteeing quality and compliance at every step of production.',
+    image_url: '/images/about-surgical-instruments.png',
+  })
+
+  // 8. Partner Connect Portal Section State (SS 2)
+  const [partnerConnectForm, setPartnerConnectForm] = useState<PartnerConnectData>({
+    title: 'Partner Connect Portal',
+    description:
+      'In the fast-moving surgical landscape, real-time data is as critical as the precision of the instruments themselves. Building on our robust digital infrastructure, we have launched the Partner Connect Portal, giving our distributors direct, secure access to a dedicated segment of our Oracle ERP. This proactive transparency allows partners to independently monitor vital KPIs, track current and past orders, check live inventory, and access technical drawings instantly. By digitizing the flow of information, we ensure our partners stay agile, informed, and equipped to lead in their respective markets.',
+    button_text: 'Explore Partner Connect Portal',
+    button_link: '/contact',
+    image_url: '/images/process-erp-operator.png',
+  })
+
+  // 9. Continuous Improvement Mindset Section State (SS 3)
+  const [continuousImprovementForm, setContinuousImprovementForm] = useState<ContinuousImprovementData>({
+    title: 'Continuous Improvement Mindset',
+    description:
+      'We are constantly optimizing, training, and staying at the forefront of the latest technologies. By embracing advancements and taking calculated risks, we ensure that we stay ahead of the curve. Change is not something we resist—it’s something we welcome and turn to our advantage. This mindset of continuous improvement allows us to refine our processes and deliver better results, always pushing the boundaries of what’s possible in our industry.',
+    image_url: '/images/company-stats-banner.png',
+  })
+
+  // 10. Corporate Social Responsibility Section State (SS 4)
+  const [csrForm, setCsrForm] = useState<CsrData>({
+    title: 'Corporate Social Responsibility',
+    description:
+      'At Durable Hospital Supplies, corporate social responsibility is at the heart of what we do. We proudly manage Roshni Homes, an orphanage that provides a nurturing environment for children. In addition, we actively support our local community through health and education sponsorships, ensuring opportunities for growth and well-being. Our efforts also include providing clean drinking water in underserved areas, reinforcing our commitment to making a positive impact. Through these & more initiatives like this, we are dedicated to giving back and creating lasting change in the communities where we live.',
+    image_url: '/images/durable-building.jpg',
+  })
+
+  // 11. Explore FAQs Banner Section State (SS 5)
+  const [faqsBannerForm, setFaqsBannerForm] = useState<FaqsBannerData>({
+    title: 'Why Choose Durable Hospital Supplies as Your OEM Surgical Instrument Manufacturer?',
+    description:
+      'Explore the most frequently asked questions from distributors, hospitals and healthcare brands before they partnered with Durable Hospital Supplies. Learn how our OEM manufacturing capabilities, ISO 13485 certification, in-house sterilization and global supply chain can support your business.',
+    button_text: 'Explore FAQs',
+    button_link: '/faqs',
+    image_url: '/images/surgical-hero.jpg',
+  })
+
+  // 12. Custom Blocks State
   const [customBlocks, setCustomBlocks] = useState<CustomBlock[]>([])
 
   // Modal Dialog States
@@ -141,6 +197,11 @@ export default function AdminContentStrengthsPage() {
         else if (Array.isArray(parsed.cards)) setCardsGrid1(parsed.cards)
         if (parsed.inHouse) setInHouseForm((prev) => ({ ...prev, ...parsed.inHouse }))
         if (Array.isArray(parsed.cardsGrid2)) setCardsGrid2(parsed.cardsGrid2)
+        if (parsed.eoSterilization) setEoSterilizationForm((prev) => ({ ...prev, ...parsed.eoSterilization }))
+        if (parsed.partnerConnect) setPartnerConnectForm((prev) => ({ ...prev, ...parsed.partnerConnect }))
+        if (parsed.continuousImprovement) setContinuousImprovementForm((prev) => ({ ...prev, ...parsed.continuousImprovement }))
+        if (parsed.csr) setCsrForm((prev) => ({ ...prev, ...parsed.csr }))
+        if (parsed.faqsBanner) setFaqsBannerForm((prev) => ({ ...prev, ...parsed.faqsBanner }))
         if (Array.isArray(parsed.customBlocks)) setCustomBlocks(parsed.customBlocks)
       }
     } catch (e) {
@@ -159,6 +220,11 @@ export default function AdminContentStrengthsPage() {
         cardsGrid1,
         inHouse: inHouseForm,
         cardsGrid2,
+        eoSterilization: eoSterilizationForm,
+        partnerConnect: partnerConnectForm,
+        continuousImprovement: continuousImprovementForm,
+        csr: csrForm,
+        faqsBanner: faqsBannerForm,
         customBlocks,
       }
       localStorage.setItem('durable_strengths_data', JSON.stringify(payload))
@@ -304,7 +370,7 @@ export default function AdminContentStrengthsPage() {
             Strengths Page Content Manager
           </h1>
           <p className="text-xs text-slate-500 font-medium">
-            Manage banner images, intro text, manufacturing blocks, In-House section, strength cards, and custom content.
+            Manage all 11 sections of the Strengths page dynamically (EO & Sterilization, Partner Connect, CSR, FAQs, etc.).
           </p>
         </div>
 
@@ -343,16 +409,14 @@ export default function AdminContentStrengthsPage() {
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-black text-[#0B1B3D]">1. Strengths Hero Banner Settings (SS 2)</h2>
+              <h2 className="text-lg font-black text-[#0B1B3D]">1. Strengths Hero Banner Settings</h2>
               <p className="text-xs text-slate-500">Edit hero banner title, subtitle, badge, and background image.</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
-                Hero Pill Badge Text
-              </label>
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Hero Pill Badge Text</label>
               <input
                 type="text"
                 value={heroForm.badge}
@@ -362,9 +426,7 @@ export default function AdminContentStrengthsPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
-                Hero Main Title
-              </label>
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Hero Main Title</label>
               <input
                 type="text"
                 value={heroForm.title}
@@ -374,9 +436,7 @@ export default function AdminContentStrengthsPage() {
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
-                Hero Subtitle / Tagline
-              </label>
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Hero Subtitle / Tagline</label>
               <input
                 type="text"
                 value={heroForm.subtitle}
@@ -386,9 +446,7 @@ export default function AdminContentStrengthsPage() {
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
-                Hero Background Image (Default: /images/about-hero-banner.png)
-              </label>
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Hero Background Image</label>
               <AdminMediaUploadPlaceholder
                 value={heroForm.bgImage}
                 onChange={(url) => setHeroForm({ ...heroForm, bgImage: url })}
@@ -405,15 +463,13 @@ export default function AdminContentStrengthsPage() {
               <Building2 className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-black text-[#0B1B3D]">2. Introductory Overview Text (SS 2)</h2>
-              <p className="text-xs text-slate-500">Edit the top overview paragraph about Dr. Frigz manufacturing capabilities.</p>
+              <h2 className="text-lg font-black text-[#0B1B3D]">2. Introductory Overview Text</h2>
+              <p className="text-xs text-slate-500">Edit top overview paragraph.</p>
             </div>
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
-              Intro Paragraph Text
-            </label>
+            <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Intro Paragraph Text</label>
             <textarea
               rows={4}
               value={introText}
@@ -430,16 +486,14 @@ export default function AdminContentStrengthsPage() {
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-black text-[#0B1B3D]">3. Feature Block (Precision Driven Manufacturing - SS 2)</h2>
-              <p className="text-xs text-slate-500">Configure title, description, badge, and image for the main feature showcase.</p>
+              <h2 className="text-lg font-black text-[#0B1B3D]">3. Feature Block (Precision Driven Manufacturing)</h2>
+              <p className="text-xs text-slate-500">Title, description, badge, and image.</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
-                Subheading / Badge
-              </label>
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Subheading / Badge</label>
               <input
                 type="text"
                 value={featureForm.subheading}
@@ -449,9 +503,7 @@ export default function AdminContentStrengthsPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
-                Feature Title
-              </label>
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Feature Title</label>
               <input
                 type="text"
                 value={featureForm.title}
@@ -461,9 +513,7 @@ export default function AdminContentStrengthsPage() {
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
-                Feature Description
-              </label>
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Feature Description</label>
               <textarea
                 rows={3}
                 value={featureForm.description}
@@ -473,9 +523,7 @@ export default function AdminContentStrengthsPage() {
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
-                Feature Image
-              </label>
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Feature Image</label>
               <AdminMediaUploadPlaceholder
                 value={featureForm.image_url}
                 onChange={(url) => setFeatureForm({ ...featureForm, image_url: url })}
@@ -493,7 +541,7 @@ export default function AdminContentStrengthsPage() {
                 <Layers className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-lg font-black text-[#0B1B3D]">4. Strength Cards Grid 1 (SS 3 & SS 4)</h2>
+                <h2 className="text-lg font-black text-[#0B1B3D]">4. Strength Cards Grid 1</h2>
                 <p className="text-xs text-slate-500">Manage Our Team & Technical Mastery cards.</p>
               </div>
             </div>
@@ -546,16 +594,14 @@ export default function AdminContentStrengthsPage() {
               <Factory className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-black text-[#0B1B3D]">5. In-House Manufacturing Section (SS 4)</h2>
-              <p className="text-xs text-slate-500">Configure the large In-House wide banner section title, description, and factory image.</p>
+              <h2 className="text-lg font-black text-[#0B1B3D]">5. In-House Manufacturing Section</h2>
+              <p className="text-xs text-slate-500">Title, description, and factory banner image.</p>
             </div>
           </div>
 
           <div className="space-y-6">
             <div className="space-y-2">
-              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
-                Section Title
-              </label>
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Section Title</label>
               <input
                 type="text"
                 value={inHouseForm.title}
@@ -565,9 +611,7 @@ export default function AdminContentStrengthsPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
-                Section Detailed Description
-              </label>
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Section Description</label>
               <textarea
                 rows={4}
                 value={inHouseForm.description}
@@ -577,13 +621,11 @@ export default function AdminContentStrengthsPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
-                In-House Wide Factory Banner Image
-              </label>
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Factory Banner Image</label>
               <AdminMediaUploadPlaceholder
                 value={inHouseForm.image_url}
                 onChange={(url) => setInHouseForm({ ...inHouseForm, image_url: url })}
-                label="Choose or Upload In-House Banner Image"
+                label="Choose or Upload Banner Image"
               />
             </div>
           </div>
@@ -597,7 +639,7 @@ export default function AdminContentStrengthsPage() {
                 <Award className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-lg font-black text-[#0B1B3D]">6. 4 Strength Cards Grid (SS 5)</h2>
+                <h2 className="text-lg font-black text-[#0B1B3D]">6. 4 Strength Cards Grid</h2>
                 <p className="text-xs text-slate-500">Manage Certifications, Quality, Scalability, and Oracle ERP cards.</p>
               </div>
             </div>
@@ -643,11 +685,271 @@ export default function AdminContentStrengthsPage() {
           </div>
         </div>
 
-        {/* SECTION 7: CUSTOM SECTIONS */}
+        {/* SECTION 7: EO & STERILIZATION (SS 1) */}
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-6">
+          <div className="flex items-center gap-3 pb-3 border-b border-slate-100">
+            <div className="w-10 h-10 rounded-xl bg-[#0B1B3D] text-white flex items-center justify-center">
+              <CheckCircle className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-lg font-black text-[#0B1B3D]">7. EO & Sterilization Section (SS 1)</h2>
+              <p className="text-xs text-slate-500">Title, description, and cleanroom/sterilization image.</p>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Section Title</label>
+              <input
+                type="text"
+                value={eoSterilizationForm.title}
+                onChange={(e) => setEoSterilizationForm({ ...eoSterilizationForm, title: e.target.value })}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-[#E31B23]"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Section Description</label>
+              <textarea
+                rows={4}
+                value={eoSterilizationForm.description}
+                onChange={(e) => setEoSterilizationForm({ ...eoSterilizationForm, description: e.target.value })}
+                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-[#E31B23]"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Cleanroom / Sterilization Image</label>
+              <AdminMediaUploadPlaceholder
+                value={eoSterilizationForm.image_url}
+                onChange={(url) => setEoSterilizationForm({ ...eoSterilizationForm, image_url: url })}
+                label="Choose or Upload Image"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* SECTION 8: PARTNER CONNECT PORTAL (SS 2) */}
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-6">
+          <div className="flex items-center gap-3 pb-3 border-b border-slate-100">
+            <div className="w-10 h-10 rounded-xl bg-[#0B1B3D] text-white flex items-center justify-center">
+              <Globe className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-lg font-black text-[#0B1B3D]">8. Partner Connect Portal Section (SS 2)</h2>
+              <p className="text-xs text-slate-500">Title, description, CTA button, and portal preview image.</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2 md:col-span-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Section Title</label>
+              <input
+                type="text"
+                value={partnerConnectForm.title}
+                onChange={(e) => setPartnerConnectForm({ ...partnerConnectForm, title: e.target.value })}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-[#E31B23]"
+              />
+            </div>
+
+            <div className="space-y-2 md:col-span-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Section Description</label>
+              <textarea
+                rows={4}
+                value={partnerConnectForm.description}
+                onChange={(e) => setPartnerConnectForm({ ...partnerConnectForm, description: e.target.value })}
+                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-[#E31B23]"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">CTA Button Text</label>
+              <input
+                type="text"
+                value={partnerConnectForm.button_text}
+                onChange={(e) => setPartnerConnectForm({ ...partnerConnectForm, button_text: e.target.value })}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#E31B23]"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">CTA Button Link</label>
+              <input
+                type="text"
+                value={partnerConnectForm.button_link}
+                onChange={(e) => setPartnerConnectForm({ ...partnerConnectForm, button_link: e.target.value })}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#E31B23]"
+              />
+            </div>
+
+            <div className="space-y-2 md:col-span-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Portal Preview Image</label>
+              <AdminMediaUploadPlaceholder
+                value={partnerConnectForm.image_url}
+                onChange={(url) => setPartnerConnectForm({ ...partnerConnectForm, image_url: url })}
+                label="Choose or Upload Portal Image"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* SECTION 9: CONTINUOUS IMPROVEMENT MINDSET (SS 3) */}
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-6">
+          <div className="flex items-center gap-3 pb-3 border-b border-slate-100">
+            <div className="w-10 h-10 rounded-xl bg-[#0B1B3D] text-white flex items-center justify-center">
+              <TrendingUp className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-lg font-black text-[#0B1B3D]">9. Continuous Improvement Mindset Section (SS 3)</h2>
+              <p className="text-xs text-slate-500">Title, description, and top banner image.</p>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Section Title</label>
+              <input
+                type="text"
+                value={continuousImprovementForm.title}
+                onChange={(e) => setContinuousImprovementForm({ ...continuousImprovementForm, title: e.target.value })}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-[#E31B23]"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Section Description</label>
+              <textarea
+                rows={4}
+                value={continuousImprovementForm.description}
+                onChange={(e) => setContinuousImprovementForm({ ...continuousImprovementForm, description: e.target.value })}
+                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-[#E31B23]"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Banner Graphic Image</label>
+              <AdminMediaUploadPlaceholder
+                value={continuousImprovementForm.image_url}
+                onChange={(url) => setContinuousImprovementForm({ ...continuousImprovementForm, image_url: url })}
+                label="Choose or Upload Graphic Image"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* SECTION 10: CORPORATE SOCIAL RESPONSIBILITY (SS 4) */}
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-6">
+          <div className="flex items-center gap-3 pb-3 border-b border-slate-100">
+            <div className="w-10 h-10 rounded-xl bg-[#0B1B3D] text-white flex items-center justify-center">
+              <HeartHandshake className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-lg font-black text-[#0B1B3D]">10. Corporate Social Responsibility Section (SS 4)</h2>
+              <p className="text-xs text-slate-500">Title, description, and CSR image.</p>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Section Title</label>
+              <input
+                type="text"
+                value={csrForm.title}
+                onChange={(e) => setCsrForm({ ...csrForm, title: e.target.value })}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-[#E31B23]"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Section Description</label>
+              <textarea
+                rows={4}
+                value={csrForm.description}
+                onChange={(e) => setCsrForm({ ...csrForm, description: e.target.value })}
+                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-[#E31B23]"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">CSR Image</label>
+              <AdminMediaUploadPlaceholder
+                value={csrForm.image_url}
+                onChange={(url) => setCsrForm({ ...csrForm, image_url: url })}
+                label="Choose or Upload CSR Image"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* SECTION 11: EXPLORE FAQS BANNER (SS 5) */}
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-6">
+          <div className="flex items-center gap-3 pb-3 border-b border-slate-100">
+            <div className="w-10 h-10 rounded-xl bg-[#0B1B3D] text-white flex items-center justify-center">
+              <HelpCircle className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-lg font-black text-[#0B1B3D]">11. Explore FAQs Callout Banner (SS 5)</h2>
+              <p className="text-xs text-slate-500">Title, description, CTA button, and background image.</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2 md:col-span-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Banner Title</label>
+              <input
+                type="text"
+                value={faqsBannerForm.title}
+                onChange={(e) => setFaqsBannerForm({ ...faqsBannerForm, title: e.target.value })}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-[#E31B23]"
+              />
+            </div>
+
+            <div className="space-y-2 md:col-span-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Banner Description</label>
+              <textarea
+                rows={3}
+                value={faqsBannerForm.description}
+                onChange={(e) => setFaqsBannerForm({ ...faqsBannerForm, description: e.target.value })}
+                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-[#E31B23]"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Button Text</label>
+              <input
+                type="text"
+                value={faqsBannerForm.button_text}
+                onChange={(e) => setFaqsBannerForm({ ...faqsBannerForm, button_text: e.target.value })}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#E31B23]"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Button Link</label>
+              <input
+                type="text"
+                value={faqsBannerForm.button_link}
+                onChange={(e) => setFaqsBannerForm({ ...faqsBannerForm, button_link: e.target.value })}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#E31B23]"
+              />
+            </div>
+
+            <div className="space-y-2 md:col-span-2">
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Background Hallway Image</label>
+              <AdminMediaUploadPlaceholder
+                value={faqsBannerForm.image_url}
+                onChange={(url) => setFaqsBannerForm({ ...faqsBannerForm, image_url: url })}
+                label="Choose or Upload Background Image"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* SECTION 12: CUSTOM SECTIONS */}
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-100">
             <div>
-              <h2 className="text-lg font-black text-[#0B1B3D]">7. Additional Custom Sections</h2>
+              <h2 className="text-lg font-black text-[#0B1B3D]">12. Additional Custom Sections</h2>
               <p className="text-xs text-slate-500">Client can add extra sections or custom blocks to the Strengths page.</p>
             </div>
 
