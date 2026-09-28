@@ -28,6 +28,7 @@ import { fetchCategoriesAction } from '@/app/admin/actions/categories'
 import { CategorySelect } from '@/src/components/admin/CategorySelect'
 import { MediaPicker } from '@/src/components/admin/MediaPicker'
 import { AdminMediaUploadPlaceholder } from '@/src/components/admin/AdminMediaUploadPlaceholder'
+import { getStoredProducts, saveStoredProducts, getStoredCategories } from '@/src/lib/dataStore'
 
 interface ProductFormProps {
   productToEdit?: ProductItem | null
@@ -165,22 +166,68 @@ export function ProductForm({ productToEdit }: ProductFormProps) {
   }
 
   const onSubmit = async (data: ProductFormData) => {
-    let res
-    if (isEditing && productToEdit) {
-      res = await updateProductAction(productToEdit.id, data)
-    } else {
-      res = await createProductAction(data)
+    const existing = getStoredProducts()
+    const specsMap: Record<string, string> = {}
+    if (data.specifications && Array.isArray(data.specifications)) {
+      data.specifications.forEach((s) => {
+        if (s.key && s.key.trim()) {
+          specsMap[s.key.trim()] = s.value
+        }
+      })
     }
 
-    if (res.error) {
-      toast.error(res.error)
-    } else {
-      toast.success(
-        isEditing ? 'Product updated successfully' : 'Product created successfully'
+    if (isEditing && productToEdit) {
+      const updated = existing.map((p) =>
+        p.id === productToEdit.id
+          ? {
+              ...p,
+              title: data.title,
+              slug: data.slug,
+              sku: data.sku || p.sku,
+              category_id: data.category_id || p.category_id,
+              short_description: data.short_description || p.short_description,
+              full_description: data.full_description || p.full_description,
+              featured_image: data.featured_image || p.featured_image,
+              features: data.features || p.features,
+              specifications: specsMap,
+              catalogue_pdf: data.catalogue_pdf || p.catalogue_pdf,
+              is_featured: data.is_featured,
+              is_published: data.is_published,
+              seo_title: data.seo_title,
+              seo_description: data.seo_description,
+              updated_at: new Date().toISOString(),
+            }
+          : p
       )
-      router.push('/admin/products')
-      router.refresh()
+      saveStoredProducts(updated as any)
+    } else {
+      const newProduct: ProductItem = {
+        id: `prod-${data.slug}-${Date.now()}`,
+        category_id: data.category_id || null,
+        title: data.title,
+        slug: data.slug,
+        sku: data.sku || `SKU-${Date.now()}`,
+        short_description: data.short_description || null,
+        full_description: data.full_description || null,
+        featured_image: data.featured_image || '/images/cat-scissors-shears.png',
+        features: data.features || [],
+        specifications: specsMap,
+        catalogue_pdf: data.catalogue_pdf || null,
+        is_featured: data.is_featured,
+        is_published: data.is_published,
+        seo_title: data.seo_title || null,
+        seo_description: data.seo_description || null,
+        sort_order: data.sort_order ?? existing.length + 1,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        category_name: 'General Surgery',
+      }
+      saveStoredProducts([...existing, newProduct] as any)
     }
+
+    toast.success(isEditing ? 'Product updated successfully' : 'Product created successfully')
+    router.push('/admin/products')
+    router.refresh()
   }
 
   return (

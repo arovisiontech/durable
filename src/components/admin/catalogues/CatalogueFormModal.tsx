@@ -12,6 +12,7 @@ import { createCatalogueAction, updateCatalogueAction } from '@/app/admin/action
 import { CategorySelect } from '@/src/components/admin/CategorySelect'
 import { MediaPicker } from '@/src/components/admin/MediaPicker'
 import { AdminMediaUploadPlaceholder } from '@/src/components/admin/AdminMediaUploadPlaceholder'
+import { getStoredCatalogues, saveStoredCatalogues, CatalogueItem as StoredCatalogueItem } from '@/src/lib/dataStore'
 
 interface CatalogueFormModalProps {
   isOpen: boolean
@@ -214,22 +215,46 @@ export function CatalogueFormModal({
   if (!isOpen) return null
 
   const onSubmit = async (data: CatalogueFormData) => {
-    let res
+    const existing = getStoredCatalogues()
     if (isEditing && catalogueToEdit) {
-      res = await updateCatalogueAction(catalogueToEdit.id, data, oldStoragePathToDelete)
+      const updated = existing.map((c) =>
+        c.id === catalogueToEdit.id
+          ? {
+              ...c,
+              title: data.title,
+              slug: data.slug,
+              category_id: data.category_id || c.category_id,
+              description: data.description || c.description,
+              cover_image: data.cover_image || c.cover_image,
+              pdf_url: data.pdf_url,
+              is_published: data.is_published,
+              sort_order: data.sort_order ?? c.sort_order,
+              updated_at: new Date().toISOString(),
+            }
+          : c
+      )
+      saveStoredCatalogues(updated as any)
     } else {
-      res = await createCatalogueAction(data, newlyUploadedStoragePath)
+      const newCat: StoredCatalogueItem = {
+        id: `cat-pdf-${data.slug}-${Date.now()}`,
+        category_id: data.category_id || null,
+        title: data.title,
+        slug: data.slug,
+        description: data.description || null,
+        cover_image: data.cover_image || '/images/blog-instruments-tray.png',
+        pdf_url: data.pdf_url,
+        is_published: data.is_published,
+        sort_order: data.sort_order ?? existing.length + 1,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        category_name: 'General Surgery',
+      }
+      saveStoredCatalogues([...existing, newCat] as any)
     }
 
-    if (res.error) {
-      toast.error(res.error)
-    } else {
-      toast.success(
-        isEditing ? 'Catalogue updated successfully' : 'Catalogue created successfully'
-      )
-      onSuccess()
-      onClose()
-    }
+    toast.success(isEditing ? 'Catalogue updated successfully' : 'Catalogue created successfully')
+    onSuccess()
+    onClose()
   }
 
   return (

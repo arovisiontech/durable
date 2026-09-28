@@ -7,6 +7,7 @@ import { CatalogueItem } from '@/src/types/catalogue'
 import { CategoryItem } from '@/src/types/category'
 import { fetchCataloguesAction, toggleCatalogueStatusAction } from '@/app/admin/actions/catalogues'
 import { fetchCategoriesAction } from '@/app/admin/actions/categories'
+import { getStoredCatalogues, saveStoredCatalogues, getStoredCategories } from '@/src/lib/dataStore'
 import { CatalogueTableRow } from './CatalogueTableRow'
 import { CatalogueCard } from './CatalogueCard'
 import { CatalogueFormModal } from './CatalogueFormModal'
@@ -40,13 +41,21 @@ export function CatalogueManager() {
 
   // Load Categories for filter
   useEffect(() => {
-    fetchCategoriesAction().then((res) => {
-      setCategories(res.categories)
-    })
+    const storedCats = getStoredCategories()
+    if (storedCats && storedCats.length > 0) {
+      setCategories(storedCats as any)
+    } else {
+      fetchCategoriesAction().then((res) => {
+        setCategories(res.categories)
+      })
+    }
   }, [])
 
   const loadCatalogues = useCallback(async () => {
     setIsLoading(true)
+    const stored = getStoredCatalogues()
+    let list: CatalogueItem[] = stored as any
+
     const res = await fetchCataloguesAction({
       search: debouncedSearch,
       categoryId,
@@ -54,23 +63,27 @@ export function CatalogueManager() {
       sortBy,
     })
 
-    setCatalogues(res.catalogues)
-    setTotalCount(res.count)
+    if (res.catalogues && res.catalogues.length > 0) {
+      list = res.catalogues as any
+    }
+
+    setCatalogues(list)
+    setTotalCount(list.length)
     setIsLoading(false)
   }, [debouncedSearch, categoryId, status, sortBy])
 
   useEffect(() => {
     loadCatalogues()
+    const handleUpdate = () => loadCatalogues()
+    window.addEventListener('durable_content_updated', handleUpdate)
+    return () => window.removeEventListener('durable_content_updated', handleUpdate)
   }, [loadCatalogues])
 
   const handleToggleStatus = async (id: string, currentStatus: boolean) => {
-    const res = await toggleCatalogueStatusAction(id, currentStatus)
-    if (res.success) {
-      toast.success(currentStatus ? 'Catalogue published' : 'Catalogue set to draft')
-      loadCatalogues()
-    } else {
-      toast.error(res.error || 'Failed to toggle status')
-    }
+    const updated = catalogues.map((c) => (c.id === id ? { ...c, is_published: currentStatus } : c))
+    saveStoredCatalogues(updated as any)
+    setCatalogues(updated)
+    toast.success(currentStatus ? 'Catalogue published' : 'Catalogue set to draft')
   }
 
   return (
@@ -269,7 +282,14 @@ export function CatalogueManager() {
       <CatalogueDeleteDialog
         catalogue={deletingCatalogue}
         onClose={() => setDeletingCatalogue(null)}
-        onSuccess={() => loadCatalogues()}
+        onSuccess={() => {
+          if (deletingCatalogue) {
+            const updated = catalogues.filter((c) => c.id !== deletingCatalogue.id)
+            saveStoredCatalogues(updated as any)
+            setCatalogues(updated)
+          }
+          loadCatalogues()
+        }}
       />
     </div>
   )

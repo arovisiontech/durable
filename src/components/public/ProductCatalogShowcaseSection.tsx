@@ -1,7 +1,9 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Download, ExternalLink, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react'
+import { Download, ExternalLink, ArrowRight, Sparkles } from 'lucide-react'
+import { getStoredCatalogues, INITIAL_CATALOGUES_SEED } from '@/src/lib/dataStore'
 
 export interface CatalogShowcaseItem {
   id: string
@@ -16,273 +18,117 @@ export interface CatalogShowcaseItem {
 }
 
 export function ProductCatalogShowcaseSection() {
-  const catalogList: CatalogShowcaseItem[] = [
-    {
-      id: 'cat-01',
-      number: '01',
-      title: 'General Surgery Catalog',
-      description:
-        'This comprehensive catalog is designed to meet the diverse needs of healthcare professionals across various medical disciplines, including Diagnostics, Autopsy, Gynecology, Orthopedics, Cardiology, Rhinology, Ophthalmology, Urology, and more. It also features specialized instruments such as Tungsten Carbide (Gold Plated), Titanium, Micro Surgery, and Diamond-Dusted instruments, ensuring precision and excellence in every procedure.',
-      pdfUrl: '/pdf/general-surgical-instruments-catalogue.pdf',
-      categorySlug: 'general-surgery',
-      coverImage: '/images/about-surgical-instruments.png',
-      badgeText: 'GENERAL SURGERY • 120 PAGES',
-      accentColor: 'from-[#0B1B3D] to-[#1E293B]',
-    },
-    {
-      id: 'cat-02',
-      number: '02',
-      title: 'Dental Instruments Catalog',
-      description:
-        'Our Dental catalog provides a comprehensive range of instruments across various dental specialties, including diagnostic, restorative, endodontic, orthodontic, and surgical fields. Each instrument is crafted with precision and durability in mind, offering dentists the confidence and reliability they need for successful procedures.',
-      pdfUrl: '/pdf/dental-maxillofacial-catalogue.pdf',
-      categorySlug: 'dental',
-      coverImage: '/images/dental-clinic-banner.png',
-      badgeText: 'DENTAL & RESTORATIVE • 84 PAGES',
-      accentColor: 'from-[#0B1B3D] to-[#0A4D68]',
-    },
-    {
-      id: 'cat-03',
-      number: '03',
-      title: 'Hi-Frequency (Electrosurgical) Catalog',
-      description:
-        'Our Electrosurgical catalog features a comprehensive selection of diathermy, bipolar and monopolar instruments, along with high-quality cables and accessories. Additionally, it caters to the demands of minimally invasive surgery by offering a premium range of laparoscopic instruments.',
-      pdfUrl: '/pdf/general-surgical-instruments-catalogue.pdf',
-      categorySlug: 'single-use-instruments',
-      coverImage: '/images/blog-surgeon-scalpel.png',
-      badgeText: 'ELECTROSURGICAL & LAPAROSCOPY',
-      accentColor: 'from-[#0B1B3D] to-[#3B82F6]',
-    },
-    {
-      id: 'cat-04',
-      number: '04',
-      title: 'Hollowware & Sterilization Catalog',
-      description:
-        'Our Hollowware catalog offers a complete range of instruments designed to meet the needs of hospitals and clinics, featuring everything from pans and bowls to sterilization containers and trays, crafted from highest quality 304 stainless steel.',
-      pdfUrl: '/pdf/general-surgical-instruments-catalogue.pdf',
-      categorySlug: 'medical-hollowware',
-      coverImage: '/images/surgical-tray-durable.png',
-      badgeText: 'HOLLOWWARE & STERILIZATION',
-      accentColor: 'from-[#0B1B3D] to-[#475569]',
-    },
-    {
-      id: 'cat-05',
-      number: '05',
-      title: 'Bone & Orthopedic Instruments Catalog',
-      description:
-        'Specialized range of bone chisels, osteotomes, mallets, rongeurs, gouges, bone holding forceps, and wire tighteners engineered for structural durability and ergonomic control during joint replacement and reconstructive procedures.',
-      pdfUrl: '/pdf/orthopedic-instruments-catalogue.pdf',
-      categorySlug: 'orthopedic-instruments',
-      coverImage: '/images/blog-instruments-tray.png',
-      badgeText: 'BONE & ORTHOPEDIC • 96 PAGES',
-      accentColor: 'from-[#0B1B3D] to-[#D97706]',
-    },
-    {
-      id: 'cat-06',
-      number: '06',
-      title: 'Discipline Specific & Ophthalmic Catalog',
-      description:
-        'Micro-dissecting forceps, spring scissors, corneal speculums, and discipline-specific instrumentation for ENT, gynecology, neurosurgery, dermatology, and cardiovascular disciplines, backed by CE MDR compliance and ISO 13485 certification.',
-      pdfUrl: '/pdf/general-surgical-instruments-catalogue.pdf',
-      categorySlug: 'ophthalmic',
-      coverImage: '/images/process-hand-filing.png',
-      badgeText: 'OPHTHALMIC & MICRO-SURGERY',
-      accentColor: 'from-[#0B1B3D] to-[#059669]',
-    },
-  ]
+  const [catalogues, setCatalogues] = useState(INITIAL_CATALOGUES_SEED)
+
+  const loadData = () => {
+    try {
+      const stored = getStoredCatalogues()
+      if (stored && stored.length > 0) {
+        setCatalogues(stored)
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  useEffect(() => {
+    loadData()
+    const handleUpdate = () => loadData()
+    window.addEventListener('durable_content_updated', handleUpdate)
+    return () => window.removeEventListener('durable_content_updated', handleUpdate)
+  }, [])
 
   return (
-    <section className="w-full bg-slate-50/50 py-10 sm:py-16 border-t border-slate-200/80 relative overflow-hidden">
-      {/* CSS Animation Keyframes for 4-Side Light Beam Rotation */}
-      <style>{`
-        @keyframes continuousLightSpin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-        .animate-light-beam {
-          animation: continuousLightSpin 5s linear infinite;
-        }
-        .animate-light-beam-fast {
-          animation: continuousLightSpin 3.5s linear infinite;
-        }
-      `}</style>
+    <section className="w-full bg-[#0B1B3D] text-white py-16 sm:py-20 border-b border-slate-800 relative overflow-hidden">
+      {/* Background Subtle Gradient Mesh */}
+      <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#E31B23_1px,transparent_1px)] [background-size:24px_24px]" />
 
-      {/* Decorative background glow ambient light */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-br from-red-500/5 via-blue-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
-
-      <div className="max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10 sm:space-y-14 relative z-10">
-        
+      <div className="max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-12 sm:space-y-16">
         {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto space-y-2.5">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white border border-slate-200 shadow-xs">
-            <span className="w-2 h-2 rounded-full bg-[#E31B23] animate-ping" />
-            <span className="text-[11px] font-black uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
-              <Sparkles className="w-3 h-3 text-[#E31B23]" />
-              OFFICIAL PRODUCT CATALOGUES
+        <div className="text-center max-w-3xl mx-auto space-y-3">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-800/80 border border-slate-700 shadow-2xs">
+            <Sparkles className="w-3.5 h-3.5 text-[#E31B23]" />
+            <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-slate-200">
+              DOWNLOADABLE PDF CATALOGUES
             </span>
           </div>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#0B1B3D] tracking-tight uppercase leading-tight">
-            EXPLORE & DOWNLOAD OUR <br />
-            TECHNICAL <span className="text-[#E31B23]">CATALOGUES</span>
+
+          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
+            Product Catalogues & PDF Literature
           </h2>
-          <p className="text-xs sm:text-sm font-medium text-slate-500 leading-relaxed">
-            Full range product catalogues featuring technical instrument specifications, sizing dimensions, and ordering SKUs.
+
+          <p className="text-xs sm:text-sm text-slate-300 font-medium leading-relaxed">
+            Download our full-line surgical, dental, hollowware, and specialty instrument catalogues for off-line reference and ordering.
           </p>
         </div>
 
-        {/* 6 Showcase Cards with 2 Columns per Row Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-          {catalogList.map((item) => {
-            return (
-              <div
-                key={item.id}
-                id={`cat-${item.number}`}
-                className="scroll-mt-24 group relative h-full flex"
-              >
-                {/* 4-Side Ambient Aura Glow Shadow behind card */}
-                <div className="absolute -inset-1 bg-gradient-to-r from-[#E31B23]/30 via-[#3B82F6]/30 to-[#E31B23]/30 rounded-3xl blur-xl opacity-40 group-hover:opacity-90 transition-opacity duration-500" />
-
-                {/* 4-Side Animated Light Beam Running Around Border */}
-                <div className="relative p-[2px] rounded-3xl overflow-hidden bg-slate-200 group-hover:shadow-[0_15px_40px_rgba(227,27,35,0.2)] transition-all duration-500 w-full flex flex-col justify-between">
-                  
-                  {/* Rotating Conic Light Layer */}
-                  <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-3xl z-0">
-                    <div className="absolute -inset-[150%] animate-light-beam bg-[conic-gradient(from_0deg_at_50%_50%,#E31B23_0deg,transparent_60deg,#0B1B3D_120deg,#00F0FF_180deg,transparent_240deg,#E31B23_300deg,#FFD700_360deg)] opacity-70 group-hover:opacity-100 transition-opacity duration-500" />
+        {/* Catalogues Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          {catalogues.map((cat, idx) => (
+            <div
+              key={cat.id || idx}
+              className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-7 flex flex-col justify-between space-y-6 hover:border-red-500/50 transition-all duration-300 shadow-xl group hover:-translate-y-1"
+            >
+              <div className="space-y-4">
+                {/* Cover Image Container */}
+                <div className="w-full h-48 sm:h-56 rounded-2xl overflow-hidden bg-slate-950 relative border border-slate-800">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={cat.cover_image || '/images/blog-instruments-tray.png'}
+                    alt={cat.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-85"
+                  />
+                  <div className="absolute top-3 left-3 bg-[#E31B23] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-md">
+                    0{idx + 1} • {cat.category_name || 'Catalogue'}
                   </div>
+                </div>
 
-                  {/* Inner Sleek Card Body */}
-                  <div className="relative z-10 bg-white rounded-[22px] p-5 sm:p-6 shadow-md group-hover:shadow-2xl transition-all duration-500 h-full flex flex-col justify-between">
-                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-5 sm:gap-6 items-center">
-                      
-                      {/* Text Content Column */}
-                      <div className="sm:col-span-7 space-y-3">
-                        {/* Big Number & Title */}
-                        <div className="space-y-1">
-                          <span className="text-3xl sm:text-4xl font-black text-[#0B1B3D] font-mono tracking-tighter leading-none block group-hover:text-[#E31B23] transition-colors duration-300">
-                            {item.number}
-                          </span>
-                          <h3 className="text-lg sm:text-xl font-black text-[#0B1B3D] leading-tight">
-                            {item.title}
-                          </h3>
-                        </div>
-
-                        {/* Compact Description */}
-                        <p className="text-xs text-slate-600 leading-relaxed font-normal line-clamp-4">
-                          {item.description}
-                        </p>
-
-                        {/* Action Buttons */}
-                        <div className="pt-2 flex flex-wrap items-center gap-2">
-                          {/* View PDF Button */}
-                          <a
-                            href={item.pdfUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-white bg-[#0B1B3D] hover:bg-slate-800 rounded-xl transition-all shadow-xs hover:shadow-md hover:scale-[1.02] active:scale-95"
-                          >
-                            <ExternalLink className="w-3.5 h-3.5 text-red-400" />
-                            <span>View PDF</span>
-                          </a>
-
-                          {/* Download PDF Button */}
-                          <a
-                            href={item.pdfUrl}
-                            download
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-white bg-[#E31B23] hover:bg-red-700 rounded-xl transition-all shadow-xs hover:shadow-md hover:scale-[1.02] active:scale-95"
-                          >
-                            <Download className="w-3.5 h-3.5" />
-                            <span>Download PDF</span>
-                          </a>
-
-                          {/* Category Link */}
-                          <Link
-                            href={`/category/${item.categorySlug}`}
-                            className="inline-flex items-center gap-1 px-3 py-2 text-xs font-bold text-slate-700 hover:text-[#E31B23] transition-colors group/link"
-                          >
-                            <span>Explore {item.number}</span>
-                            <ArrowRight className="w-3.5 h-3.5 text-[#E31B23] group-hover/link:translate-x-1 transition-transform" />
-                          </Link>
-                        </div>
-                      </div>
-
-                      {/* Compact 3D Book Cover Card Column with Light Beam */}
-                      <div className="sm:col-span-5 flex items-center justify-center">
-                        <div className="relative w-full max-w-[200px] sm:max-w-[220px] group/book perspective-1000">
-                          
-                          {/* Book Outer Light Beam Wrapper */}
-                          <div className="relative p-[1.5px] rounded-2xl overflow-hidden bg-slate-200 shadow-xl group-hover/book:shadow-2xl transition-all duration-500">
-                            
-                            {/* Rotating Conic Light on Book Border */}
-                            <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl z-0">
-                              <div className="absolute -inset-[150%] animate-light-beam-fast bg-[conic-gradient(from_0deg_at_50%_50%,#E31B23_0deg,transparent_90deg,#3B82F6_180deg,transparent_270deg,#E31B23_360deg)] opacity-80" />
-                            </div>
-
-                            {/* Book Inner Container */}
-                            <div className="relative z-10 rounded-[14px] overflow-hidden bg-white group-hover/book:scale-[1.03] group-hover/book:-rotate-1 transition-all duration-500">
-                              
-                              {/* Top Foil Band */}
-                              <div className="bg-[#0B1B3D] text-white px-3 py-2 flex items-center justify-between border-b border-slate-700">
-                                <div className="flex items-center gap-1.5">
-                                  <span className="w-2 h-2 rounded-full bg-[#E31B23] animate-pulse" />
-                                  <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-wider text-slate-200 truncate max-w-[130px]">
-                                    {item.badgeText}
-                                  </span>
-                                </div>
-                                <div className="text-[9px] font-black tracking-widest text-[#E31B23]">
-                                  DURABLE
-                                </div>
-                              </div>
-
-                              {/* Book Cover Image */}
-                              <div className="relative aspect-[3/4] bg-slate-900 overflow-hidden">
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img
-                                  src={item.coverImage}
-                                  alt={item.title}
-                                  className="w-full h-full object-cover group-hover/book:scale-110 transition-transform duration-700 opacity-90"
-                                />
-
-                                {/* Gradient Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#0B1B3D] via-[#0B1B3D]/40 to-transparent" />
-
-                                {/* Book Overlay Content */}
-                                <div className="absolute bottom-3 left-3 right-3 space-y-0.5 text-white">
-                                  <div className="text-xl font-black font-mono opacity-40">
-                                    {item.number}
-                                  </div>
-                                  <h4 className="text-xs font-black leading-snug uppercase text-white drop-shadow-sm line-clamp-2">
-                                    {item.title}
-                                  </h4>
-                                  <div className="pt-0.5 flex items-center gap-1 text-[8px] font-semibold text-slate-300">
-                                    <ShieldCheck className="w-3 h-3 text-emerald-400 shrink-0" />
-                                    <span className="truncate">ISO 13485 & CE MDR</span>
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Bottom Spine Edge */}
-                              <div className="bg-[#051026] text-slate-400 text-[8px] font-bold text-center py-1 border-t border-slate-800 tracking-wider uppercase">
-                                DURABLE HOSPITAL SUPPLIES
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Soft Floor Shadow */}
-                          <div className="w-3/4 h-2.5 bg-slate-900/15 mx-auto rounded-full blur-xs mt-2 group-hover/book:w-4/5 transition-all" />
-                        </div>
-                      </div>
-
-                    </div>
-                  </div>
-
+                {/* Title & Description */}
+                <div className="space-y-2">
+                  <h3 className="text-lg font-black text-white group-hover:text-red-400 transition-colors">
+                    {cat.title}
+                  </h3>
+                  <p className="text-xs text-slate-400 leading-relaxed line-clamp-3">
+                    {cat.description || 'Complete PDF catalogue download with technical specs and item numbers.'}
+                  </p>
                 </div>
               </div>
-            )
-          })}
+
+              {/* Action Buttons */}
+              <div className="pt-4 border-t border-slate-800 flex items-center justify-between gap-3">
+                <a
+                  href={cat.pdf_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download
+                  className="flex-1 px-4 py-2.5 text-xs font-black text-white bg-[#E31B23] hover:bg-red-700 rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>DOWNLOAD PDF</span>
+                </a>
+
+                <Link
+                  href={`/catalogues/${cat.slug}`}
+                  className="p-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl transition-colors border border-slate-700"
+                  title="View Details"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+          ))}
         </div>
 
+        {/* View All Button */}
+        <div className="text-center pt-4">
+          <Link
+            href="/catalogues"
+            className="inline-flex items-center gap-2 px-8 py-3.5 text-xs font-black text-[#0B1B3D] bg-white hover:bg-slate-100 rounded-2xl shadow-xl transition-all transform hover:scale-105"
+          >
+            <span>BROWSE ALL CATALOGUES & MANUALS</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
       </div>
     </section>
   )

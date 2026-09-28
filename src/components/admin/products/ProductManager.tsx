@@ -13,6 +13,7 @@ import {
   toggleProductFeaturedAction,
 } from '@/app/admin/actions/products'
 import { fetchCategoriesAction } from '@/app/admin/actions/categories'
+import { getStoredProducts, saveStoredProducts, getStoredCategories } from '@/src/lib/dataStore'
 import { ProductTableRow } from './ProductTableRow'
 import { ProductCard } from './ProductCard'
 import { ProductDeleteDialog } from './ProductDeleteDialog'
@@ -44,13 +45,21 @@ export function ProductManager() {
 
   // Load Categories for filter
   useEffect(() => {
-    fetchCategoriesAction().then((res) => {
-      setCategories(res.categories)
-    })
+    const storedCats = getStoredCategories()
+    if (storedCats && storedCats.length > 0) {
+      setCategories(storedCats as any)
+    } else {
+      fetchCategoriesAction().then((res) => {
+        setCategories(res.categories)
+      })
+    }
   }, [])
 
   const loadProducts = useCallback(async () => {
     setIsLoading(true)
+    const stored = getStoredProducts()
+    let list: ProductItem[] = stored as any
+
     const res = await fetchProductsAction({
       search: debouncedSearch,
       categoryId,
@@ -59,13 +68,20 @@ export function ProductManager() {
       sortBy,
     })
 
-    setProducts(res.products)
-    setTotalCount(res.count)
+    if (res.products && res.products.length > 0) {
+      list = res.products as any
+    }
+
+    setProducts(list)
+    setTotalCount(list.length)
     setIsLoading(false)
   }, [debouncedSearch, categoryId, status, featured, sortBy])
 
   useEffect(() => {
     loadProducts()
+    const handleUpdate = () => loadProducts()
+    window.addEventListener('durable_content_updated', handleUpdate)
+    return () => window.removeEventListener('durable_content_updated', handleUpdate)
   }, [loadProducts])
 
   const handleDuplicate = async (product: ProductItem) => {
@@ -74,6 +90,8 @@ export function ProductManager() {
     toast.dismiss(toastId)
 
     if (res.product) {
+      const updated = [...products, res.product]
+      saveStoredProducts(updated as any)
       toast.success(`Duplicated "${product.title}" as draft`)
       loadProducts()
     } else {
@@ -82,23 +100,17 @@ export function ProductManager() {
   }
 
   const handleTogglePublish = async (id: string, currentStatus: boolean) => {
-    const res = await toggleProductPublishAction(id, currentStatus)
-    if (res.success) {
-      toast.success(currentStatus ? 'Product published' : 'Product set to draft')
-      loadProducts()
-    } else {
-      toast.error(res.error || 'Failed to toggle publish status')
-    }
+    const updated = products.map((p) => (p.id === id ? { ...p, is_published: currentStatus } : p))
+    saveStoredProducts(updated as any)
+    setProducts(updated)
+    toast.success(currentStatus ? 'Product published' : 'Product set to draft')
   }
 
   const handleToggleFeatured = async (id: string, currentFeatured: boolean) => {
-    const res = await toggleProductFeaturedAction(id, currentFeatured)
-    if (res.success) {
-      toast.success(currentFeatured ? 'Product marked as Featured' : 'Product removed from Featured')
-      loadProducts()
-    } else {
-      toast.error(res.error || 'Failed to toggle featured status')
-    }
+    const updated = products.map((p) => (p.id === id ? { ...p, is_featured: currentFeatured } : p))
+    saveStoredProducts(updated as any)
+    setProducts(updated)
+    toast.success(currentFeatured ? 'Product marked as Featured' : 'Product removed from Featured')
   }
 
   return (
@@ -107,10 +119,10 @@ export function ProductManager() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-            Product Catalogue
+            Product Catalogue & Inventory
           </h1>
           <p className="text-xs text-slate-500 mt-1">
-            Manage surgical instruments, specifications, image galleries, and catalogue entries ({totalCount} total).
+            Manage surgical instruments, specifications, image galleries, and catalogue entries ({totalCount} total products).
           </p>
         </div>
 
@@ -125,10 +137,10 @@ export function ProductManager() {
 
           <Link
             href="/admin/products/new"
-            className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-bold text-white bg-red-600 rounded-xl hover:bg-red-700 transition-colors shadow-xs"
+            className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-black text-white bg-red-600 rounded-xl hover:bg-red-700 transition-colors shadow-md transform hover:scale-[1.02]"
           >
             <Plus className="w-4 h-4" />
-            Add Product
+            + Add More Products
           </Link>
         </div>
       </div>
@@ -230,10 +242,10 @@ export function ProductManager() {
           </div>
           <Link
             href="/admin/products/new"
-            className="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold text-white bg-red-600 rounded-xl hover:bg-red-700 transition-colors shadow-xs"
+            className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-black text-white bg-red-600 rounded-xl hover:bg-red-700 transition-colors shadow-xs"
           >
             <Plus className="w-4 h-4" />
-            Create First Product
+            + Add More Products
           </Link>
         </div>
       ) : (
@@ -283,6 +295,17 @@ export function ProductManager() {
               />
             ))}
           </div>
+
+          {/* Bottom Add More Button */}
+          <div className="flex justify-center pt-4">
+            <Link
+              href="/admin/products/new"
+              className="inline-flex items-center gap-2 px-6 py-3 text-xs font-black text-white bg-red-600 hover:bg-red-700 rounded-xl shadow-lg transition-all transform hover:scale-105"
+            >
+              <Plus className="w-4 h-4" />
+              + Add More Products
+            </Link>
+          </div>
         </>
       )}
 
@@ -290,7 +313,14 @@ export function ProductManager() {
       <ProductDeleteDialog
         product={deletingProduct}
         onClose={() => setDeletingProduct(null)}
-        onSuccess={() => loadProducts()}
+        onSuccess={() => {
+          if (deletingProduct) {
+            const updated = products.filter((p) => p.id !== deletingProduct.id)
+            saveStoredProducts(updated as any)
+            setProducts(updated)
+          }
+          loadProducts()
+        }}
       />
     </div>
   )

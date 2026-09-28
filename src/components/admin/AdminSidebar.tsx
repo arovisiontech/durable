@@ -70,6 +70,7 @@ const contentNavGroup: NavGroup = {
 const catalogNavItems: NavItem[] = [
   { name: 'Products', href: '/admin/products', icon: Package },
   { name: 'Categories', href: '/admin/categories', icon: FolderTree },
+  { name: 'Subcategories', href: '/admin/subcategories', icon: FolderTree },
   { name: 'Catalogues', href: '/admin/catalogues', icon: FileText },
   { name: 'Blogs', href: '/admin/blogs', icon: Newspaper },
   { name: 'Media Library', href: '/admin/media', icon: Image },

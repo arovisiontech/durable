@@ -5,7 +5,8 @@ import { useState, useRef, useEffect } from 'react'
 const DEFAULT_VIDEO = {
   badge: 'COMPLIANCE AND CERTIFICATIONS',
   title: 'Committed To Global Standards',
-  description: 'Durable Hospital Supplies Operates In Full Compliance With Internationally Recognized Medical Device Regulations And Quality Management Standards. Our Surgical, Dental, And Medical Instruments Are Manufactured, Inspected, And Validated To Meet Global Healthcare Markets Requirements.',
+  description:
+    'Durable Hospital Supplies Operates In Full Compliance With Internationally Recognized Medical Device Regulations And Quality Management Standards. Our Surgical, Dental, And Medical Instruments Are Manufactured, Inspected, And Validated To Meet Global Healthcare Markets Requirements.',
   videoUrl: 'https://vimeo.com/1230520070?fl=ip&fe=ec',
   thumbnailImage: '/images/company-stats-banner.png',
 }
@@ -23,6 +24,7 @@ function getVimeoEmbedUrl(url: string, autoplay = true) {
 
 export function ComplianceVideoSection() {
   const [isPlaying, setIsPlaying] = useState(false)
+  const [isFullScreen, setIsFullScreen] = useState(false)
   const [videoData, setVideoData] = useState(DEFAULT_VIDEO)
   const videoRef = useRef<HTMLVideoElement>(null)
 
@@ -32,7 +34,6 @@ export function ComplianceVideoSection() {
       if (saved) {
         const parsed = JSON.parse(saved)
         if (parsed && typeof parsed === 'object') {
-          // If videoUrl was old default MP4, update to new Vimeo link
           if (!parsed.videoUrl || parsed.videoUrl === '/videos/0609.mp4') {
             parsed.videoUrl = 'https://vimeo.com/1230520070?fl=ip&fe=ec'
           }
@@ -54,25 +55,16 @@ export function ComplianceVideoSection() {
   const vimeoEmbedUrl = getVimeoEmbedUrl(videoData.videoUrl, true)
 
   const handlePlayPause = () => {
-    if (vimeoEmbedUrl) {
-      setIsPlaying(true)
-    } else if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause()
-        setIsPlaying(false)
-      } else {
-        videoRef.current.play()
-        setIsPlaying(true)
-      }
-    }
+    setIsPlaying(true)
+    setIsFullScreen(true)
   }
 
   return (
-    <section className="w-full bg-[#0F233A] text-white py-8 sm:py-10 relative overflow-hidden">
-      {/* 100% Full Screen Edge-to-Edge Video Showcase */}
-      <div className="w-full relative shadow-2xl bg-slate-950 overflow-hidden h-[280px] sm:h-[400px] lg:h-[520px] group">
+    <section className="w-full bg-[#0F233A] text-white py-6 sm:py-10 relative overflow-hidden">
+      {/* 100% Responsive Edge-to-Edge Clean Video Showcase Container */}
+      <div className="w-full relative shadow-2xl bg-slate-950 overflow-hidden aspect-video min-h-[340px] sm:min-h-[500px] lg:min-h-[680px] 2xl:min-h-[850px] 4xl:min-h-[1200px] group">
         {vimeoEmbedUrl ? (
-          isPlaying ? (
+          isPlaying && !isFullScreen ? (
             <div className="w-full h-full relative">
               <iframe
                 src={vimeoEmbedUrl}
@@ -81,104 +73,106 @@ export function ComplianceVideoSection() {
                 allowFullScreen
                 title="Durable Compliance & Manufacturing Video"
               />
-              <button
-                onClick={() => setIsPlaying(false)}
-                className="absolute top-3 right-3 z-30 bg-slate-900/80 hover:bg-slate-900 text-white p-2 rounded-full backdrop-blur-xs border border-white/20 transition-all text-xs font-bold"
-                aria-label="Close Video"
-              >
-                ✕ Close
-              </button>
+              <div className="absolute top-4 right-4 z-30 flex items-center gap-2">
+                <button
+                  onClick={() => setIsFullScreen(true)}
+                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-xs font-black shadow-lg transition-all"
+                >
+                  ⛶ Fullscreen
+                </button>
+                <button
+                  onClick={() => setIsPlaying(false)}
+                  className="bg-slate-900/90 hover:bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold border border-white/20 shadow-lg transition-all"
+                >
+                  ✕ Close
+                </button>
+              </div>
             </div>
           ) : (
             <div className="w-full h-full relative bg-slate-950 flex items-center justify-center">
-              {/* Background Poster Image */}
+              {/* Background Poster Image - Clean & Unobstructed */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={videoData.thumbnailImage || '/images/company-stats-banner.png'}
                 alt="Video Thumbnail"
-                className="w-full h-full object-cover opacity-60"
+                className="w-full h-full object-cover opacity-75"
               />
-
-              {/* Overlapping Red Pill Badge on Bottom Right of Video */}
-              <div className="absolute bottom-3 right-3 sm:bottom-5 sm:right-6 lg:right-10 z-20 pointer-events-none">
-                <div className="inline-flex items-center gap-1.5 bg-[#E31B23] text-white text-[9px] sm:text-xs font-black tracking-widest uppercase px-3.5 py-1.5 rounded-full shadow-xl">
-                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                  {videoData.badge || 'COMPLIANCE AND CERTIFICATIONS'}
-                </div>
-              </div>
 
               {/* Center Play Button Overlay */}
               <div
                 onClick={handlePlayPause}
-                className="absolute inset-0 bg-slate-950/30 flex items-center justify-center cursor-pointer transition-all duration-300 group-hover:bg-slate-950/20 z-10"
+                className="absolute inset-0 bg-slate-950/20 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 group-hover:bg-slate-950/10 z-10 space-y-4"
               >
                 <button
                   aria-label="Play Video"
-                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/25 hover:bg-white/40 backdrop-blur-md border-2 border-white flex items-center justify-center shadow-xl transition-all duration-300 transform group-hover:scale-110"
+                  className="w-20 h-20 sm:w-28 sm:h-28 rounded-full bg-red-600/90 hover:bg-red-600 backdrop-blur-md border-4 border-white flex items-center justify-center shadow-2xl transition-all duration-300 transform group-hover:scale-110"
                 >
-                  <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-white flex items-center justify-center shadow-md">
+                  <div className="w-14 h-14 sm:w-18 sm:h-18 rounded-full bg-white flex items-center justify-center shadow-inner">
                     <svg
                       viewBox="0 0 24 24"
                       fill="none"
-                      className="w-6 h-6 sm:w-8 sm:h-8 text-[#0F233A] ml-1"
+                      className="w-8 h-8 sm:w-10 sm:h-10 text-[#E31B23] ml-1"
                     >
                       <path d="M8 5v14l11-7z" fill="currentColor" />
                     </svg>
                   </div>
                 </button>
+                <span className="text-xs sm:text-sm font-black tracking-wider uppercase text-white bg-slate-950/70 px-4 py-1.5 rounded-full border border-white/20 shadow-lg">
+                  Click to Play Video (100% Fullscreen)
+                </span>
               </div>
             </div>
           )
         ) : (
-          <>
+          <div className="w-full h-full relative">
             <video
               ref={videoRef}
               src={videoData.videoUrl || 'https://vimeo.com/1230520070?fl=ip&fe=ec'}
               className="w-full h-full object-cover min-w-full min-h-full block"
-              style={{ objectFit: 'cover' }}
               controls={isPlaying}
               onPlay={() => setIsPlaying(true)}
               onPause={() => setIsPlaying(false)}
             />
-
-            {/* Overlapping Red Pill Badge on Bottom Right of Video */}
-            {!isPlaying && (
-              <div className="absolute bottom-3 right-3 sm:bottom-5 sm:right-6 lg:right-10 z-20 pointer-events-none">
-                <div className="inline-flex items-center gap-1.5 bg-[#E31B23] text-white text-[9px] sm:text-xs font-black tracking-widest uppercase px-3.5 py-1.5 rounded-full shadow-xl">
-                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                  {videoData.badge || 'COMPLIANCE AND CERTIFICATIONS'}
-                </div>
-              </div>
-            )}
-
-            {/* Center Play Button Overlay */}
-            {!isPlaying && (
-              <div
-                onClick={handlePlayPause}
-                className="absolute inset-0 bg-slate-950/30 flex items-center justify-center cursor-pointer transition-all duration-300 group-hover:bg-slate-950/20"
-              >
-                <button
-                  aria-label="Play Video"
-                  className="w-14 h-14 sm:w-18 sm:h-18 rounded-full bg-white/25 hover:bg-white/40 backdrop-blur-md border-2 border-white flex items-center justify-center shadow-xl transition-all duration-300 transform group-hover:scale-110"
-                >
-                  <div className="w-10 h-10 sm:w-13 sm:h-13 rounded-full bg-white flex items-center justify-center shadow-md">
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      className="w-5 h-5 sm:w-7 sm:h-7 text-[#0F233A] ml-1"
-                    >
-                      <path d="M8 5v14l11-7z" fill="currentColor" />
-                    </svg>
-                  </div>
-                </button>
-              </div>
-            )}
-          </>
+          </div>
         )}
       </div>
 
+      {/* ULTRA 100% FULLSCREEN RESPONSIVE MODAL FOR 24", 29", 64" MONITORS */}
+      {isFullScreen && (
+        <div className="fixed inset-0 z-50 bg-slate-950 flex flex-col items-center justify-center p-0 sm:p-4 w-screen h-screen">
+          <div className="relative w-full h-full max-w-[3840px] flex flex-col items-center justify-center bg-black">
+            {/* Top Fullscreen Control Bar */}
+            <div className="absolute top-4 right-4 z-50 flex items-center gap-3">
+              <button
+                onClick={() => setIsFullScreen(false)}
+                className="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-2xl text-xs font-black shadow-2xl transition-all flex items-center gap-2 border border-white/20"
+              >
+                <span>✕ Exit Fullscreen</span>
+              </button>
+            </div>
+
+            {vimeoEmbedUrl ? (
+              <iframe
+                src={vimeoEmbedUrl}
+                className="w-full h-full border-0 block"
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowFullScreen
+                title="Durable Compliance Video Fullscreen"
+              />
+            ) : (
+              <video
+                src={videoData.videoUrl || 'https://vimeo.com/1230520070?fl=ip&fe=ec'}
+                className="w-full h-full object-contain block"
+                controls
+                autoPlay
+              />
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Bottom Content & Global Compliance Badges */}
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-6 sm:space-y-8 pt-6 sm:pt-8">
+      <div className="max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-6 sm:space-y-8 pt-6 sm:pt-8">
         {/* Text Row: Left Title + Right Description */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 items-start">
           <div className="lg:col-span-6">
@@ -259,4 +253,3 @@ export function ComplianceVideoSection() {
     </section>
   )
 }
-

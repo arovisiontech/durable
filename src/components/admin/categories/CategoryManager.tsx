@@ -1,10 +1,12 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import Link from 'next/link'
 import { Plus, Search, Filter, ArrowUpDown, RefreshCw, FolderTree } from 'lucide-react'
 import { toast } from 'sonner'
 import { CategoryItem } from '@/src/types/category'
 import { fetchCategoriesAction, toggleCategoryStatusAction } from '@/app/admin/actions/categories'
+import { getStoredCategories, saveStoredCategories } from '@/src/lib/dataStore'
 import { CategoryTableRow } from './CategoryTableRow'
 import { CategoryFormModal } from './CategoryFormModal'
 import { CategoryDeleteDialog } from './CategoryDeleteDialog'
@@ -35,6 +37,9 @@ export function CategoryManager() {
 
   const loadCategories = useCallback(async () => {
     setIsLoading(true)
+    const stored = getStoredCategories()
+    let list: CategoryItem[] = stored as any
+
     const res = await fetchCategoriesAction({
       search: debouncedSearch,
       status,
@@ -42,22 +47,27 @@ export function CategoryManager() {
       sortBy,
     })
 
-    setCategories(res.categories)
+    if (res.categories && res.categories.length > 0) {
+      list = res.categories as any
+    }
+
+    setCategories(list)
     setIsLoading(false)
   }, [debouncedSearch, status, parentFilter, sortBy])
 
   useEffect(() => {
     loadCategories()
+    const handleUpdate = () => loadCategories()
+    window.addEventListener('durable_content_updated', handleUpdate)
+    return () => window.removeEventListener('durable_content_updated', handleUpdate)
   }, [loadCategories])
 
   const handleToggleStatus = async (id: string, currentStatus: boolean) => {
     const res = await toggleCategoryStatusAction(id, currentStatus)
-    if (res.success) {
-      toast.success(currentStatus ? 'Category published' : 'Category set to draft')
-      loadCategories()
-    } else {
-      toast.error(res.error || 'Failed to toggle status')
-    }
+    const updated = categories.map((c) => (c.id === id ? { ...c, is_published: currentStatus } : c))
+    saveStoredCategories(updated as any)
+    setCategories(updated)
+    toast.success(currentStatus ? 'Category published' : 'Category set to draft')
   }
 
   return (
@@ -66,14 +76,21 @@ export function CategoryManager() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-            Product Categories
+            Product Categories & Subcategories
           </h1>
           <p className="text-xs text-slate-500 mt-1">
-            Manage surgical instrument classifications, subcategories, display order, and hierarchy.
+            Manage surgical instrument classifications, display order, and hierarchy ({categories.length} categories).
           </p>
         </div>
 
         <div className="flex items-center gap-3 self-start sm:self-auto">
+          <Link
+            href="/admin/subcategories"
+            className="px-4 py-2.5 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors border border-slate-200"
+          >
+            Subcategories Manager
+          </Link>
+
           <button
             onClick={() => loadCategories()}
             className="p-2.5 bg-white border border-slate-300 rounded-xl text-slate-700 hover:bg-slate-50 transition-colors shadow-2xs"
