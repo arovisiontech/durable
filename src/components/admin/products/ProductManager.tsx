@@ -57,19 +57,55 @@ export function ProductManager() {
 
   const loadProducts = useCallback(async () => {
     setIsLoading(true)
-    const stored = getStoredProducts()
-    let list: ProductItem[] = stored as any
+    let list: ProductItem[] = getStoredProducts()
 
-    const res = await fetchProductsAction({
-      search: debouncedSearch,
-      categoryId,
-      status,
-      featured,
-      sortBy,
-    })
+    // Filter by search
+    if (debouncedSearch && debouncedSearch.trim() !== '') {
+      const term = debouncedSearch.trim().toLowerCase()
+      list = list.filter(
+        (p) =>
+          p.title.toLowerCase().includes(term) ||
+          p.slug.toLowerCase().includes(term) ||
+          (p.sku && p.sku.toLowerCase().includes(term))
+      )
+    }
 
-    if (res.products && res.products.length > 0) {
-      list = res.products as any
+    // Filter by category
+    if (categoryId && categoryId !== 'all') {
+      list = list.filter(
+        (p) => p.category_id === categoryId || p.category_name?.toLowerCase() === categoryId.toLowerCase()
+      )
+    }
+
+    // Filter by status
+    if (status === 'published') {
+      list = list.filter((p) => p.is_published)
+    } else if (status === 'draft') {
+      list = list.filter((p) => !p.is_published)
+    }
+
+    // Filter by featured
+    if (featured === 'featured') {
+      list = list.filter((p) => p.is_featured)
+    } else if (featured === 'standard') {
+      list = list.filter((p) => !p.is_featured)
+    }
+
+    // Sort
+    switch (sortBy) {
+      case 'oldest':
+        list.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+        break
+      case 'title':
+        list.sort((a, b) => a.title.localeCompare(b.title))
+        break
+      case 'order':
+        list.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
+        break
+      case 'newest':
+      default:
+        list.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        break
     }
 
     setProducts(list)

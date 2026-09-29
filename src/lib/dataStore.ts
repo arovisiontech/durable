@@ -332,6 +332,9 @@ export function getStoredProducts(): ProductItem[] {
     if (raw) {
       const parsed = JSON.parse(raw)
       if (Array.isArray(parsed) && parsed.length > 0) return parsed
+    } else {
+      localStorage.setItem('durable_products', JSON.stringify(INITIAL_PRODUCTS_SEED))
+      return INITIAL_PRODUCTS_SEED
     }
   } catch (e) {
     console.error('Failed to parse products from localStorage:', e)

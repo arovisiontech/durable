@@ -45,13 +45,6 @@ export function ProductForm({ productToEdit }: ProductFormProps) {
   const [showPreviewModal, setShowPreviewModal] = useState(false)
   const [newFeatureText, setNewFeatureText] = useState('')
 
-  // Load categories
-  useEffect(() => {
-    fetchCategoriesAction().then((res) => {
-      setCategories(res.categories)
-    })
-  }, [])
-
   // Map initial specifications object into key-value array for form
   const initialSpecs = productToEdit?.specifications
     ? Object.entries(productToEdit.specifications).map(([key, value]) => ({ key, value }))
@@ -98,6 +91,56 @@ export function ProductForm({ productToEdit }: ProductFormProps) {
       sort_order: productToEdit?.sort_order ?? 0,
     },
   })
+
+  // Load categories and sync stored product if editing
+  useEffect(() => {
+    const storedCats = getStoredCategories()
+    if (storedCats && storedCats.length > 0) {
+      setCategories(storedCats)
+    } else {
+      fetchCategoriesAction().then((res) => {
+        setCategories(res.categories)
+      })
+    }
+
+    if (isEditing && productToEdit) {
+      const storedProds = getStoredProducts()
+      const found = storedProds.find((p) => p.id === productToEdit.id || p.slug === productToEdit.slug)
+      if (found) {
+        setValue('title', found.title)
+        setValue('slug', found.slug)
+        setValue('sku', found.sku || '')
+        setValue('category_id', found.category_id || null)
+        setValue('short_description', found.short_description || '')
+        setValue('full_description', found.full_description || '')
+        setValue('featured_image', found.featured_image || '')
+        setValue('features', found.features || [])
+        setValue('catalogue_pdf', found.catalogue_pdf || '')
+        setValue('is_featured', found.is_featured ?? false)
+        setValue('is_published', found.is_published ?? true)
+        setValue('seo_title', found.seo_title || '')
+        setValue('seo_description', found.seo_description || '')
+        setValue('sort_order', found.sort_order ?? 0)
+
+        if (found.specifications) {
+          const specsArr = Object.entries(found.specifications).map(([key, value]) => ({ key, value }))
+          setValue('specifications', specsArr)
+        }
+
+        if (found.gallery_images) {
+          setValue(
+            'gallery_images',
+            found.gallery_images.map((img) => ({
+              id: img.id,
+              image_url: img.image_url,
+              alt_text: img.alt_text || '',
+              sort_order: img.sort_order,
+            }))
+          )
+        }
+      }
+    }
+  }, [isEditing, productToEdit, setValue])
 
   // Field Arrays for Dynamic Specifications & Gallery Images
   const {
@@ -188,6 +231,7 @@ export function ProductForm({ productToEdit }: ProductFormProps) {
               short_description: data.short_description || p.short_description,
               full_description: data.full_description || p.full_description,
               featured_image: data.featured_image || p.featured_image,
+              gallery_images: data.gallery_images || p.gallery_images || [],
               features: data.features || p.features,
               specifications: specsMap,
               catalogue_pdf: data.catalogue_pdf || p.catalogue_pdf,
@@ -210,6 +254,7 @@ export function ProductForm({ productToEdit }: ProductFormProps) {
         short_description: data.short_description || null,
         full_description: data.full_description || null,
         featured_image: data.featured_image || '/images/cat-scissors-shears.png',
+        gallery_images: data.gallery_images || [],
         features: data.features || [],
         specifications: specsMap,
         catalogue_pdf: data.catalogue_pdf || null,
