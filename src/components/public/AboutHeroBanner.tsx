@@ -1,15 +1,46 @@
 'use client'
 
+import { useState, useEffect } from 'react'
+
+const DEFAULT_HERO = {
+  badge: 'ABOUT US',
+  title: 'PRECISION IN EVERY INSTRUMENT. TRUST IN EVERY DETAIL.',
+  bgImage: '/images/about-hero-banner.png',
+}
+
 export function AboutHeroBanner() {
+  const [heroData, setHeroData] = useState(DEFAULT_HERO)
+
+  const loadData = () => {
+    try {
+      const saved = localStorage.getItem('durable_about_hero_data')
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (parsed && typeof parsed === 'object') {
+          setHeroData((prev) => ({ ...prev, ...parsed }))
+        }
+      }
+    } catch (e) {
+      console.error('LocalStorage AboutHero read error:', e)
+    }
+  }
+
+  useEffect(() => {
+    loadData()
+    const handleUpdate = () => loadData()
+    window.addEventListener('durable_content_updated', handleUpdate)
+    return () => window.removeEventListener('durable_content_updated', handleUpdate)
+  }, [])
+
   return (
     <section className="w-full relative bg-white overflow-hidden border-b border-slate-200">
-      {/* Background Banner Container - 100% Responsive across 24", 29", 60" LCD Monitors */}
+      {/* Background Banner Container */}
       <div className="w-full max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto min-h-[360px] sm:min-h-[420px] lg:min-h-[480px] xl:min-h-[540px] relative flex items-center">
         
         {/* Right Side Background Image */}
         <div 
           className="absolute inset-0 bg-right bg-cover bg-no-repeat z-0"
-          style={{ backgroundImage: `url('/images/about-hero-banner.png')` }}
+          style={{ backgroundImage: `url('${heroData.bgImage || '/images/about-hero-banner.png'}')` }}
         />
 
         {/* White Fade Gradient Overlay from Left to Right */}
@@ -23,15 +54,13 @@ export function AboutHeroBanner() {
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#F1F5F9] border border-slate-200 shadow-2xs">
               <span className="w-2 h-2 rounded-full bg-[#E31B23]" />
               <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-slate-800">
-                ABOUT US
+                {heroData.badge}
               </span>
             </div>
 
             {/* Main Title */}
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-[#0B1B3D] tracking-tight leading-[1.12] uppercase">
-              PRECISION IN EVERY <br />
-              INSTRUMENT. TRUST IN <br />
-              <span className="text-[#E31B23]">EVERY DETAIL.</span>
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-[#0B1B3D] tracking-tight leading-[1.12] uppercase whitespace-pre-line">
+              {heroData.title}
             </h1>
 
           </div>
@@ -41,3 +70,4 @@ export function AboutHeroBanner() {
     </section>
   )
 }
+
