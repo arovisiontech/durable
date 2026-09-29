@@ -1,7 +1,12 @@
 'use client'
 
-export function QualityPillarsSection() {
-  const pillars = [
+import { useState, useEffect } from 'react'
+
+const DEFAULT_PILLARS = {
+  titlePrimary: 'Delivering Confidence ',
+  titleHighlight: 'Through Quality',
+  imageUrl: '/images/surgical-tray-durable.png',
+  pillars: [
     {
       id: 'supply-chain',
       title: 'SUPPLY CHAIN RESILIENCE',
@@ -20,7 +25,37 @@ export function QualityPillarsSection() {
       description:
         'We Take A Proactive Approach To Risk Management By Implementing Robust Quality Controls, Regulatory Compliance Measures, And Continuous Process Monitoring Throughout Our Operations. From Manufacturing To Delivery, Every Stage Is Carefully Managed To Minimize Risks, Ensure Product Integrity, And Provide Healthcare Professionals With Safe, Reliable, And Consistent Solutions They Can Trust.',
     },
-  ]
+  ],
+}
+
+export function QualityPillarsSection() {
+  const [data, setData] = useState(DEFAULT_PILLARS)
+
+  const loadData = () => {
+    try {
+      const saved = localStorage.getItem('durable_pillars_data')
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (parsed && typeof parsed === 'object') {
+          setData({
+            titlePrimary: parsed.titlePrimary || DEFAULT_PILLARS.titlePrimary,
+            titleHighlight: parsed.titleHighlight || DEFAULT_PILLARS.titleHighlight,
+            imageUrl: parsed.imageUrl || DEFAULT_PILLARS.imageUrl,
+            pillars: Array.isArray(parsed.pillars) && parsed.pillars.length > 0 ? parsed.pillars : DEFAULT_PILLARS.pillars,
+          })
+        }
+      }
+    } catch (e) {
+      console.error('LocalStorage QualityPillars read error:', e)
+    }
+  }
+
+  useEffect(() => {
+    loadData()
+    const handleUpdate = () => loadData()
+    window.addEventListener('durable_content_updated', handleUpdate)
+    return () => window.removeEventListener('durable_content_updated', handleUpdate)
+  }, [])
 
   return (
     <section className="w-full bg-white py-10 sm:py-14 relative overflow-hidden border-b border-slate-200">
@@ -31,19 +66,19 @@ export function QualityPillarsSection() {
         {/* Section Headline matching SS 1 */}
         <div className="text-center max-w-3xl mx-auto">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight">
-            <span className="text-[#0B1B3D]">Delivering Confidence </span>
-            <span className="text-[#E31B23]">Through Quality</span>
+            <span className="text-[#0B1B3D]">{data.titlePrimary}</span>
+            <span className="text-[#E31B23]">{data.titleHighlight}</span>
           </h2>
         </div>
 
-        {/* 2-Column Content Layout (Image Left + 3 Pillars Right) - items-start so text starts from top of image row */}
+        {/* 2-Column Content Layout (Image Left + Pillars Right) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
-          {/* Left Column: Surgical Tray Photo with Controlled Compact Height */}
+          {/* Left Column: Surgical Tray Photo */}
           <div className="lg:col-span-5 relative">
             <div className="relative rounded-2xl overflow-hidden shadow-md border border-slate-200/80 group max-h-[380px] sm:max-h-[440px] w-full bg-slate-100">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/images/surgical-tray-durable.png"
+                src={data.imageUrl || '/images/surgical-tray-durable.png'}
                 alt="Delivering Confidence Through Quality - Surgical Tray"
                 className="w-full h-full max-h-[380px] sm:max-h-[440px] object-cover transform group-hover:scale-105 transition-transform duration-500"
               />
@@ -51,9 +86,9 @@ export function QualityPillarsSection() {
             </div>
           </div>
 
-          {/* Right Column: 3 Pillar Blocks starting aligned from top of image row */}
+          {/* Right Column: Pillar Blocks */}
           <div className="lg:col-span-7 space-y-6">
-            {pillars.map((pillar) => (
+            {data.pillars.map((pillar) => (
               <div key={pillar.id} className="space-y-1.5">
                 <h3 className="text-sm sm:text-base font-black text-[#0B1B3D] tracking-wider uppercase">
                   {pillar.title}
@@ -69,3 +104,4 @@ export function QualityPillarsSection() {
     </section>
   )
 }
+
