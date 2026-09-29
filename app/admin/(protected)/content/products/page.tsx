@@ -87,10 +87,10 @@ export default function AdminContentProductsPage() {
   const [exploreCards, setExploreCards] = useState<ProductRangeCard[]>([
     { id: 'pr-1', number: '01', title: 'General Surgery', description: 'General surgical tools including scissors, forceps, retractors, scalpel handles, and clamps.', sku_count: '6+ SKUs', image_url: '/images/cat-scissors-shears.png', slug: 'general-surgery' },
     { id: 'pr-2', number: '02', title: 'Dental & Restorative', description: 'Ergonomic restorative, periodontal, extraction, and orthodontic dental instruments.', sku_count: '4+ SKUs', image_url: '/images/cat-retractors.png', slug: 'dental' },
-    { id: 'pr-3', number: '03', title: 'Extraction & Oral Surgery', description: 'Extracting forceps, root elevators, luxators, and bone chisels.', sku_count: '3+ SKUs', image_url: '/images/cat-handles-blades.png', slug: 'extraction-oral-surgery' },
-    { id: 'pr-4', number: '04', title: 'Dental Bone Surgery', description: 'Osteotomes, gouges, chisels, bone rongeurs, and surgical mallets.', sku_count: '2+ SKUs', image_url: '/images/cat-scissors-shears.png', slug: 'dental-bone-surgery' },
-    { id: 'pr-5', number: '05', title: 'Periodontics & Cleaning', description: 'Scalers, Gracey curettes, periodontal probes, and amalgam carvers.', sku_count: '2+ SKUs', image_url: '/images/cat-retractors.png', slug: 'periodontics-cleaning' },
-    { id: 'pr-6', number: '06', title: 'Endodontics & Root Canal', description: 'Root canal spreaders, pluggers, impression trays, and matrix bands.', sku_count: '2+ SKUs', image_url: '/images/cat-handles-blades.png', slug: 'endodontics' },
+    { id: 'pr-3', number: '03', title: 'Medical Hollowware', description: 'Storage trays, kidney basins, gallipots, sterilization boxes, and autoclave bowls.', sku_count: '4+ SKUs', image_url: '/images/surgical-tray-durable.png', slug: 'medical-hollowware' },
+    { id: 'pr-4', number: '04', title: 'Bone & Orthopedic Instruments', description: 'Bone chisels, osteotomes, mallets, rongeurs, gouges, and bone holding forceps.', sku_count: '3+ SKUs', image_url: '/images/cat-forceps-clamps.png', slug: 'orthopedic-instruments' },
+    { id: 'pr-5', number: '05', title: 'Ophthalmic Micro-Surgery', description: 'Micro-forceps, eye speculums, corneal scissors, and micro cassettes.', sku_count: '2+ SKUs', image_url: '/images/blog-instruments-tray.png', slug: 'ophthalmic' },
+    { id: 'pr-6', number: '06', title: 'Hospital Furniture & Single Use', description: 'Hospital beds, MAYO instrument trolleys, IV poles, and sterile single use procedure kits.', sku_count: '2+ SKUs', image_url: '/images/icon-hospital-furniture.png', slug: 'hospital-furniture' },
   ])
 
   // 3. DENTAL CLINIC WIDE BANNER STATE

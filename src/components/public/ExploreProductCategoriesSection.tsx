@@ -3,20 +3,75 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Sparkles, ArrowRight } from 'lucide-react'
-import { getStoredCategories, INITIAL_CATEGORIES_SEED } from '@/src/lib/dataStore'
+
+const DEFAULT_MAIN_PRODUCT_CATEGORIES = [
+  {
+    id: 'pr-1',
+    number: '01',
+    title: 'General Surgery',
+    description: 'General surgical tools including scissors, forceps, retractors, scalpel handles, and clamps.',
+    sku_count: '6+ SKUs',
+    slug: 'general-surgery',
+  },
+  {
+    id: 'pr-2',
+    number: '02',
+    title: 'Dental & Restorative',
+    description: 'Ergonomic restorative, periodontal, extraction, and orthodontic dental instruments.',
+    sku_count: '4+ SKUs',
+    slug: 'dental',
+  },
+  {
+    id: 'pr-3',
+    number: '03',
+    title: 'Medical Hollowware',
+    description: 'Storage trays, kidney basins, gallipots, sterilization boxes, and autoclave bowls.',
+    sku_count: '4+ SKUs',
+    slug: 'medical-hollowware',
+  },
+  {
+    id: 'pr-4',
+    number: '04',
+    title: 'Bone & Orthopedic Instruments',
+    description: 'Bone chisels, osteotomes, mallets, rongeurs, gouges, and bone holding forceps.',
+    sku_count: '3+ SKUs',
+    slug: 'orthopedic-instruments',
+  },
+  {
+    id: 'pr-5',
+    number: '05',
+    title: 'Ophthalmic Micro-Surgery',
+    description: 'Micro-forceps, eye speculums, corneal scissors, and micro cassettes.',
+    sku_count: '2+ SKUs',
+    slug: 'ophthalmic',
+  },
+  {
+    id: 'pr-6',
+    number: '06',
+    title: 'Hospital Furniture & Single Use',
+    description: 'Hospital beds, MAYO instrument trolleys, IV poles, and sterile single use procedure kits.',
+    sku_count: '2+ SKUs',
+    slug: 'hospital-furniture',
+  },
+]
 
 export function ExploreProductCategoriesSection() {
-  const [categories, setCategories] = useState(INITIAL_CATEGORIES_SEED)
+  const [categories, setCategories] = useState(DEFAULT_MAIN_PRODUCT_CATEGORIES)
 
   const loadData = () => {
     try {
-      const stored = getStoredCategories()
-      if (stored && stored.length > 0) {
-        setCategories(stored)
+      const savedCards = localStorage.getItem('durable_explore_range_cards')
+      if (savedCards) {
+        const parsed = JSON.parse(savedCards)
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setCategories(parsed)
+          return
+        }
       }
     } catch (e) {
-      console.error(e)
+      console.error('LocalStorage ExploreProductCategories read error:', e)
     }
+    setCategories(DEFAULT_MAIN_PRODUCT_CATEGORIES)
   }
 
   useEffect(() => {
@@ -62,7 +117,7 @@ export function ExploreProductCategoriesSection() {
           </p>
         </div>
 
-        {/* 6 Numbered Category Cards Grid (Matching SS 1) */}
+        {/* 6 Numbered Main Product Category Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-7">
           {categories.slice(0, 6).map((cat, idx) => (
             <Link
@@ -86,14 +141,14 @@ export function ExploreProductCategoriesSection() {
                     {/* Number & Accent Bar */}
                     <div>
                       <span className="text-xl sm:text-2xl font-black text-[#0B1B3D] group-hover:text-[#E31B23] transition-colors font-mono">
-                        0{idx + 1}
+                        {cat.number || `0${idx + 1}`}
                       </span>
                       <div className="w-8 h-[2.5px] bg-[#E31B23] rounded-full mt-1 group-hover:w-12 transition-all duration-300" />
                     </div>
 
                     {/* Card Title */}
                     <h3 className="text-base sm:text-lg font-black text-[#0B1B3D] leading-snug group-hover:text-[#E31B23] transition-colors">
-                      {cat.name}
+                      {cat.title}
                     </h3>
 
                     {/* Description */}
@@ -110,7 +165,7 @@ export function ExploreProductCategoriesSection() {
                     </span>
 
                     <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-full">
-                      {cat.product_count || 5}+ SKUs
+                      {cat.sku_count || '5+ SKUs'}
                     </span>
                   </div>
                 </div>
@@ -133,4 +188,5 @@ export function ExploreProductCategoriesSection() {
     </section>
   )
 }
+
 
