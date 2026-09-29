@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { ArrowUpRight } from 'lucide-react'
 import { BLOGS_DATA, BlogItem } from '@/src/data/blogsData'
@@ -12,8 +13,41 @@ interface LatestBlogsSectionProps {
   showHeader?: boolean
 }
 
+const DEFAULT_HEADER = {
+  line1: 'Insights From Our',
+  line2: 'Latest Blogs',
+  subtitle:
+    'Stay Updated With The Latest Trends, Innovations, And Expert Insights In The Manufacturing And Industrial Sectors',
+}
+
 export function LatestBlogsSection({ limit, showHeader = true }: LatestBlogsSectionProps) {
-  const blogsToDisplay = limit ? BLOGS_DATA.slice(0, limit) : BLOGS_DATA
+  const [blogsList, setBlogsList] = useState<BlogItem[]>(BLOGS_DATA)
+  const [headerData, setHeaderData] = useState(DEFAULT_HEADER)
+
+  const loadData = () => {
+    try {
+      const savedBlogs = localStorage.getItem('durable_blogs_list')
+      if (savedBlogs) setBlogsList(JSON.parse(savedBlogs))
+
+      const savedHeader = localStorage.getItem('durable_blog_section_header')
+      if (savedHeader) setHeaderData(JSON.parse(savedHeader))
+    } catch (e) {
+      console.error('Error loading blogs section data:', e)
+    }
+  }
+
+  useEffect(() => {
+    loadData()
+    const handleUpdate = () => loadData()
+    window.addEventListener('durable_content_updated', handleUpdate)
+    window.addEventListener('storage', handleUpdate)
+    return () => {
+      window.removeEventListener('durable_content_updated', handleUpdate)
+      window.removeEventListener('storage', handleUpdate)
+    }
+  }, [])
+
+  const blogsToDisplay = limit ? blogsList.slice(0, limit) : blogsList
 
   return (
     <section className="w-full bg-[#FAFAFA] py-10 sm:py-14 relative overflow-hidden border-b border-slate-200">
@@ -27,16 +61,16 @@ export function LatestBlogsSection({ limit, showHeader = true }: LatestBlogsSect
             {/* Left Title */}
             <div className="space-y-0.5">
               <h3 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#0B1B3D]">
-                Insights From Our
+                {headerData.line1}
               </h3>
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#0B1B3D] tracking-tight">
-                Latest Blogs
+                {headerData.line2}
               </h2>
             </div>
 
             {/* Right Subtitle matching SS 1 */}
             <p className="text-xs sm:text-sm font-semibold text-slate-500 leading-relaxed max-w-md">
-              Stay Updated With The Latest Trends, Innovations, And Expert Insights In The Manufacturing And Industrial Sectors
+              {headerData.subtitle}
             </p>
           </div>
         )}
@@ -53,7 +87,7 @@ export function LatestBlogsSection({ limit, showHeader = true }: LatestBlogsSect
               <div className="relative rounded-2xl overflow-hidden shadow-xs group-hover:shadow-xl border border-slate-200 aspect-[16/10] transition-all duration-300">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={blog.image}
+                  src={blog.image || '/images/blog-instruments-tray.png'}
                   alt={blog.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />

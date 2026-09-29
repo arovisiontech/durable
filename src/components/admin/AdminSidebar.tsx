@@ -65,6 +65,7 @@ const contentNavGroup: NavGroup = {
     { name: 'About Us', href: '/admin/content/about', icon: Info },
     { name: 'Strengths', href: '/admin/content/strengths', icon: Award },
     { name: 'Events Page', href: '/admin/content/events', icon: Calendar },
+    { name: 'Blog Page', href: '/admin/content/blog', icon: Newspaper },
     { name: 'Contact Page', href: '/admin/content/contact', icon: Phone },
     { name: 'FAQs', href: '/admin/content/faqs', icon: HelpCircle },
   ],
