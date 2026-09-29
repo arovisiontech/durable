@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
 interface ProductsHeroBannerProps {
@@ -7,47 +8,88 @@ interface ProductsHeroBannerProps {
   categoryHighlight?: string
 }
 
+const DEFAULT_HERO = {
+  badge: 'OUR PRODUCT CATEGORIES',
+  categoryTitle: 'GENERAL',
+  categoryHighlight: 'SURGERY',
+  description:
+    'Durable Hospital Supplies Is A Trusted Manufacturer And Exporter Of Premium Surgical Instruments, Serving Healthcare Professionals, Distributors, And OEM Brands In More Than 15 Countries.',
+  bgImage: '/images/products-hero-banner.png',
+}
+
+const DEFAULT_SUBCATS = [
+  {
+    id: 'scissors-shears',
+    title: 'Scissors & Shears',
+    icon: '/images/cat-scissors-shears.png',
+    query: 'scissors',
+  },
+  {
+    id: 'retractors',
+    title: 'Retractors',
+    icon: '/images/cat-retractors.png',
+    query: 'retractors',
+  },
+  {
+    id: 'forceps-clamps',
+    title: 'Forceps & Clamps',
+    icon: '/images/cat-forceps-clamps.png',
+    query: 'forceps',
+  },
+  {
+    id: 'handles-blades',
+    title: 'Handles & Blades',
+    icon: '/images/cat-handles-blades.png',
+    query: 'scalpel',
+  },
+]
+
 export function ProductsHeroBanner({
   categoryTitle = 'GENERAL',
   categoryHighlight = 'SURGERY',
 }: ProductsHeroBannerProps) {
-  const subCategories = [
-    {
-      id: 'scissors-shears',
-      title: 'Scissors & Shears',
-      icon: '/images/cat-scissors-shears.png',
-      query: 'scissors',
-    },
-    {
-      id: 'retractors',
-      title: 'Retractors',
-      icon: '/images/cat-retractors.png',
-      query: 'retractors',
-    },
-    {
-      id: 'forceps-clamps',
-      title: 'Forceps & Clamps',
-      icon: '/images/cat-forceps-clamps.png',
-      query: 'forceps',
-    },
-    {
-      id: 'handles-blades',
-      title: 'Handles & Blades',
-      icon: '/images/cat-handles-blades.png',
-      query: 'scalpel',
-    },
-  ]
+  const [heroData, setHeroData] = useState(DEFAULT_HERO)
+  const [subCategories, setSubCategories] = useState(DEFAULT_SUBCATS)
+
+  const loadData = () => {
+    try {
+      const savedHero = localStorage.getItem('durable_products_hero_data')
+      if (savedHero) {
+        const parsed = JSON.parse(savedHero)
+        if (parsed && typeof parsed === 'object') {
+          setHeroData((prev) => ({ ...prev, ...parsed }))
+        }
+      }
+
+      const savedSubcats = localStorage.getItem('durable_subcategories_bar')
+      if (savedSubcats) {
+        const parsed = JSON.parse(savedSubcats)
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setSubCategories(parsed)
+        }
+      }
+    } catch (e) {
+      console.error('LocalStorage ProductsHero read error:', e)
+    }
+  }
+
+  useEffect(() => {
+    loadData()
+    const handleUpdate = () => loadData()
+    window.addEventListener('durable_content_updated', handleUpdate)
+    return () => window.removeEventListener('durable_content_updated', handleUpdate)
+  }, [])
 
   return (
     <div className="w-full relative bg-white pb-12 sm:pb-16">
-      {/* Top Banner Box - 100% LCD Screen Responsive */}
+      {/* Top Banner Box */}
       <section className="w-full relative bg-white overflow-hidden border-b border-slate-200">
         <div className="w-full max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto min-h-[380px] sm:min-h-[440px] lg:min-h-[500px] xl:min-h-[560px] relative flex items-center">
           
-          {/* Right Side Surgical Gloves Hero Image */}
+          {/* Right Side Background Image */}
           <div
             className="absolute inset-0 bg-right bg-cover bg-no-repeat z-0"
-            style={{ backgroundImage: `url('/images/products-hero-banner.png')` }}
+            style={{ backgroundImage: `url('${heroData.bgImage || '/images/products-hero-banner.png'}')` }}
           />
 
           {/* White Fade Gradient Overlay from Left to Right */}
@@ -61,19 +103,19 @@ export function ProductsHeroBanner({
               <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#F1F5F9] border border-slate-200 shadow-2xs">
                 <span className="w-2 h-2 rounded-full bg-[#E31B23]" />
                 <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-slate-800">
-                  OUR PRODUCT CATEGORIES
+                  {heroData.badge || 'OUR PRODUCT CATEGORIES'}
                 </span>
               </div>
 
               {/* Main Title */}
               <h1 className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-[#0B1B3D] tracking-tight leading-[1.1] uppercase">
-                {categoryTitle} <br />
-                <span className="text-[#E31B23]">{categoryHighlight}</span>
+                {heroData.categoryTitle || categoryTitle} <br />
+                <span className="text-[#E31B23]">{heroData.categoryHighlight || categoryHighlight}</span>
               </h1>
 
               {/* Subtitle Description */}
               <p className="text-xs sm:text-sm lg:text-base text-slate-600 font-medium leading-relaxed max-w-2xl">
-                Durable Hospital Supplies Is A Trusted Manufacturer And Exporter Of Premium Surgical Instruments, Serving Healthcare Professionals, Distributors, And OEM Brands In More Than 15 Countries.
+                {heroData.description}
               </p>
 
             </div>
@@ -88,14 +130,14 @@ export function ProductsHeroBanner({
           {subCategories.map((subCat) => (
             <Link
               key={subCat.id}
-              href={`/products?search=${subCat.query}`}
+              href={`/products?search=${subCat.query || subCat.title}`}
               className="group flex items-center gap-3 px-2 sm:px-4 py-2 hover:opacity-90 transition-all justify-center text-center sm:text-left"
             >
               {/* Circle Sub-Category Image Icon */}
               <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-full overflow-hidden shrink-0 border border-slate-200/90 bg-slate-50 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={subCat.icon}
+                  src={subCat.icon || '/images/cat-scissors-shears.png'}
                   alt={subCat.title}
                   className="w-full h-full object-cover"
                 />
@@ -112,3 +154,4 @@ export function ProductsHeroBanner({
     </div>
   )
 }
+

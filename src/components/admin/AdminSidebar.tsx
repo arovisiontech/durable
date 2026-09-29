@@ -60,6 +60,7 @@ const contentNavGroup: NavGroup = {
   icon: Globe,
   items: [
     { name: 'Home Page', href: '/admin/content/home', icon: Home },
+    { name: 'Products Page', href: '/admin/content/products', icon: Package },
     { name: 'About Us', href: '/admin/content/about', icon: Info },
     { name: 'Strengths', href: '/admin/content/strengths', icon: Award },
     { name: 'Contact Page', href: '/admin/content/contact', icon: Phone },

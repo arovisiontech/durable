@@ -1,53 +1,99 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Sparkles, ArrowRight } from 'lucide-react'
 
+const DEFAULT_HEADER = {
+  badge: 'COVERING ALL MAJOR FIELDS',
+  titlePrimary: 'EXPLORE OUR ',
+  titleHighlight: 'DENTAL INSTRUMENTS',
+  titleEnd: ' CATEGORIES',
+}
+
+const DEFAULT_CARDS = [
+  {
+    id: 'd-1',
+    number: '01',
+    title: 'Extraction & Oral Surgery',
+    description:
+      'Extracting Forceps In Various Patterns (English And American, Upper And Lower Jaw, Anatomically Shaped Handles, Delicate Touch), Root Elevators, Root Fragment Elevators, And Luxators.',
+    slug: 'extraction-oral-surgery',
+  },
+  {
+    id: 'd-2',
+    number: '02',
+    title: 'Dental Bone Surgery',
+    description:
+      'Osteotomes, Gouges, Chisels, Bone Rongeurs, Bone Curettes, Periosteal Elevators, Mallets, And Related Bone Instruments.',
+    slug: 'dental-bone-surgery',
+  },
+  {
+    id: 'd-3',
+    number: '03',
+    title: 'Periodontics & Cleaning',
+    description:
+      'A Large Scaler Range (Supragingival And Subgingival), Cure, And Periodontal Probes. Restorative & Filling: Filling Instruments Composite Instruments, Amalgam Instruments, Wax/Porcelain/Carvers, And Spatulas.',
+    slug: 'periodontics-cleaning',
+  },
+  {
+    id: 'd-4',
+    number: '04',
+    title: 'Endodontics',
+    description:
+      "Root Canal Instruments. Impression Trays (Ehricke's, Partial Trays), Matrix Bands, And Retainers",
+    slug: 'endodontics',
+  },
+  {
+    id: 'd-5',
+    number: '05',
+    title: 'Diagnostic',
+    description:
+      'Mouth Mirrors, Explorers, Probes And Cotton Applicators Sickle Probe, Intraoral Mirror, Periadontal Probe, Dental Tweezers / College Cotton Pliers, Articulating Paper Forceps, Endodontic Locking Tweezers',
+    slug: 'diagnostic',
+  },
+  {
+    id: 'd-6',
+    number: '06',
+    title: 'Discipline Specific Instruments',
+    description:
+      'Needle Holders (Including Micro Needle Holders), Scissors (Dissecting, Gum, Delicate), Artery/Hemostatic Forceps, Dressing And Tissue Forceps (Including Micro), Retractors, Gags, Skin Hooks/Hooklets, Scalpels, Suction Cannulas,',
+    slug: 'discipline-specific-dental',
+  },
+]
+
 export function ExploreDentalCategoriesSection() {
-  const dentalCategories = [
-    {
-      number: '01',
-      title: 'Extraction & Oral Surgery',
-      description:
-        'Extracting Forceps In Various Patterns (English And American, Upper And Lower Jaw, Anatomically Shaped Handles, Delicate Touch), Root Elevators, Root Fragment Elevators, And Luxators.',
-      slug: 'extraction-oral-surgery',
-    },
-    {
-      number: '02',
-      title: 'Dental Bone Surgery',
-      description:
-        'Osteotomes, Gouges, Chisels, Bone Rongeurs, Bone Curettes, Periosteal Elevators, Mallets, And Related Bone Instruments.',
-      slug: 'dental-bone-surgery',
-    },
-    {
-      number: '03',
-      title: 'Periodontics & Cleaning',
-      description:
-        'A Large Scaler Range (Supragingival And Subgingival), Cure, And Periodontal Probes. Restorative & Filling: Filling Instruments Composite Instruments, Amalgam Instruments, Wax/Porcelain/Carvers, And Spatulas.',
-      slug: 'periodontics-cleaning',
-    },
-    {
-      number: '04',
-      title: 'Endodontics',
-      description:
-        "Root Canal Instruments. Impression Trays (Ehricke's, Partial Trays), Matrix Bands, And Retainers",
-      slug: 'endodontics',
-    },
-    {
-      number: '05',
-      title: 'Diagnostic',
-      description:
-        'Mouth Mirrors, Explorers, Probes And Cotton Applicators Sickle Probe, Intraoral Mirror, Periadontal Probe, Dental Tweezers / College Cotton Pliers, Articulating Paper Forceps, Endodontic Locking Tweezers',
-      slug: 'diagnostic',
-    },
-    {
-      number: '06',
-      title: 'Discipline Specific Instruments',
-      description:
-        'Needle Holders (Including Micro Needle Holders), Scissors (Dissecting, Gum, Delicate), Artery/Hemostatic Forceps, Dressing And Tissue Forceps (Including Micro), Retractors, Gags, Skin Hooks/Hooklets, Scalpels, Suction Cannulas,',
-      slug: 'discipline-specific-dental',
-    },
-  ]
+  const [headerData, setHeaderData] = useState(DEFAULT_HEADER)
+  const [dentalCategories, setDentalCategories] = useState(DEFAULT_CARDS)
+
+  const loadData = () => {
+    try {
+      const savedHeader = localStorage.getItem('durable_dental_fields_data')
+      if (savedHeader) {
+        const parsed = JSON.parse(savedHeader)
+        if (parsed && typeof parsed === 'object') {
+          setHeaderData((prev) => ({ ...prev, ...parsed }))
+        }
+      }
+
+      const savedCards = localStorage.getItem('durable_dental_fields_cards')
+      if (savedCards) {
+        const parsed = JSON.parse(savedCards)
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setDentalCategories(parsed)
+        }
+      }
+    } catch (e) {
+      console.error('LocalStorage ExploreDentalCategories read error:', e)
+    }
+  }
+
+  useEffect(() => {
+    loadData()
+    const handleUpdate = () => loadData()
+    window.addEventListener('durable_content_updated', handleUpdate)
+    return () => window.removeEventListener('durable_content_updated', handleUpdate)
+  }, [])
 
   return (
     <section className="w-full bg-slate-50/50 py-12 sm:py-16 border-b border-slate-200 relative overflow-hidden">
@@ -64,29 +110,29 @@ export function ExploreDentalCategoriesSection() {
 
       <div className="max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-10 sm:space-y-12">
         
-        {/* Top Centered Header Block matching User Screenshot */}
+        {/* Top Centered Header Block */}
         <div className="text-center max-w-3xl mx-auto space-y-2.5">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white border border-slate-200 shadow-xs">
             <span className="w-2 h-2 rounded-full bg-[#E31B23] animate-ping" />
             <span className="text-[11px] font-black uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
               <Sparkles className="w-3 h-3 text-[#E31B23]" />
-              COVERING ALL MAJOR FIELDS
+              {headerData.badge}
             </span>
           </div>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#0B1B3D] tracking-tight uppercase leading-tight">
-            EXPLORE OUR <span className="text-[#E31B23]">DENTAL INSTRUMENTS</span> CATEGORIES
+            {headerData.titlePrimary}<span className="text-[#E31B23]">{headerData.titleHighlight}</span>{headerData.titleEnd}
           </h2>
           
           {/* Centered Red Accent Line */}
           <div className="w-16 h-[3px] bg-[#E31B23] rounded-full mx-auto my-2.5" />
         </div>
 
-        {/* 6 Numbered Category Cards Grid with 4-Side Light Beam & Direct Navigation */}
+        {/* 6 Numbered Category Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-7">
-          {dentalCategories.map((cat) => (
+          {dentalCategories.map((cat, idx) => (
             <Link
-              key={cat.number}
-              href={`/dental-showcase#dental-${cat.number}`}
+              key={cat.id || cat.number || idx}
+              href={`/dental-showcase#dental-${cat.number || `0${idx + 1}`}`}
               className="group relative block rounded-2xl"
             >
               {/* 4-Side Glow Backdrop Aura Shadow */}
@@ -106,7 +152,7 @@ export function ExploreDentalCategoriesSection() {
                     {/* Number & Accent Bar */}
                     <div>
                       <span className="text-xl sm:text-2xl font-black text-[#0B1B3D] group-hover:text-[#E31B23] transition-colors font-mono">
-                        {cat.number}
+                        {cat.number || `0${idx + 1}`}
                       </span>
                       <div className="w-8 h-[2.5px] bg-[#E31B23] rounded-full mt-1 group-hover:w-12 transition-all duration-300" />
                     </div>
@@ -140,3 +186,4 @@ export function ExploreDentalCategoriesSection() {
     </section>
   )
 }
+
