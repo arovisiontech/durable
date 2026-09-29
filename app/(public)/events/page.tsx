@@ -1,77 +1,125 @@
-import { Metadata } from 'next'
+'use client'
+
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Calendar, MapPin, ArrowRight, ExternalLink, Award, Users, CheckCircle2 } from 'lucide-react'
+import { Calendar, MapPin, ArrowRight } from 'lucide-react'
 import { EventsHeroBanner } from '@/src/components/public/EventsHeroBanner'
 
-export const metadata: Metadata = {
-  title: 'Global Surgical Events & Trade Exhibitions | Durable Medical',
-  description:
-    'Join Durable Hospital Supplies at global medical trade fairs including IDS Cologne, MEDICA Germany, Arab Health Dubai, and FIME USA.',
+const DEFAULT_OVERVIEW_HERO = {
+  categoryBadge: 'Global Exhibitions',
+  title: 'Global Medical Fairs & Trade Events',
+  subtitle: 'Meet Durable Hospital Supplies at leading international surgical trade exhibitions, dental forums, and global healthcare conventions.',
+  bgImage: '/images/products-hero-banner.png',
 }
 
-const ALL_EVENTS = [
+const DEFAULT_RECENT_EVENTS = [
   {
-    id: 'EVT-01',
-    title: 'IDS Cologne 2026 - 41st International Dental Show',
-    type: 'Upcoming',
-    date: 'March 24 - 28, 2026',
-    location: 'Koelnmesse, Cologne, Germany',
-    booth: 'Hall 10.2, Stand B-045',
-    category: 'Dental & Maxillofacial',
-    image: '/images/dental-clinic-banner.png',
-    description:
-      'Discover Durable Medical’s latest German-grade stainless steel dental surgical tools, titanium implantology sets, and custom OEM private label solutions.',
-    link: '/events/upcoming',
-  },
-  {
-    id: 'EVT-02',
-    title: 'Arab Health Dubai 2026',
-    type: 'Upcoming',
-    date: 'January 26 - 29, 2026',
-    location: 'Dubai World Trade Centre, UAE',
-    booth: 'Za’abeel Hall 3, Stand Z3.D12',
-    category: 'General Surgery & Hospital Supplies',
-    image: '/images/surgical-tray-durable.png',
-    description:
-      'Middle East’s largest healthcare exhibition. Durable Medical will showcase single-use procedure kits, micro-forceps, and CE MDR certified instruments.',
-    link: '/events/upcoming',
-  },
-  {
-    id: 'EVT-03',
+    id: 'RE-01',
+    category: 'General Surgery',
     title: 'MEDICA Düsseldorf 2025 International Forum',
-    type: 'Recent',
     date: 'November 17 - 20, 2025',
     location: 'Messe Düsseldorf, Germany',
     booth: 'Hall 3, Stand C-89',
-    category: 'General Surgery',
     image: '/images/about-surgical-instruments.png',
-    description:
-      'Successfully connected with over 450 global distributors and hospital procurement teams across Europe and Latin America.',
+    overview: 'Successfully connected with over 450 global distributors and hospital procurement teams across Europe and Latin America.',
     link: '/events/recent',
+    type: 'Recent',
   },
   {
-    id: 'EVT-04',
-    title: 'FIME USA International Medical Expo',
-    type: 'Recent',
+    id: 'RE-02',
+    category: 'Hospital Supplies',
+    title: 'FIME Florida International Medical Exhibition 2025',
     date: 'June 18 - 20, 2025',
     location: 'Miami Beach Convention Center, Florida, USA',
     booth: 'Stand 1420',
-    category: 'Hospital Supplies',
     image: '/images/precision-healthcare-banner.png',
-    description:
-      'Showcasing reusable cardiovascular forceps, tungsten carbide scissors, and FDA registered hospital tools.',
+    overview: 'Showcasing reusable cardiovascular forceps, tungsten carbide scissors, and FDA registered hospital tools.',
     link: '/events/recent',
+    type: 'Recent',
+  },
+]
+
+const DEFAULT_UPCOMING_EVENTS = [
+  {
+    id: 'UE-01',
+    category: 'Dental & Maxillofacial',
+    title: 'IDS Cologne 2026 - 41st International Dental Show',
+    date: 'March 24 - 28, 2026',
+    location: 'Koelnmesse, Cologne, Germany',
+    booth: 'Hall 10.2, Stand B-045',
+    image: '/images/dental-clinic-banner.png',
+    overview: 'Discover Durable Medical’s latest German-grade stainless steel dental surgical tools, titanium implantology sets, and custom OEM private label solutions.',
+    link: '/events/upcoming',
+    type: 'Upcoming',
+  },
+  {
+    id: 'UE-02',
+    category: 'General Surgery & Hospital Supplies',
+    title: 'Arab Health Dubai 2026',
+    date: 'January 26 - 29, 2026',
+    location: 'Dubai World Trade Centre, UAE',
+    booth: 'Za’abeel Hall 3, Stand Z3.D12',
+    image: '/images/surgical-tray-durable.png',
+    overview: 'Middle East’s largest healthcare exhibition. Durable Medical will showcase single-use procedure kits, micro-forceps, and CE MDR certified instruments.',
+    link: '/events/upcoming',
+    type: 'Upcoming',
   },
 ]
 
 export default function EventsOverviewPage() {
+  const [heroData, setHeroData] = useState(DEFAULT_OVERVIEW_HERO)
+  const [recentEvents, setRecentEvents] = useState<any[]>(DEFAULT_RECENT_EVENTS)
+  const [upcomingEvents, setUpcomingEvents] = useState<any[]>(DEFAULT_UPCOMING_EVENTS)
+
+  const loadData = () => {
+    try {
+      const savedHero = localStorage.getItem('durable_events_overview_hero')
+      if (savedHero) setHeroData(JSON.parse(savedHero))
+
+      const savedRecent = localStorage.getItem('durable_recent_events_list')
+      if (savedRecent) setRecentEvents(JSON.parse(savedRecent))
+
+      const savedUpcoming = localStorage.getItem('durable_upcoming_events_list')
+      if (savedUpcoming) setUpcomingEvents(JSON.parse(savedUpcoming))
+    } catch (e) {
+      console.error('Error loading events overview data:', e)
+    }
+  }
+
+  useEffect(() => {
+    loadData()
+    const handleUpdate = () => loadData()
+    window.addEventListener('durable_content_updated', handleUpdate)
+    window.addEventListener('storage', handleUpdate)
+    return () => {
+      window.removeEventListener('durable_content_updated', handleUpdate)
+      window.removeEventListener('storage', handleUpdate)
+    }
+  }, [])
+
+  const allEventsCombined = [
+    ...upcomingEvents.map((item) => ({
+      ...item,
+      type: 'Upcoming',
+      link: '/events/upcoming',
+      description: item.overview || item.description,
+    })),
+    ...recentEvents.map((item) => ({
+      ...item,
+      type: 'Recent',
+      link: '/events/recent',
+      description: item.overview || item.description || (item.highlights ? item.highlights.join(' ') : ''),
+    })),
+  ]
+
   return (
     <div className="w-full bg-[#F8FAFC]">
       {/* Hero Banner */}
       <EventsHeroBanner
-        title="Global Medical Fairs & Trade Events"
-        subtitle="Meet Durable Hospital Supplies at leading international surgical trade exhibitions, dental forums, and global healthcare conventions."
-        categoryBadge="Global Exhibitions"
+        title={heroData.title}
+        subtitle={heroData.subtitle}
+        categoryBadge={heroData.categoryBadge}
+        bgImage={heroData.bgImage}
       />
 
       {/* Main Container */}
@@ -100,15 +148,15 @@ export default function EventsOverviewPage() {
           </div>
 
           <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-            Showing {ALL_EVENTS.length} Global Exhibitions
+            Showing {allEventsCombined.length} Global Exhibitions
           </div>
         </div>
 
         {/* Grid of Events */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {ALL_EVENTS.map((event) => (
+          {allEventsCombined.map((event, idx) => (
             <div
-              key={event.id}
+              key={event.id || idx}
               className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
             >
               <div className="space-y-4">
@@ -116,7 +164,7 @@ export default function EventsOverviewPage() {
                 <div className="relative w-full h-64 bg-slate-900 overflow-hidden">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={event.image}
+                    src={event.image || '/images/dental-clinic-banner.png'}
                     alt={event.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
                   />
@@ -158,7 +206,7 @@ export default function EventsOverviewPage() {
                     Booth: {event.booth}
                   </div>
 
-                  <p className="text-xs text-slate-600 leading-relaxed font-sans">
+                  <p className="text-xs text-slate-600 leading-relaxed font-sans line-clamp-3">
                     {event.description}
                   </p>
                 </div>

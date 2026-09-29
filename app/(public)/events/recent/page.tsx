@@ -1,23 +1,24 @@
-import { Metadata } from 'next'
+'use client'
+
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Calendar, MapPin, ArrowRight, CheckCircle2, Award, Users, Globe } from 'lucide-react'
+import { Calendar, MapPin, CheckCircle2, Users, Globe } from 'lucide-react'
 import { EventsHeroBanner } from '@/src/components/public/EventsHeroBanner'
 
-export const metadata: Metadata = {
-  title: 'Recent International Trade Events & Fairs | Durable Medical',
-  description:
-    'Explore past international trade exhibitions, delegations, and convention outcomes hosted by Durable Hospital Supplies.',
+const DEFAULT_HERO = {
+  categoryBadge: 'Recent Events Archive',
+  title: 'Recent International Events Archive',
+  subtitle: 'A look back at our recent trade exhibitions, global convention outcomes, and international distributor partnerships.',
+  bgImage: '/images/products-hero-banner.png',
 }
 
-const RECENT_EVENTS = [
+const DEFAULT_EVENTS = [
   {
     id: 'RE-01',
+    category: 'General Surgery',
     title: 'MEDICA Düsseldorf 2025 International Forum',
     date: 'November 17 - 20, 2025',
     location: 'Messe Düsseldorf, Germany',
-    booth: 'Hall 3, Stand C-89',
-    category: 'General Surgery',
-    image: '/images/about-surgical-instruments.png',
     attendees: '120,000+ Healthcare Visitors',
     delegates: 'German & European Hospital Buyers',
     highlights: [
@@ -25,15 +26,17 @@ const RECENT_EVENTS = [
       'Signed OEM private label agreements with 14 European distributors.',
       'Demonstrated ISO 13485 & CE MDR technical compliance files.',
     ],
+    booth: 'Hall 3, Stand C-89',
+    image: '/images/about-surgical-instruments.png',
+    actionText: 'Completed Exhibition Archive',
+    statusBadge: 'Completed Event',
   },
   {
     id: 'RE-02',
+    category: 'Hospital Supplies',
     title: 'FIME Florida International Medical Exhibition 2025',
     date: 'June 18 - 20, 2025',
     location: 'Miami Beach Convention Center, Florida, USA',
-    booth: 'Stand 1420',
-    category: 'Hospital Supplies',
-    image: '/images/precision-healthcare-banner.png',
     attendees: '15,000+ Trade Professionals',
     delegates: 'North & South American Importers',
     highlights: [
@@ -41,15 +44,17 @@ const RECENT_EVENTS = [
       'Expanded FDA registered product offerings to Latin American markets.',
       'Distributed 500+ physical product catalogs to verified medical buyers.',
     ],
+    booth: 'Stand 1420',
+    image: '/images/precision-healthcare-banner.png',
+    actionText: 'Completed Exhibition Archive',
+    statusBadge: 'Completed Event',
   },
   {
     id: 'RE-03',
+    category: 'Manufacturing & Export',
     title: 'Sialkot International Surgical Industry Expo 2025',
     date: 'February 10 - 12, 2025',
     location: 'Sialkot Chamber of Commerce & Industry, Pakistan',
-    booth: 'Pavilion A, Stand 12',
-    category: 'Manufacturing & Export',
-    image: '/images/surgical-tray-durable.png',
     attendees: 'Local & Global Exporters',
     delegates: 'Ministry of Commerce & SCCI Trade Leaders',
     highlights: [
@@ -57,17 +62,48 @@ const RECENT_EVENTS = [
       'Live demonstration of 4-step hand-filing and heat treatment forging.',
       'Hosted international delegation from Middle Eastern health ministries.',
     ],
+    booth: 'Pavilion A, Stand 12',
+    image: '/images/surgical-tray-durable.png',
+    actionText: 'Completed Exhibition Archive',
+    statusBadge: 'Completed Event',
   },
 ]
 
 export default function RecentEventsPage() {
+  const [heroData, setHeroData] = useState(DEFAULT_HERO)
+  const [eventsList, setEventsList] = useState(DEFAULT_EVENTS)
+
+  const loadData = () => {
+    try {
+      const savedHero = localStorage.getItem('durable_recent_events_hero')
+      if (savedHero) setHeroData(JSON.parse(savedHero))
+
+      const savedEvents = localStorage.getItem('durable_recent_events_list')
+      if (savedEvents) setEventsList(JSON.parse(savedEvents))
+    } catch (e) {
+      console.error('Error loading recent events data:', e)
+    }
+  }
+
+  useEffect(() => {
+    loadData()
+    const handleUpdate = () => loadData()
+    window.addEventListener('durable_content_updated', handleUpdate)
+    window.addEventListener('storage', handleUpdate)
+    return () => {
+      window.removeEventListener('durable_content_updated', handleUpdate)
+      window.removeEventListener('storage', handleUpdate)
+    }
+  }, [])
+
   return (
     <div className="w-full bg-[#F8FAFC]">
       {/* Hero Banner */}
       <EventsHeroBanner
-        title="Recent International Events Archive"
-        subtitle="A look back at our recent trade exhibitions, global convention outcomes, and international distributor partnerships."
-        categoryBadge="Recent Events Archive"
+        title={heroData.title}
+        subtitle={heroData.subtitle}
+        categoryBadge={heroData.categoryBadge}
+        bgImage={heroData.bgImage}
       />
 
       {/* Main Content */}
@@ -102,7 +138,7 @@ export default function RecentEventsPage() {
 
         {/* Detailed Recent Events List */}
         <div className="space-y-12">
-          {RECENT_EVENTS.map((event) => (
+          {eventsList.map((event) => (
             <div
               key={event.id}
               className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-lg p-6 sm:p-8 flex flex-col lg:flex-row gap-8 items-stretch"
@@ -111,13 +147,13 @@ export default function RecentEventsPage() {
               <div className="w-full lg:w-5/12 h-72 lg:h-auto rounded-2xl bg-slate-900 overflow-hidden relative shrink-0">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={event.image}
+                  src={event.image || '/images/about-surgical-instruments.png'}
                   alt={event.title}
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute top-4 left-4">
                   <span className="px-3 py-1 rounded-full bg-[#0B1B3D] text-white text-[10px] font-black uppercase tracking-wider shadow-md">
-                    Completed Event
+                    {event.statusBadge || 'Completed Event'}
                   </span>
                 </div>
               </div>
@@ -160,19 +196,21 @@ export default function RecentEventsPage() {
                     </div>
                   </div>
 
-                  <div className="space-y-2 pt-2">
-                    <h4 className="text-xs font-black uppercase tracking-wider text-slate-900">
-                      Key Event Highlights & Outcomes:
-                    </h4>
-                    <ul className="space-y-1.5 text-xs text-slate-600">
-                      {event.highlights.map((h, idx) => (
-                        <li key={idx} className="flex items-start gap-2">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                          <span>{h}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                  {event.highlights && event.highlights.length > 0 && (
+                    <div className="space-y-2 pt-2">
+                      <h4 className="text-xs font-black uppercase tracking-wider text-slate-900">
+                        Key Event Highlights & Outcomes:
+                      </h4>
+                      <ul className="space-y-1.5 text-xs text-slate-600">
+                        {event.highlights.map((h: string, idx: number) => (
+                          <li key={idx} className="flex items-start gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                            <span>{h}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
 
                 <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
@@ -181,7 +219,7 @@ export default function RecentEventsPage() {
                   </span>
 
                   <span className="px-4 py-1.5 bg-slate-100 text-[#0B1B3D] text-xs font-extrabold rounded-full">
-                    Completed Exhibition Archive
+                    {event.actionText || 'Completed Exhibition Archive'}
                   </span>
                 </div>
               </div>

@@ -7,12 +7,14 @@ interface EventsHeroBannerProps {
   title: string
   subtitle: string
   categoryBadge: string
+  bgImage?: string
 }
 
 export function EventsHeroBanner({
   title,
   subtitle,
   categoryBadge,
+  bgImage = '/images/products-hero-banner.png',
 }: EventsHeroBannerProps) {
   return (
     <section className="w-full relative bg-white overflow-hidden border-b border-slate-200">
@@ -22,7 +24,7 @@ export function EventsHeroBanner({
         {/* Right Side Background Image matching SS 3 */}
         <div 
           className="absolute inset-0 bg-right bg-cover bg-no-repeat z-0"
-          style={{ backgroundImage: `url('/images/products-hero-banner.png')` }}
+          style={{ backgroundImage: `url('${bgImage || '/images/products-hero-banner.png'}')` }}
         />
 
         {/* White Fade Gradient Overlay from Left to Right */}
