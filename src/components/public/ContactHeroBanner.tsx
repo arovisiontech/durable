@@ -1,15 +1,47 @@
 'use client'
 
+import { useState, useEffect } from 'react'
+
+const DEFAULT_HERO = {
+  categoryBadge: 'PARTNER WITH US',
+  title: 'GLOBAL SURGICAL & HEALTHCARE SUPPLIES MANUFACTURING',
+  subtitle:
+    'Whether you require custom OEM manufacturing, private label surgical tools, bulk hospital supplies, or international distribution rights, our technical team is ready to serve you.',
+  bgImage: '/images/products-hero-banner.png',
+}
+
 export function ContactHeroBanner() {
+  const [heroData, setHeroData] = useState(DEFAULT_HERO)
+
+  const loadData = () => {
+    try {
+      const savedHero = localStorage.getItem('durable_contact_hero_data')
+      if (savedHero) setHeroData(JSON.parse(savedHero))
+    } catch (e) {
+      console.error('Error loading contact hero data:', e)
+    }
+  }
+
+  useEffect(() => {
+    loadData()
+    const handleUpdate = () => loadData()
+    window.addEventListener('durable_content_updated', handleUpdate)
+    window.addEventListener('storage', handleUpdate)
+    return () => {
+      window.removeEventListener('durable_content_updated', handleUpdate)
+      window.removeEventListener('storage', handleUpdate)
+    }
+  }, [])
+
   return (
     <section className="w-full relative bg-white overflow-hidden border-b border-slate-200">
-      {/* Background Banner Container - 100% Responsive across 24", 29", 60" LCD Monitors */}
+      {/* Background Banner Container */}
       <div className="w-full max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto min-h-[360px] sm:min-h-[420px] lg:min-h-[480px] xl:min-h-[540px] relative flex items-center">
         
         {/* Right Side Background Image */}
         <div 
           className="absolute inset-0 bg-right bg-cover bg-no-repeat z-0"
-          style={{ backgroundImage: `url('/images/products-hero-banner.png')` }}
+          style={{ backgroundImage: `url('${heroData.bgImage || '/images/products-hero-banner.png'}')` }}
         />
 
         {/* White Fade Gradient Overlay from Left to Right */}
@@ -23,19 +55,18 @@ export function ContactHeroBanner() {
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#F1F5F9] border border-slate-200 shadow-2xs">
               <span className="w-2 h-2 rounded-full bg-[#E31B23]" />
               <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-slate-800">
-                PARTNER WITH US
+                {heroData.categoryBadge}
               </span>
             </div>
 
             {/* Main Title */}
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-[#0B1B3D] tracking-tight leading-[1.12] uppercase">
-              GLOBAL SURGICAL & HEALTHCARE <br />
-              <span className="text-[#E31B23]">SUPPLIES MANUFACTURING</span>
+              {heroData.title}
             </h1>
 
             {/* Subtitle Description */}
             <p className="text-xs sm:text-sm lg:text-base text-slate-600 font-medium leading-relaxed max-w-2xl">
-              Whether you require custom OEM manufacturing, private label surgical tools, bulk hospital supplies, or international distribution rights, our technical team is ready to serve you.
+              {heroData.subtitle}
             </p>
 
           </div>

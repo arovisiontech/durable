@@ -1,3 +1,6 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import { ContactHeroBanner } from '@/src/components/public/ContactHeroBanner'
 import { ContactForm } from '@/src/components/public/ContactForm'
 import {
@@ -11,83 +14,133 @@ import {
   PackageCheck,
 } from 'lucide-react'
 
-export const metadata = {
-  title: 'Partner With Us | Contact Durable Hospital Supplies',
-  description:
-    'Get in touch with Durable Hospital Supplies for OEM manufacturing, private labeling, bulk hospital procurement, and custom sterile surgical procedure packs.',
+const DEFAULT_INFO = {
+  hqTitle: 'Global Manufacturing HQ',
+  addressLine1: 'Noal More, Roras Road P.O. Box 919',
+  addressLine2: 'Sialkot - 51310 Pakistan.',
+  phoneTitle: 'Direct Phone Support',
+  phone1: 'Phone : (+92) 52 3563200',
+  phone2: 'Phone: (+92) 52 3553777 | (+92) 523252500',
+  emailTitle: 'Email Support',
+  email: 'Info@Durablehs.Com',
+  hoursTitle: 'Business Hours',
+  hoursLine1: 'Monday - Saturday: 8:00 AM - 6:00 PM (PKT)',
+  hoursLine2: '24/7 Priority Emergency Export Support',
 }
 
+const DEFAULT_WHY_FEATURES = [
+  {
+    title: 'ISO 13485 & CE',
+    desc: 'Certified ISO quality standards',
+    icon: 'Award',
+  },
+  {
+    title: 'German Steel',
+    desc: 'Medical-grade stainless steel',
+    icon: 'ShieldCheck',
+  },
+  {
+    title: 'OEM & Private Label',
+    desc: 'Custom logo & laser marking',
+    icon: 'PackageCheck',
+  },
+  {
+    title: 'Global Shipping',
+    desc: 'Express DHL/FedEx logistics',
+    icon: 'Globe',
+  },
+]
+
 export default function ContactPage() {
+  const [infoData, setInfoData] = useState(DEFAULT_INFO)
+  const [whyFeatures, setWhyFeatures] = useState(DEFAULT_WHY_FEATURES)
+
+  const loadData = () => {
+    try {
+      const savedInfo = localStorage.getItem('durable_contact_info_data')
+      if (savedInfo) setInfoData(JSON.parse(savedInfo))
+
+      const savedWhy = localStorage.getItem('durable_contact_why_data')
+      if (savedWhy) setWhyFeatures(JSON.parse(savedWhy))
+    } catch (e) {
+      console.error('Error loading contact page data:', e)
+    }
+  }
+
+  useEffect(() => {
+    loadData()
+    const handleUpdate = () => loadData()
+    window.addEventListener('durable_content_updated', handleUpdate)
+    window.addEventListener('storage', handleUpdate)
+    return () => {
+      window.removeEventListener('durable_content_updated', handleUpdate)
+      window.removeEventListener('storage', handleUpdate)
+    }
+  }, [])
+
   return (
     <div className="w-full bg-white min-h-screen pb-16 space-y-10">
-      {/* 1. Hero Header Banner matching SS 1 layout and SS 2 image */}
+      {/* 1. Hero Header Banner */}
       <ContactHeroBanner />
 
-      {/* 2. Main Container: Form + Headquarters Info matching SS 3 */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+      {/* 2. Main Container: Form + Headquarters Info */}
+      <div className="max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10">
           
-          {/* Left Column: Partnership Inquiry Form matching SS 1 */}
-          <div className="lg:col-span-7 bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
-            <div className="space-y-1 pb-4 border-b border-slate-100">
-              <h2 className="text-xl sm:text-2xl font-black text-[#0B1B3D]">Send Us an Inquiry</h2>
-              <p className="text-xs text-slate-500 font-medium">
-                Fill out the form below to receive immediate quotes, technical catalogs, or sample requests.
-              </p>
-            </div>
-
+          {/* Left Column: Partnership Inquiry Form */}
+          <div className="lg:col-span-7 bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs">
             <ContactForm />
           </div>
 
-          {/* Right Column: Headquarters & Direct Lines matching SS 3 */}
+          {/* Right Column: Headquarters & Direct Lines */}
           <div className="lg:col-span-5 space-y-6">
-            {/* Office Info Card matching SS 3 */}
+            {/* Office Info Card */}
             <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
               <h2 className="text-lg sm:text-xl font-black text-[#0B1B3D] pb-3 border-b border-slate-100">
                 Headquarters & Direct Lines
               </h2>
 
               <div className="space-y-5 text-xs">
-                {/* Address matching SS 3 */}
+                {/* Address */}
                 <div className="flex items-start gap-3.5">
                   <div className="w-10 h-10 rounded-2xl bg-red-50 text-[#E31B23] flex items-center justify-center shrink-0 border border-red-100 shadow-2xs">
                     <MapPin className="w-5 h-5" />
                   </div>
                   <div className="space-y-0.5 pt-0.5">
-                    <h4 className="font-extrabold text-[#0B1B3D] text-sm">Global Manufacturing HQ</h4>
+                    <h4 className="font-extrabold text-[#0B1B3D] text-sm">{infoData.hqTitle}</h4>
                     <p className="text-slate-600 font-medium leading-relaxed">
-                      Noal More, Roras Road P.O. Box 919 <br />
-                      Sialkot - 51310 Pakistan.
+                      {infoData.addressLine1} <br />
+                      {infoData.addressLine2}
                     </p>
                   </div>
                 </div>
 
-                {/* Phone Lines matching SS 3 */}
+                {/* Phone Lines */}
                 <div className="flex items-start gap-3.5">
                   <div className="w-10 h-10 rounded-2xl bg-red-50 text-[#E31B23] flex items-center justify-center shrink-0 border border-red-100 shadow-2xs">
                     <Phone className="w-5 h-5" />
                   </div>
                   <div className="space-y-0.5 pt-0.5">
-                    <h4 className="font-extrabold text-[#0B1B3D] text-sm">Direct Phone Support</h4>
-                    <p className="text-slate-600 font-medium">Phone : (+92) 52 3563200</p>
-                    <p className="text-slate-600 font-medium">
-                      Phone: (+92) 52 3553777 | (+92) 523252500
-                    </p>
+                    <h4 className="font-extrabold text-[#0B1B3D] text-sm">{infoData.phoneTitle}</h4>
+                    <p className="text-slate-600 font-medium">{infoData.phone1}</p>
+                    {infoData.phone2 && (
+                      <p className="text-slate-600 font-medium">{infoData.phone2}</p>
+                    )}
                   </div>
                 </div>
 
-                {/* Email Support matching SS 3 */}
+                {/* Email Support */}
                 <div className="flex items-start gap-3.5">
                   <div className="w-10 h-10 rounded-2xl bg-red-50 text-[#E31B23] flex items-center justify-center shrink-0 border border-red-100 shadow-2xs">
                     <Mail className="w-5 h-5" />
                   </div>
                   <div className="space-y-0.5 pt-0.5">
-                    <h4 className="font-extrabold text-[#0B1B3D] text-sm">Email Support</h4>
+                    <h4 className="font-extrabold text-[#0B1B3D] text-sm">{infoData.emailTitle}</h4>
                     <a
-                      href="mailto:Info@Durablehs.Com"
+                      href={`mailto:${infoData.email}`}
                       className="text-slate-700 font-bold hover:text-[#E31B23] transition-colors block"
                     >
-                      Email: Info@Durablehs.Com
+                      Email: {infoData.email}
                     </a>
                   </div>
                 </div>
@@ -98,21 +151,20 @@ export default function ContactPage() {
                     <Clock className="w-5 h-5" />
                   </div>
                   <div className="space-y-0.5 pt-0.5">
-                    <h4 className="font-extrabold text-[#0B1B3D] text-sm">Business Hours</h4>
-                    <p className="text-slate-600 font-medium">Monday - Saturday: 8:00 AM - 6:00 PM (PKT)</p>
+                    <h4 className="font-extrabold text-[#0B1B3D] text-sm">{infoData.hoursTitle}</h4>
+                    <p className="text-slate-600 font-medium">{infoData.hoursLine1}</p>
                     <p className="text-slate-500 font-semibold text-[11px]">
-                      24/7 Priority Emergency Export Support
+                      {infoData.hoursLine2}
                     </p>
                   </div>
                 </div>
 
-                {/* Social Connect Row matching SS 3 */}
+                {/* Social Connect Row */}
                 <div className="pt-3 border-t border-slate-100 space-y-2">
                   <span className="text-[11px] font-extrabold text-[#0B1B3D] uppercase tracking-wider block">
                     Connect With Us
                   </span>
                   <div className="flex items-center gap-2">
-                    {/* Instagram */}
                     <a
                       href="#"
                       aria-label="Instagram"
@@ -125,7 +177,6 @@ export default function ContactPage() {
                       </svg>
                     </a>
 
-                    {/* Facebook */}
                     <a
                       href="#"
                       aria-label="Facebook"
@@ -136,7 +187,6 @@ export default function ContactPage() {
                       </svg>
                     </a>
 
-                    {/* Twitter */}
                     <a
                       href="#"
                       aria-label="Twitter"
@@ -147,7 +197,6 @@ export default function ContactPage() {
                       </svg>
                     </a>
 
-                    {/* LinkedIn */}
                     <a
                       href="#"
                       aria-label="LinkedIn"
@@ -160,7 +209,6 @@ export default function ContactPage() {
                       </svg>
                     </a>
 
-                    {/* Pinterest */}
                     <a
                       href="#"
                       aria-label="Pinterest"
@@ -179,29 +227,19 @@ export default function ContactPage() {
                 Why Choose Durable?
               </h3>
               <div className="grid grid-cols-2 gap-3 text-xs">
-                <div className="p-3 bg-slate-900/80 rounded-xl border border-slate-700/60 space-y-1">
-                  <Award className="w-4 h-4 text-emerald-400" />
-                  <h5 className="font-bold">ISO 13485 & CE</h5>
-                  <p className="text-[10px] text-slate-400 font-medium">Certified ISO quality standards</p>
-                </div>
-
-                <div className="p-3 bg-slate-900/80 rounded-xl border border-slate-700/60 space-y-1">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                  <h5 className="font-bold">German Steel</h5>
-                  <p className="text-[10px] text-slate-400 font-medium">Medical-grade stainless steel</p>
-                </div>
-
-                <div className="p-3 bg-slate-900/80 rounded-xl border border-slate-700/60 space-y-1">
-                  <PackageCheck className="w-4 h-4 text-emerald-400" />
-                  <h5 className="font-bold">OEM & Private Label</h5>
-                  <p className="text-[10px] text-slate-400 font-medium">Custom logo & laser marking</p>
-                </div>
-
-                <div className="p-3 bg-slate-900/80 rounded-xl border border-slate-700/60 space-y-1">
-                  <Globe className="w-4 h-4 text-emerald-400" />
-                  <h5 className="font-bold">Global Shipping</h5>
-                  <p className="text-[10px] text-slate-400 font-medium">Express DHL/FedEx logistics</p>
-                </div>
+                {whyFeatures.map((feat, idx) => (
+                  <div key={idx} className="p-3 bg-slate-900/80 rounded-xl border border-slate-700/60 space-y-1">
+                    {feat.icon === 'Award' && <Award className="w-4 h-4 text-emerald-400" />}
+                    {feat.icon === 'ShieldCheck' && <ShieldCheck className="w-4 h-4 text-emerald-400" />}
+                    {feat.icon === 'PackageCheck' && <PackageCheck className="w-4 h-4 text-emerald-400" />}
+                    {feat.icon === 'Globe' && <Globe className="w-4 h-4 text-emerald-400" />}
+                    {!['Award', 'ShieldCheck', 'PackageCheck', 'Globe'].includes(feat.icon) && (
+                      <Award className="w-4 h-4 text-emerald-400" />
+                    )}
+                    <h5 className="font-bold">{feat.title}</h5>
+                    <p className="text-[10px] text-slate-400 font-medium">{feat.desc}</p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
