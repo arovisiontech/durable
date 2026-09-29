@@ -1,16 +1,12 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import {
   Search,
   Plus,
   Minus,
   HelpCircle,
-  ShieldCheck,
-  Package,
-  Wrench,
-  Truck,
   ArrowRight,
   MessageSquare,
 } from 'lucide-react'
@@ -20,15 +16,17 @@ export interface FaqItem {
   category: string
   question: string
   answer: string
+  isActive?: boolean
 }
 
-export const FAQS_DATA: FaqItem[] = [
+export const DEFAULT_FAQS_DATA: FaqItem[] = [
   {
     id: 'faq-1',
     category: 'Quality & Certifications',
     question: 'What steel grades and raw materials do you use for surgical instruments?',
     answer:
       'We primarily utilize premium Japanese AISI 420 (SUS420J2) and German AISI 410 stainless steel for martensitic hardness, alongside AISI 304/316 for non-magnetic handles and hollowware. For gold-handle scissors and needle holders, we vacuum-bond ultra-hard Tungsten Carbide (TC) inserts for extended edge retention up to 70 HRC.',
+    isActive: true,
   },
   {
     id: 'faq-2',
@@ -36,6 +34,7 @@ export const FAQS_DATA: FaqItem[] = [
     question: 'Which international quality certifications do Durable Hospital Supplies hold?',
     answer:
       'Our Sialkot manufacturing plant is certified under ISO 13485:2016 (Medical Devices Quality Management System), ISO 9001:2015, CE Marking (MDR 2017/745 compliant), cGMP, and registered with US FDA. Every production lot undergoes chemical mill certificate validation and ASTM F1089 corrosion resistance testing.',
+    isActive: true,
   },
   {
     id: 'faq-3',
@@ -43,6 +42,7 @@ export const FAQS_DATA: FaqItem[] = [
     question: 'Do you offer OEM / ODM contract manufacturing and private labeling?',
     answer:
       'Yes, contract manufacturing for healthcare brands and regional distributors in over 15 countries is our core specialty. Services include custom fiber laser etching (brand logo, SKU, serial numbers, UDI barcode), custom color coding (titanium coating), modified jaw geometry, and custom sterile/non-sterile packaging.',
+    isActive: true,
   },
   {
     id: 'faq-4',
@@ -50,6 +50,7 @@ export const FAQS_DATA: FaqItem[] = [
     question: 'What is the Minimum Order Quantity (MOQ) for custom instrument production?',
     answer:
       'For standard catalog items, our flexible MOQ starts at 10 to 25 units per SKU. For custom OEM instruments requiring specialized drop-forging dies or custom CNC tooling, the MOQ typically ranges between 50 and 100 units per line item.',
+    isActive: true,
   },
   {
     id: 'faq-5',
@@ -57,6 +58,7 @@ export const FAQS_DATA: FaqItem[] = [
     question: 'What are your standard lead times for manufacturing and international dispatch?',
     answer:
       'In-stock catalog items ship within 3-5 business days. Standard production manufacturing orders take 3 to 4 weeks from order confirmation. Custom OEM drop-forged batches require 5 to 6 weeks including passivation chemical treatment and final 100% optical inspection.',
+    isActive: true,
   },
   {
     id: 'faq-6',
@@ -64,6 +66,7 @@ export const FAQS_DATA: FaqItem[] = [
     question: 'Which international shipping methods and Incoterms do you support?',
     answer:
       'We export worldwide via DHL, FedEx, and UPS Express for urgent sample kits and air freight, as well as LCL/FCL ocean shipping for large hospital bulk orders. Supported Incoterms include FOB Sialkot/Lahore, CIF, EXW, and DDP upon client arrangement.',
+    isActive: true,
   },
   {
     id: 'faq-7',
@@ -71,6 +74,7 @@ export const FAQS_DATA: FaqItem[] = [
     question: 'What is the warranty coverage on Durable Hospital Supplies instruments?',
     answer:
       'All our reusable surgical and dental instruments come with a Life-Time Warranty against material defects and manufacturing craftsmanship under intended clinical usage. Any instrument demonstrating manufacturing defects will be repaired or replaced free of cost.',
+    isActive: true,
   },
   {
     id: 'faq-8',
@@ -78,6 +82,7 @@ export const FAQS_DATA: FaqItem[] = [
     question: 'Are your surgical instruments supplied sterile or non-sterile?',
     answer:
       'Standard catalog instruments are delivered non-sterile in protective pouches and must be thoroughly washed, lubricated, and autoclaved prior to surgical use. We also provide pre-sterilized single-use kitting in cleanroom pouch packaging for OEM contracts upon request.',
+    isActive: true,
   },
   {
     id: 'faq-9',
@@ -85,6 +90,7 @@ export const FAQS_DATA: FaqItem[] = [
     question: 'How should instruments be washed and autoclaved to prevent staining or corrosion?',
     answer:
       'Rinse instruments with neutral pH enzymatic cleaners immediately after surgery to prevent blood drying. Avoid saline or bleach exposure. Use ultrasonic bath washing for 5-10 minutes, dry thoroughly, lubricate box locks with water-soluble instrument milk, and autoclave at standard 134°C (273°F) steam cycles.',
+    isActive: true,
   },
   {
     id: 'faq-10',
@@ -92,6 +98,7 @@ export const FAQS_DATA: FaqItem[] = [
     question: 'Can we request evaluation samples before placing a commercial order?',
     answer:
       'Yes, we encourage healthcare procurement managers and hospital buyers to inspect evaluation sample kits. Sample orders are processed swiftly, and sample costs are fully credited toward your first commercial production order.',
+    isActive: true,
   },
   {
     id: 'faq-11',
@@ -99,6 +106,7 @@ export const FAQS_DATA: FaqItem[] = [
     question: 'What payment terms do you accept for international orders?',
     answer:
       'We accept Telegraphic Transfer (T/T), Irrevocable L/C at Sight, Bank Wire, and Credit Card payments for smaller orders. Standard OEM production terms are 30% advance deposit upon order placement and 70% balance payment prior to shipment dispatch.',
+    isActive: true,
   },
   {
     id: 'faq-12',
@@ -106,25 +114,69 @@ export const FAQS_DATA: FaqItem[] = [
     question: 'How can I obtain your full PDF catalogue and price list?',
     answer:
       'You can download our 2026 General Surgical and Dental PDF Catalogues directly from our Catalogues page, or send an inquiry to Info@Durablehs.Com to receive custom SKU pricing spreadsheets tailored to your order quantity.',
+    isActive: true,
   },
 ]
 
+const DEFAULT_SUPPORT_DATA = {
+  badge: 'STILL HAVE QUESTIONS?',
+  title: 'WE ARE HERE TO HELP YOU 24/7',
+  description:
+    'Need detailed custom quotations, CAD sizing blueprints, or sample kits? Our global customer support team responds within 24 hours.',
+  buttonText: 'CONTACT SUPPORT',
+  buttonLink: '/contact',
+}
+
 export function FaqAccordionSection() {
+  const [faqsList, setFaqsList] = useState<FaqItem[]>(DEFAULT_FAQS_DATA)
+  const [supportData, setSupportData] = useState(DEFAULT_SUPPORT_DATA)
   const [selectedCategory, setSelectedCategory] = useState<string>('All')
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [openFaqId, setOpenFaqId] = useState<string | null>('faq-1')
 
-  const categories = [
-    'All',
-    'Quality & Certifications',
-    'OEM & Custom Manufacturing',
-    'Orders & Shipping',
-    'Warranty & Sterilization',
-    'General & Payments',
-  ]
+  const loadData = () => {
+    try {
+      const savedFaqs = localStorage.getItem('durable_faqs_list')
+      if (savedFaqs) setFaqsList(JSON.parse(savedFaqs))
+
+      const savedSupport = localStorage.getItem('durable_faq_support_data')
+      if (savedSupport) setSupportData(JSON.parse(savedSupport))
+    } catch (e) {
+      console.error('Error loading FAQs accordion data:', e)
+    }
+  }
+
+  useEffect(() => {
+    loadData()
+    const handleUpdate = () => loadData()
+    window.addEventListener('durable_content_updated', handleUpdate)
+    window.addEventListener('storage', handleUpdate)
+    return () => {
+      window.removeEventListener('durable_content_updated', handleUpdate)
+      window.removeEventListener('storage', handleUpdate)
+    }
+  }, [])
+
+  // Derive unique categories from active FAQs data
+  const categories = useMemo(() => {
+    const defaultCats = [
+      'All',
+      'Quality & Certifications',
+      'OEM & Custom Manufacturing',
+      'Orders & Shipping',
+      'Warranty & Sterilization',
+      'General & Payments',
+    ]
+
+    const customCats = faqsList.map((f) => f.category).filter(Boolean)
+    const combined = Array.from(new Set([...defaultCats, ...customCats]))
+    return combined
+  }, [faqsList])
 
   const filteredFaqs = useMemo(() => {
-    return FAQS_DATA.filter((faq) => {
+    return faqsList.filter((faq) => {
+      if (faq.isActive === false) return false
+
       const matchesCategory =
         selectedCategory === 'All' || faq.category === selectedCategory
       const matchesSearch =
@@ -135,7 +187,7 @@ export function FaqAccordionSection() {
 
       return matchesCategory && matchesSearch
     })
-  }, [selectedCategory, searchQuery])
+  }, [faqsList, selectedCategory, searchQuery])
 
   const toggleFaq = (id: string) => {
     setOpenFaqId((prev) => (prev === id ? null : id))
@@ -283,21 +335,21 @@ export function FaqAccordionSection() {
           <div className="space-y-2 text-center md:text-left z-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-white text-[10px] font-bold uppercase tracking-wider">
               <MessageSquare className="w-3.5 h-3.5 text-[#E31B23]" />
-              <span>STILL HAVE QUESTIONS?</span>
+              <span>{supportData.badge}</span>
             </div>
             <h3 className="text-xl sm:text-2xl font-black tracking-tight leading-tight uppercase">
-              WE ARE HERE TO HELP YOU 24/7
+              {supportData.title}
             </h3>
             <p className="text-xs text-slate-300 font-medium max-w-md">
-              Need detailed custom quotations, CAD sizing blueprints, or sample kits? Our global customer support team responds within 24 hours.
+              {supportData.description}
             </p>
           </div>
 
           <Link
-            href="/contact"
+            href={supportData.buttonLink || '/contact'}
             className="z-10 inline-flex items-center gap-2 px-6 py-3.5 bg-[#E31B23] hover:bg-red-700 text-white font-extrabold text-xs tracking-wider uppercase rounded-xl transition-all shadow-lg hover:shadow-xl shrink-0 group"
           >
-            <span>CONTACT SUPPORT</span>
+            <span>{supportData.buttonText}</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
