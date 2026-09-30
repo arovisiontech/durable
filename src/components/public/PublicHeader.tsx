@@ -36,12 +36,13 @@ export function PublicHeader({ navigation = [] }: PublicHeaderProps) {
   const [isMobileEventsOpen, setIsMobileEventsOpen] = useState(true)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  // Standard Navigation Links with Events Sub-menu
+  // Standard Navigation Links with Catalogues & Events Sub-menu
   const defaultNavLinks: NavItem[] = [
     { label: 'Home', url: '/' },
     { label: 'About', url: '/about' },
     { label: 'Strengths', url: '/strengths' },
     { label: 'Products', url: '/products' },
+    { label: 'Catalogues', url: '/catalogues' },
     {
       label: 'Events',
       url: '/events',

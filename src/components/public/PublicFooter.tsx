@@ -197,6 +197,12 @@ export function PublicFooter({ settings }: PublicFooterProps) {
             </h3>
             <ul className="space-y-1.5 text-xs sm:text-sm text-slate-200 font-semibold">
               <li>
+                <Link href="/catalogues" prefetch={true} className="hover:text-[#E31B23] transition-colors flex items-center gap-2">
+                  <span className="text-slate-400">•</span>
+                  <span>Catalogues</span>
+                </Link>
+              </li>
+              <li>
                 <Link href="/about" prefetch={true} className="hover:text-[#E31B23] transition-colors flex items-center gap-2">
                   <span className="text-slate-400">•</span>
                   <span>About Us</span>
