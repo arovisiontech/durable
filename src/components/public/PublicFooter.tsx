@@ -254,39 +254,39 @@ export function PublicFooter({ settings }: PublicFooterProps) {
             </h3>
             <ul className="space-y-1.5 text-xs sm:text-sm text-slate-200 font-semibold">
               <li>
-                <Link href="/catalog-showcase#cat-01" prefetch={true} className="hover:text-[#E31B23] transition-colors flex items-center gap-2">
+                <Link href="/category/general-surgery" prefetch={true} className="hover:text-[#E31B23] transition-colors flex items-center gap-2">
                   <span className="text-slate-400">•</span>
                   <span>General Surgery</span>
                 </Link>
               </li>
               <li>
-                <Link href="/dental-showcase" prefetch={true} className="hover:text-[#E31B23] transition-colors flex items-center gap-2">
+                <Link href="/category/dental" prefetch={true} className="hover:text-[#E31B23] transition-colors flex items-center gap-2">
                   <span className="text-slate-400">•</span>
                   <span>Dental Instruments</span>
                 </Link>
               </li>
               <li>
-                <Link href="/catalog-showcase#cat-03" prefetch={true} className="hover:text-[#E31B23] transition-colors flex items-center gap-2">
+                <Link href="/category/general-surgery" prefetch={true} className="hover:text-[#E31B23] transition-colors flex items-center gap-2">
                   <span className="text-slate-400">•</span>
                   <span>Diagnostics Instruments</span>
                 </Link>
               </li>
               <li>
-                <Link href="/catalog-showcase#cat-04" prefetch={true} className="hover:text-[#E31B23] transition-colors flex items-center gap-2">
+                <Link href="/category/medical-hollowware" prefetch={true} className="hover:text-[#E31B23] transition-colors flex items-center gap-2">
                   <span className="text-slate-400">•</span>
-                  <span>Holloware</span>
+                  <span>Hollowware</span>
                 </Link>
               </li>
               <li>
-                <Link href="/products?category=hospital-furniture" prefetch={true} className="hover:text-[#E31B23] transition-colors flex items-center gap-2">
+                <Link href="/category/hospital-furniture" prefetch={true} className="hover:text-[#E31B23] transition-colors flex items-center gap-2">
                   <span className="text-slate-400">•</span>
                   <span>Hospital Furniture</span>
                 </Link>
               </li>
               <li>
-                <Link href="/catalog-showcase#cat-03" prefetch={true} className="hover:text-[#E31B23] transition-colors flex items-center gap-2">
+                <Link href="/category/single-use-instruments" prefetch={true} className="hover:text-[#E31B23] transition-colors flex items-center gap-2">
                   <span className="text-slate-400">•</span>
-                  <span>Laparoscopy Instruments</span>
+                  <span>Laparoscopy & Single Use</span>
                 </Link>
               </li>
             </ul>
