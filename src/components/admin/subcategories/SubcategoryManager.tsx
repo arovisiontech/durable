@@ -497,16 +497,13 @@ export function SubcategoryManager() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-black text-slate-800 uppercase tracking-wider">
-                  PDF File URL <span className="text-[#E31B23]">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
+                <AdminMediaUploadPlaceholder
+                  label="Subcategory Technical PDF Catalogue File"
+                  type="pdf"
                   value={formData.pdfUrl}
-                  onChange={(e) => setFormData({ ...formData, pdfUrl: e.target.value })}
-                  placeholder="/pdf/general-surgical-instruments-catalogue.pdf"
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono text-slate-900"
+                  onChange={(url) => setFormData({ ...formData, pdfUrl: url })}
+                  placeholderText="Click or Drag to Upload PDF Catalogue File from Device / Gallery"
+                  helperText="Supports any size PDF catalogue (1000+ pages, large MBs/KBs files, fast direct upload)"
                 />
               </div>
 

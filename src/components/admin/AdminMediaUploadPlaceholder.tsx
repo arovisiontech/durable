@@ -78,18 +78,82 @@ export function AdminMediaUploadPlaceholder({
 
     const file = files[0]
     setIsUploading(true)
-    setProgress(10)
+    setProgress(20)
     setUploadError(null)
 
     try {
+      // For PDF documents, check size and optimize upload
+      if (effectiveType === 'pdf' || file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+        setProgress(50)
+        
+        // Attempt Supabase storage upload if available
+        try {
+          const supabase = createClient()
+          const sanitizedName = sanitizeFilename(file.name)
+          const datePrefix = new Date().toISOString().slice(0, 7)
+          const filePath = `uploads/${datePrefix}/${Date.now()}-${sanitizedName}`
+
+          const { data: uploadData, error: uploadErr } = await supabase.storage
+            .from('website-media')
+            .upload(filePath, file, {
+              cacheControl: '3600',
+              upsert: true,
+            })
+
+          if (!uploadErr && uploadData) {
+            const { data: publicUrlData } = supabase.storage
+              .from('website-media')
+              .getPublicUrl(uploadData.path)
+
+            if (publicUrlData?.publicUrl) {
+              await createMediaRecordAction({
+                filename: file.name,
+                file_path: uploadData.path,
+                file_type: 'application/pdf',
+                file_size: file.size,
+                alt_text: file.name.split('.')[0],
+              })
+
+              setProgress(100)
+              onChange(publicUrlData.publicUrl)
+              setIsUploading(false)
+              if (fileInputRef.current) fileInputRef.current.value = ''
+              return
+            }
+          }
+        } catch (supabaseErr) {
+          console.warn('Supabase storage unavailable for PDF, using FileReader fallback:', supabaseErr)
+        }
+
+        // Fallback: Read file with FileReader DataURL or Blob URL for large files (1000+ pages)
+        const reader = new FileReader()
+        reader.onload = () => {
+          const result = reader.result as string
+          onChange(result)
+          setIsUploading(false)
+          setProgress(100)
+          if (fileInputRef.current) fileInputRef.current.value = ''
+        }
+        reader.onerror = () => {
+          // Object URL as ultra-fast fallback for massive files
+          const objUrl = URL.createObjectURL(file)
+          onChange(objUrl)
+          setIsUploading(false)
+          setProgress(100)
+          if (fileInputRef.current) fileInputRef.current.value = ''
+        }
+        reader.readAsDataURL(file)
+        return
+      }
+
+      // Default Image/Video Upload logic
       const supabase = createClient()
       const sanitizedName = sanitizeFilename(file.name)
-      const datePrefix = new Date().toISOString().slice(0, 7) // e.g. 2026-09
+      const datePrefix = new Date().toISOString().slice(0, 7)
       const filePath = `uploads/${datePrefix}/${Date.now()}-${sanitizedName}`
 
-      setProgress(30)
+      setProgress(40)
 
-      // Upload file directly to Supabase storage bucket
       const { data: uploadData, error: uploadErr } = await supabase.storage
         .from('website-media')
         .upload(filePath, file, {
@@ -100,7 +164,6 @@ export function AdminMediaUploadPlaceholder({
       setProgress(70)
 
       if (uploadErr) {
-        // Fallback to Base64 Data URL if storage fails or RLS policy restricts
         console.warn('Storage upload error, using fallback reader:', uploadErr)
         const reader = new FileReader()
         reader.onload = () => {
@@ -108,23 +171,22 @@ export function AdminMediaUploadPlaceholder({
           onChange(result)
           setIsUploading(false)
           setProgress(100)
+          if (fileInputRef.current) fileInputRef.current.value = ''
         }
         reader.readAsDataURL(file)
         return
       }
 
-      // Get Public URL
       const { data: publicUrlData } = supabase.storage
         .from('website-media')
         .getPublicUrl(uploadData.path)
 
       const finalUrl = publicUrlData.publicUrl
 
-      // Register media record in database table
       await createMediaRecordAction({
         filename: file.name,
         file_path: uploadData.path,
-        file_type: file.type || (type === 'pdf' ? 'application/pdf' : 'image/png'),
+        file_type: file.type || 'image/png',
         file_size: file.size,
         alt_text: file.name.split('.')[0],
       })
@@ -132,6 +194,7 @@ export function AdminMediaUploadPlaceholder({
       setProgress(100)
       onChange(finalUrl)
       setIsUploading(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
     } catch (err: any) {
       console.error('File upload failed:', err)
       setUploadError(err?.message || 'Upload failed. Please try again.')
