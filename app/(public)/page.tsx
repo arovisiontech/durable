@@ -42,7 +42,7 @@ export default function HomePage() {
       <ComplianceVideoSection />
 
       {/* 10. Insights From Our Latest Blogs Section (Compact length) */}
-      <LatestBlogsSection limit={2} />
+      <LatestBlogsSection limit={3} />
     </div>
   )
 }

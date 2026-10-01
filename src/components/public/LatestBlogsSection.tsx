@@ -20,7 +20,7 @@ const DEFAULT_HEADER = {
     'Stay Updated With The Latest Trends, Innovations, And Expert Insights In The Manufacturing And Industrial Sectors',
 }
 
-export function LatestBlogsSection({ limit, showHeader = true }: LatestBlogsSectionProps) {
+export function LatestBlogsSection({ limit = 3, showHeader = true }: LatestBlogsSectionProps) {
   const [blogsList, setBlogsList] = useState<BlogItem[]>(BLOGS_DATA)
   const [headerData, setHeaderData] = useState(DEFAULT_HEADER)
 
@@ -75,8 +75,8 @@ export function LatestBlogsSection({ limit, showHeader = true }: LatestBlogsSect
           </div>
         )}
 
-        {/* 2-Column Blog Cards Grid matching SS 1 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10">
+        {/* 3-Column Blog Cards Grid matching SS 1 */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
           {blogsToDisplay.map((blog) => (
             <Link
               key={blog.id}
