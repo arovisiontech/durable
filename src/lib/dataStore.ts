@@ -375,3 +375,235 @@ export function saveStoredCatalogues(catalogues: CatalogueItem[]): void {
     console.error('Failed to save catalogues to localStorage:', e)
   }
 }
+
+export interface SubcategoryPdfItem {
+  id: string
+  categorySlug: string
+  categoryName: string
+  title: string
+  image: string
+  pdfUrl: string
+  accessCode: string
+  description?: string
+  sortOrder?: number
+  isPublished?: boolean
+}
+
+export const INITIAL_SUBCATEGORY_PDF_SEED: SubcategoryPdfItem[] = [
+  // GENERAL SURGERY SUBCATEGORIES (SS 2)
+  {
+    id: 'sub-gen-1',
+    categorySlug: 'general-surgery',
+    categoryName: 'General Surgery',
+    title: 'Anesthesia',
+    image: '/images/catalogue-cover-yellow.png',
+    pdfUrl: '/pdf/general-surgical-instruments-catalogue.pdf',
+    accessCode: '12345',
+    description: 'Experience Future of Anesthesia Instruments with ENDO Tech',
+    sortOrder: 1,
+    isPublished: true,
+  },
+  {
+    id: 'sub-gen-2',
+    categorySlug: 'general-surgery',
+    categoryName: 'General Surgery',
+    title: 'Diagnostic',
+    image: '/images/catalogue-cover-yellow.png',
+    pdfUrl: '/pdf/general-surgical-instruments-catalogue.pdf',
+    accessCode: '12345',
+    description: 'Experience Future of Diagnostic Instruments with ENDO Tech',
+    sortOrder: 2,
+    isPublished: true,
+  },
+  {
+    id: 'sub-gen-3',
+    categorySlug: 'general-surgery',
+    categoryName: 'General Surgery',
+    title: 'Scissors',
+    image: '/images/catalogue-cover-yellow.png',
+    pdfUrl: '/pdf/general-surgical-instruments-catalogue.pdf',
+    accessCode: '12345',
+    description: 'Experience Future of Scissors with ENDO Tech',
+    sortOrder: 3,
+    isPublished: true,
+  },
+  {
+    id: 'sub-gen-4',
+    categorySlug: 'general-surgery',
+    categoryName: 'General Surgery',
+    title: 'Dissecting Forcep',
+    image: '/images/catalogue-cover-yellow.png',
+    pdfUrl: '/pdf/general-surgical-instruments-catalogue.pdf',
+    accessCode: '12345',
+    description: 'Experience Future of Dissecting Forcep with ENDO Tech',
+    sortOrder: 4,
+    isPublished: true,
+  },
+  {
+    id: 'sub-gen-5',
+    categorySlug: 'general-surgery',
+    categoryName: 'General Surgery',
+    title: 'Hemostatic Clamps',
+    image: '/images/catalogue-cover-yellow.png',
+    pdfUrl: '/pdf/general-surgical-instruments-catalogue.pdf',
+    accessCode: '12345',
+    description: 'Hemostatic locking clamps and vascular forceps.',
+    sortOrder: 5,
+    isPublished: true,
+  },
+
+  // DENTAL SUBCATEGORIES
+  {
+    id: 'sub-dent-1',
+    categorySlug: 'dental',
+    categoryName: 'Dental',
+    title: 'Extraction & Oral Surgery',
+    image: '/images/catalogue-cover-yellow.png',
+    pdfUrl: '/pdf/dental-maxillofacial-catalogue.pdf',
+    accessCode: '12345',
+    description: 'Extracting forceps in English & American patterns, root elevators, and luxators.',
+    sortOrder: 1,
+    isPublished: true,
+  },
+  {
+    id: 'sub-dent-2',
+    categorySlug: 'dental',
+    categoryName: 'Dental',
+    title: 'Dental Bone Surgery',
+    image: '/images/catalogue-cover-yellow.png',
+    pdfUrl: '/pdf/dental-maxillofacial-catalogue.pdf',
+    accessCode: '12345',
+    description: 'Osteotomes, gouges, chisels, bone rongeurs, and surgical mallets.',
+    sortOrder: 2,
+    isPublished: true,
+  },
+  {
+    id: 'sub-dent-3',
+    categorySlug: 'dental',
+    categoryName: 'Dental',
+    title: 'Periodontics & Cleaning',
+    image: '/images/catalogue-cover-yellow.png',
+    pdfUrl: '/pdf/dental-maxillofacial-catalogue.pdf',
+    accessCode: '12345',
+    description: 'Scalers, Gracey curettes, periodontal probes, and amalgam carvers.',
+    sortOrder: 3,
+    isPublished: true,
+  },
+
+  // MEDICAL HOLLOWWARE SUBCATEGORIES
+  {
+    id: 'sub-hol-1',
+    categorySlug: 'medical-hollowware',
+    categoryName: 'Medical Hollowware',
+    title: 'Sterilization Trays & Containers',
+    image: '/images/catalogue-cover-yellow.png',
+    pdfUrl: '/pdf/general-surgical-instruments-catalogue.pdf',
+    accessCode: '12345',
+    description: 'Seamless 304 stainless steel sterilization trays, lids, and container baskets.',
+    sortOrder: 1,
+    isPublished: true,
+  },
+  {
+    id: 'sub-hol-2',
+    categorySlug: 'medical-hollowware',
+    categoryName: 'Medical Hollowware',
+    title: 'Kidney Dishes & Gallipots',
+    image: '/images/catalogue-cover-yellow.png',
+    pdfUrl: '/pdf/general-surgical-instruments-catalogue.pdf',
+    accessCode: '12345',
+    description: 'Kidney basins, procedure bowls, and gallipots for surgical suites.',
+    sortOrder: 2,
+    isPublished: true,
+  },
+
+  // OPHTHALMIC SUBCATEGORIES
+  {
+    id: 'sub-oph-1',
+    categorySlug: 'ophthalmic',
+    categoryName: 'Ophthalmic',
+    title: 'Corneal Scissors & Speculums',
+    image: '/images/catalogue-cover-yellow.png',
+    pdfUrl: '/pdf/general-surgical-instruments-catalogue.pdf',
+    accessCode: '12345',
+    description: 'Ultra-delicate micro-scissors, eye speculums, and eye speculum blades.',
+    sortOrder: 1,
+    isPublished: true,
+  },
+  {
+    id: 'sub-oph-2',
+    categorySlug: 'ophthalmic',
+    categoryName: 'Ophthalmic',
+    title: 'Cataract Micro-Forceps',
+    image: '/images/catalogue-cover-yellow.png',
+    pdfUrl: '/pdf/general-surgical-instruments-catalogue.pdf',
+    accessCode: '12345',
+    description: 'Micro-forceps with 0.12mm teeth and tying platforms.',
+    sortOrder: 2,
+    isPublished: true,
+  },
+
+  // HOSPITAL FURNITURE SUBCATEGORIES
+  {
+    id: 'sub-fur-1',
+    categorySlug: 'hospital-furniture',
+    categoryName: 'Hospital Furniture',
+    title: 'MAYO Instrument Trolleys',
+    image: '/images/catalogue-cover-yellow.png',
+    pdfUrl: '/pdf/general-surgical-instruments-catalogue.pdf',
+    accessCode: '12345',
+    description: 'Hydraulic height-adjustable MAYO instrument stands with anti-static casters.',
+    sortOrder: 1,
+    isPublished: true,
+  },
+  {
+    id: 'sub-fur-2',
+    categorySlug: 'hospital-furniture',
+    categoryName: 'Hospital Furniture',
+    title: 'Examination & Ward Beds',
+    image: '/images/catalogue-cover-yellow.png',
+    pdfUrl: '/pdf/general-surgical-instruments-catalogue.pdf',
+    accessCode: '12345',
+    description: 'Heavy duty hospital ward beds and clinical examination couches.',
+    sortOrder: 2,
+    isPublished: true,
+  },
+
+  // SINGLE USE INSTRUMENTS SUBCATEGORIES
+  {
+    id: 'sub-sgl-1',
+    categorySlug: 'single-use-instruments',
+    categoryName: 'Single Use Instruments',
+    title: 'Sterile Procedure Packs',
+    image: '/images/catalogue-cover-yellow.png',
+    pdfUrl: '/pdf/general-surgical-instruments-catalogue.pdf',
+    accessCode: '12345',
+    description: 'Pre-sterilized single use disposable surgical procedure packs.',
+    sortOrder: 1,
+    isPublished: true,
+  },
+]
+
+export function getStoredSubcategoryPdfs(): SubcategoryPdfItem[] {
+  if (typeof window === 'undefined') return INITIAL_SUBCATEGORY_PDF_SEED
+  try {
+    const raw = localStorage.getItem('durable_subcategories_pdf')
+    if (raw) {
+      const parsed = JSON.parse(raw)
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed
+    }
+  } catch (e) {
+    console.error('Failed to parse subcategory PDFs from localStorage:', e)
+  }
+  return INITIAL_SUBCATEGORY_PDF_SEED
+}
+
+export function saveStoredSubcategoryPdfs(items: SubcategoryPdfItem[]): void {
+  if (typeof window === 'undefined') return
+  try {
+    localStorage.setItem('durable_subcategories_pdf', JSON.stringify(items))
+    window.dispatchEvent(new Event('durable_content_updated'))
+  } catch (e) {
+    console.error('Failed to save subcategory PDFs to localStorage:', e)
+  }
+}
+

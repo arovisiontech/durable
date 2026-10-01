@@ -4,6 +4,8 @@ import { CATEGORIES_DATA } from '@/src/data/categoriesData'
 import { CategoryHeroBanner } from '@/src/components/public/CategoryHeroBanner'
 import { ArrowLeft, ArrowRight, Package, ShieldCheck, FileText, CheckCircle2 } from 'lucide-react'
 
+import { SubcategoryPdfSection } from '@/src/components/public/SubcategoryPdfSection'
+
 interface CategoryPageProps {
   params: Promise<{
     slug: string
@@ -85,6 +87,12 @@ export default async function CategoryDetailPage({ params }: CategoryPageProps) 
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
+
+        {/* 2.5 Subcategories PDF Catalogs Grid Showcase (Matching SS 2) */}
+        <SubcategoryPdfSection
+          categorySlug={category.slug}
+          categoryTitle={`${category.title} ${category.highlight}`}
+        />
 
         {/* 3. Category Products Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200">
