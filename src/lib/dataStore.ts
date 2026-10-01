@@ -301,79 +301,55 @@ export const INITIAL_CATALOGUES_SEED: CatalogueItem[] = [
 
 // CLIENT-SIDE LOCAL STORAGE DATA ACCESSORS & SYNC HELPERS
 
+import {
+  savePersistentData,
+  getLocalStorageSync,
+  getItemIDB,
+} from '@/src/lib/persistentStorage'
+
 export function getStoredCategories(): CategoryItem[] {
   if (typeof window === 'undefined') return INITIAL_CATEGORIES_SEED
   try {
-    const raw = localStorage.getItem('durable_categories')
-    if (raw) {
-      const parsed = JSON.parse(raw)
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed
-    }
+    const data = getLocalStorageSync<CategoryItem[]>('durable_categories', INITIAL_CATEGORIES_SEED)
+    if (Array.isArray(data) && data.length > 0) return data
   } catch (e) {
-    console.error('Failed to parse categories from localStorage:', e)
+    console.error('Failed to parse categories:', e)
   }
   return INITIAL_CATEGORIES_SEED
 }
 
 export function saveStoredCategories(categories: CategoryItem[]): void {
-  if (typeof window === 'undefined') return
-  try {
-    localStorage.setItem('durable_categories', JSON.stringify(categories))
-    window.dispatchEvent(new Event('durable_content_updated'))
-  } catch (e) {
-    console.error('Failed to save categories to localStorage:', e)
-  }
+  savePersistentData('durable_categories', categories)
 }
 
 export function getStoredProducts(): ProductItem[] {
   if (typeof window === 'undefined') return INITIAL_PRODUCTS_SEED
   try {
-    const raw = localStorage.getItem('durable_products')
-    if (raw) {
-      const parsed = JSON.parse(raw)
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed
-    } else {
-      localStorage.setItem('durable_products', JSON.stringify(INITIAL_PRODUCTS_SEED))
-      return INITIAL_PRODUCTS_SEED
-    }
+    const data = getLocalStorageSync<ProductItem[]>('durable_products', INITIAL_PRODUCTS_SEED)
+    if (Array.isArray(data) && data.length > 0) return data
   } catch (e) {
-    console.error('Failed to parse products from localStorage:', e)
+    console.error('Failed to parse products:', e)
   }
   return INITIAL_PRODUCTS_SEED
 }
 
 export function saveStoredProducts(products: ProductItem[]): void {
-  if (typeof window === 'undefined') return
-  try {
-    localStorage.setItem('durable_products', JSON.stringify(products))
-    window.dispatchEvent(new Event('durable_content_updated'))
-  } catch (e) {
-    console.error('Failed to save products to localStorage:', e)
-  }
+  savePersistentData('durable_products', products)
 }
 
 export function getStoredCatalogues(): CatalogueItem[] {
   if (typeof window === 'undefined') return INITIAL_CATALOGUES_SEED
   try {
-    const raw = localStorage.getItem('durable_catalogues')
-    if (raw) {
-      const parsed = JSON.parse(raw)
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed
-    }
+    const data = getLocalStorageSync<CatalogueItem[]>('durable_catalogues', INITIAL_CATALOGUES_SEED)
+    if (Array.isArray(data) && data.length > 0) return data
   } catch (e) {
-    console.error('Failed to parse catalogues from localStorage:', e)
+    console.error('Failed to parse catalogues:', e)
   }
   return INITIAL_CATALOGUES_SEED
 }
 
 export function saveStoredCatalogues(catalogues: CatalogueItem[]): void {
-  if (typeof window === 'undefined') return
-  try {
-    localStorage.setItem('durable_catalogues', JSON.stringify(catalogues))
-    window.dispatchEvent(new Event('durable_content_updated'))
-  } catch (e) {
-    console.error('Failed to save catalogues to localStorage:', e)
-  }
+  savePersistentData('durable_catalogues', catalogues)
 }
 
 export interface SubcategoryPdfItem {
@@ -586,24 +562,16 @@ export const INITIAL_SUBCATEGORY_PDF_SEED: SubcategoryPdfItem[] = [
 export function getStoredSubcategoryPdfs(): SubcategoryPdfItem[] {
   if (typeof window === 'undefined') return INITIAL_SUBCATEGORY_PDF_SEED
   try {
-    const raw = localStorage.getItem('durable_subcategories_pdf')
-    if (raw) {
-      const parsed = JSON.parse(raw)
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed
-    }
+    const data = getLocalStorageSync<SubcategoryPdfItem[]>('durable_subcategories_pdf', INITIAL_SUBCATEGORY_PDF_SEED)
+    if (Array.isArray(data) && data.length > 0) return data
   } catch (e) {
-    console.error('Failed to parse subcategory PDFs from localStorage:', e)
+    console.error('Failed to parse subcategory PDFs:', e)
   }
   return INITIAL_SUBCATEGORY_PDF_SEED
 }
 
 export function saveStoredSubcategoryPdfs(items: SubcategoryPdfItem[]): void {
-  if (typeof window === 'undefined') return
-  try {
-    localStorage.setItem('durable_subcategories_pdf', JSON.stringify(items))
-    window.dispatchEvent(new Event('durable_content_updated'))
-  } catch (e) {
-    console.error('Failed to save subcategory PDFs to localStorage:', e)
-  }
+  savePersistentData('durable_subcategories_pdf', items)
 }
+
 

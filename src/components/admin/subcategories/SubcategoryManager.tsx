@@ -25,6 +25,7 @@ import {
   getStoredCategories,
   CategoryItem,
 } from '@/src/lib/dataStore'
+import { getItemIDB } from '@/src/lib/persistentStorage'
 
 const MAIN_CATEGORIES = [
   { slug: 'general-surgery', name: 'General Surgery' },
@@ -60,6 +61,14 @@ export function SubcategoryManager() {
     const all = getStoredSubcategoryPdfs()
     setSubcategories(all)
     setIsLoading(false)
+
+    if (typeof window !== 'undefined') {
+      getItemIDB<SubcategoryPdfItem[]>('durable_subcategories_pdf').then((idbData) => {
+        if (idbData && Array.isArray(idbData) && idbData.length > 0) {
+          setSubcategories(idbData)
+        }
+      })
+    }
   }, [])
 
   useEffect(() => {

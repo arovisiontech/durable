@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Eye, Download, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react'
 import { SubcategoryPdfItem, getStoredSubcategoryPdfs } from '@/src/lib/dataStore'
+import { getItemIDB } from '@/src/lib/persistentStorage'
 
 interface SubcategoryPdfSectionProps {
   categorySlug: string
@@ -32,6 +33,17 @@ export function SubcategoryPdfSection({ categorySlug, categoryTitle }: Subcatego
       (item) => item.categorySlug.toLowerCase().trim() === categorySlug.toLowerCase().trim()
     )
     setSubcategories(filtered)
+
+    if (typeof window !== 'undefined') {
+      getItemIDB<SubcategoryPdfItem[]>('durable_subcategories_pdf').then((idbData) => {
+        if (idbData && Array.isArray(idbData) && idbData.length > 0) {
+          const idbFiltered = idbData.filter(
+            (item) => item.categorySlug.toLowerCase().trim() === categorySlug.toLowerCase().trim()
+          )
+          setSubcategories(idbFiltered)
+        }
+      })
+    }
   }
 
   useEffect(() => {
