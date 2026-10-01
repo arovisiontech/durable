@@ -337,7 +337,18 @@ export default function AdminContentHomePage() {
       const savedProcess = localStorage.getItem('durable_process_data')
       if (savedProcess) {
         const parsed = JSON.parse(savedProcess)
-        if (Array.isArray(parsed) && parsed.length > 0) setProcessSteps(parsed)
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const mapped = parsed.map((item: any, idx: number) => ({
+            id: item.id || `step-${idx + 1}`,
+            step_number: item.step_number || (item.stepNumber ? parseInt(item.stepNumber, 10) : idx + 1),
+            title: item.title,
+            category: item.category || item.subtitle || 'Precision Manufacturing',
+            subtitle: item.subtitle || item.category || '',
+            description: item.description || '',
+            image_url: item.image_url || item.image || '/images/process-hand-filing.png',
+          }))
+          setProcessSteps(mapped)
+        }
       }
 
       const savedVideo = localStorage.getItem('durable_video_data')
