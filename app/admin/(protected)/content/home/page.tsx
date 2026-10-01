@@ -248,7 +248,7 @@ export default function AdminContentHomePage() {
     title: 'Watch Our Quality & Manufacturing Process Showcase',
     description: 'Durable Hospital Supplies Operates In Full Compliance With Internationally Recognized Medical Device Regulations And Quality Management Standards. Our Surgical, Dental, And Medical Instruments Are Manufactured, Inspected, And Validated To Meet Global Healthcare Markets Requirements.',
     videoUrl: 'https://vimeo.com/1230520070?fl=ip&fe=ec',
-    thumbnailImage: '/images/company-stats-banner.png',
+    thumbnailImage: '',
   })
 
   const [certLogos, setCertLogos] = useState<AdminCertLogo[]>([

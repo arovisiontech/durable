@@ -8,7 +8,7 @@ const DEFAULT_VIDEO = {
   description:
     'Durable Hospital Supplies Operates In Full Compliance With Internationally Recognized Medical Device Regulations And Quality Management Standards. Our Surgical, Dental, And Medical Instruments Are Manufactured, Inspected, And Validated To Meet Global Healthcare Markets Requirements.',
   videoUrl: 'https://vimeo.com/1230520070?fl=ip&fe=ec',
-  thumbnailImage: '/images/company-stats-banner.png',
+  thumbnailImage: '',
 }
 
 function getVimeoEmbedUrl(url: string, autoplay = true) {
@@ -52,7 +52,13 @@ export function ComplianceVideoSection() {
     return () => window.removeEventListener('durable_content_updated', handleUpdate)
   }, [])
 
-  const vimeoEmbedUrl = getVimeoEmbedUrl(videoData.videoUrl, true)
+  const hasCustomThumbnail =
+    videoData.thumbnailImage &&
+    videoData.thumbnailImage !== '/images/company-stats-banner.png' &&
+    videoData.thumbnailImage.trim() !== ''
+
+  const vimeoEmbedUrlDirect = getVimeoEmbedUrl(videoData.videoUrl, false)
+  const vimeoEmbedUrlAutoplay = getVimeoEmbedUrl(videoData.videoUrl, true)
 
   const handlePlayPause = () => {
     setIsPlaying(true)
@@ -63,39 +69,15 @@ export function ComplianceVideoSection() {
     <section className="w-full bg-[#0F233A] text-white py-6 sm:py-10 relative overflow-hidden">
       {/* 100% Responsive Edge-to-Edge Clean Video Showcase Container */}
       <div className="w-full relative shadow-2xl bg-slate-950 overflow-hidden aspect-video min-h-[340px] sm:min-h-[500px] lg:min-h-[680px] 2xl:min-h-[850px] 4xl:min-h-[1200px] group">
-        {vimeoEmbedUrl ? (
-          isPlaying && !isFullScreen ? (
-            <div className="w-full h-full relative">
-              <iframe
-                src={vimeoEmbedUrl}
-                className="w-full h-full border-0 block"
-                allow="autoplay; fullscreen; picture-in-picture"
-                allowFullScreen
-                title="Durable Compliance & Manufacturing Video"
-              />
-              <div className="absolute top-4 right-4 z-30 flex items-center gap-2">
-                <button
-                  onClick={() => setIsFullScreen(true)}
-                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-xs font-black shadow-lg transition-all"
-                >
-                  ⛶ Fullscreen
-                </button>
-                <button
-                  onClick={() => setIsPlaying(false)}
-                  className="bg-slate-900/90 hover:bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold border border-white/20 shadow-lg transition-all"
-                >
-                  ✕ Close
-                </button>
-              </div>
-            </div>
-          ) : (
+        {vimeoEmbedUrlDirect ? (
+          hasCustomThumbnail && !isPlaying ? (
             <div className="w-full h-full relative bg-slate-950 flex items-center justify-center">
-              {/* Background Poster Image - Clean & Unobstructed */}
+              {/* Custom Poster Image if user explicitly uploaded one */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={videoData.thumbnailImage || '/images/company-stats-banner.png'}
+                src={videoData.thumbnailImage}
                 alt="Video Thumbnail"
-                className="w-full h-full object-cover opacity-75"
+                className="w-full h-full object-cover"
               />
 
               {/* Center Play Button Overlay */}
@@ -117,10 +99,17 @@ export function ComplianceVideoSection() {
                     </svg>
                   </div>
                 </button>
-                <span className="text-xs sm:text-sm font-black tracking-wider uppercase text-white bg-slate-950/70 px-4 py-1.5 rounded-full border border-white/20 shadow-lg">
-                  Click to Play Video (100% Fullscreen)
-                </span>
               </div>
+            </div>
+          ) : (
+            <div className="w-full h-full relative">
+              <iframe
+                src={isPlaying ? vimeoEmbedUrlAutoplay! : vimeoEmbedUrlDirect}
+                className="w-full h-full border-0 block"
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowFullScreen
+                title="Durable Compliance & Manufacturing Video"
+              />
             </div>
           )
         ) : (
@@ -129,9 +118,8 @@ export function ComplianceVideoSection() {
               ref={videoRef}
               src={videoData.videoUrl || 'https://vimeo.com/1230520070?fl=ip&fe=ec'}
               className="w-full h-full object-cover min-w-full min-h-full block"
-              controls={isPlaying}
-              onPlay={() => setIsPlaying(true)}
-              onPause={() => setIsPlaying(false)}
+              controls
+              poster={hasCustomThumbnail ? videoData.thumbnailImage : undefined}
             />
           </div>
         )}
@@ -151,9 +139,9 @@ export function ComplianceVideoSection() {
               </button>
             </div>
 
-            {vimeoEmbedUrl ? (
+            {vimeoEmbedUrlAutoplay ? (
               <iframe
-                src={vimeoEmbedUrl}
+                src={vimeoEmbedUrlAutoplay}
                 className="w-full h-full border-0 block"
                 allow="autoplay; fullscreen; picture-in-picture"
                 allowFullScreen
