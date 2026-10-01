@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Download, ExternalLink, ArrowRight, Sparkles } from 'lucide-react'
 import { getStoredCatalogues, INITIAL_CATALOGUES_SEED } from '@/src/lib/dataStore'
+import { safeDownloadPdf } from '@/src/lib/pdfHelper'
 
 export interface CatalogShowcaseItem {
   id: string
@@ -96,16 +97,14 @@ export function ProductCatalogShowcaseSection() {
 
               {/* Action Buttons */}
               <div className="pt-4 border-t border-slate-800 flex items-center justify-between gap-3">
-                <a
-                  href={cat.pdf_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  download
-                  className="flex-1 px-4 py-2.5 text-xs font-black text-white bg-[#E31B23] hover:bg-red-700 rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
+                <button
+                  type="button"
+                  onClick={() => safeDownloadPdf(cat.pdf_url, cat.title)}
+                  className="flex-1 px-4 py-2.5 text-xs font-black text-white bg-[#E31B23] hover:bg-red-700 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Download className="w-4 h-4" />
                   <span>DOWNLOAD PDF</span>
-                </a>
+                </button>
 
                 <Link
                   href={`/catalogues/${cat.slug}`}

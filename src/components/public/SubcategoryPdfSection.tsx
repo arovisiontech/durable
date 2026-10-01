@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Eye, Download, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react'
+import { Eye, Download, Sparkles } from 'lucide-react'
 import { SubcategoryPdfItem, getStoredSubcategoryPdfs } from '@/src/lib/dataStore'
 import { getItemIDB } from '@/src/lib/persistentStorage'
+import { safeViewPdf, safeDownloadPdf } from '@/src/lib/pdfHelper'
 
 interface SubcategoryPdfSectionProps {
   categorySlug: string
@@ -22,10 +23,6 @@ const DUMMY_COVER_IMAGES: Record<string, string> = {
 
 export function SubcategoryPdfSection({ categorySlug, categoryTitle }: SubcategoryPdfSectionProps) {
   const [subcategories, setSubcategories] = useState<SubcategoryPdfItem[]>([])
-  const [passwordInputs, setPasswordInputs] = useState<Record<string, string>>({})
-  const [statusMessages, setStatusMessages] = useState<
-    Record<string, { type: 'success' | 'error'; text: string }>
-  >({})
 
   const loadData = () => {
     const all = getStoredSubcategoryPdfs()
@@ -53,55 +50,15 @@ export function SubcategoryPdfSection({ categorySlug, categoryTitle }: Subcatego
     return () => window.removeEventListener('durable_content_updated', handleUpdate)
   }, [categorySlug])
 
-  const handleInputChange = (id: string, val: string) => {
-    setPasswordInputs((prev) => ({ ...prev, [id]: val }))
-    if (statusMessages[id]) {
-      setStatusMessages((prev) => {
-        const next = { ...prev }
-        delete next[id]
-        return next
-      })
-    }
-  }
-
   const handleViewPdf = (item: SubcategoryPdfItem) => {
     const targetUrl = item.pdfUrl || '/pdf/general-surgical-instruments-catalogue.pdf'
-    window.open(targetUrl, '_blank')
+    safeViewPdf(targetUrl)
   }
 
   const handleDownloadPdf = (item: SubcategoryPdfItem) => {
-    const inputPass = (passwordInputs[item.id] || '').trim()
-    const requiredCode = (item.accessCode || '12345').trim()
-
-    // Accept requiredCode, 12345, 1234, 2026, or DURABLE (case-insensitive)
-    if (
-      !requiredCode ||
-      inputPass === requiredCode ||
-      inputPass === '12345' ||
-      inputPass === '1234' ||
-      inputPass === '2026' ||
-      inputPass.toUpperCase() === 'DURABLE'
-    ) {
-      setStatusMessages((prev) => ({
-        ...prev,
-        [item.id]: { type: 'success', text: 'Access Granted! Downloading PDF...' },
-      }))
-
-      setTimeout(() => {
-        const targetUrl = item.pdfUrl || '/pdf/general-surgical-instruments-catalogue.pdf'
-        const link = document.createElement('a')
-        link.href = targetUrl
-        link.download = `${item.title.toLowerCase().replace(/\s+/g, '-')}-catalogue.pdf`
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-      }, 500)
-    } else {
-      setStatusMessages((prev) => ({
-        ...prev,
-        [item.id]: { type: 'error', text: 'Invalid Password! (Use: 12345 or 1234)' },
-      }))
-    }
+    const targetUrl = item.pdfUrl || '/pdf/general-surgical-instruments-catalogue.pdf'
+    const fileName = `${item.title.toLowerCase().replace(/\s+/g, '-')}-catalogue.pdf`
+    safeDownloadPdf(targetUrl, fileName)
   }
 
   if (subcategories.length === 0) {
@@ -188,36 +145,7 @@ export function SubcategoryPdfSection({ categorySlug, categoryTitle }: Subcatego
                   <p className="text-[10px] text-slate-500 font-semibold">Technical PDF Catalog</p>
                 </div>
 
-                {/* Password Input */}
-                <div className="space-y-1">
-                  <input
-                    type="password"
-                    value={passwordInputs[item.id] || ''}
-                    onChange={(e) => handleInputChange(item.id, e.target.value)}
-                    placeholder="Enter Password (12345)"
-                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-mono font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0B1B3D]"
-                  />
-                </div>
-
-                {/* Status Message */}
-                {statusMessages[item.id] && (
-                  <div
-                    className={`p-2 rounded-lg text-[10px] font-bold flex items-center gap-1.5 ${
-                      statusMessages[item.id].type === 'success'
-                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                        : 'bg-red-50 text-red-600 border border-red-200'
-                    }`}
-                  >
-                    {statusMessages[item.id].type === 'success' ? (
-                      <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-                    ) : (
-                      <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                    )}
-                    <span>{statusMessages[item.id].text}</span>
-                  </div>
-                )}
-
-                {/* Action Buttons: View PDF & Download PDF */}
+                {/* Action Buttons: View PDF & Download PDF (Direct without password input) */}
                 <div className="grid grid-cols-2 gap-2 pt-1">
                   <button
                     type="button"

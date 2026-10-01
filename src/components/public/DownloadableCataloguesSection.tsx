@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Lock, Download, Eye, X, ShieldCheck, Mail, PhoneCall, CheckCircle2, AlertCircle } from 'lucide-react'
+import { safeViewPdf, safeDownloadPdf } from '@/src/lib/pdfHelper'
 
 interface CatalogueCardItem {
   id: string
@@ -93,7 +94,7 @@ export function DownloadableCataloguesSection() {
 
   // Direct View without Password
   const handleViewDirectly = (cat: CatalogueCardItem) => {
-    window.open(cat.pdfUrl, '_blank')
+    safeViewPdf(cat.pdfUrl)
   }
 
   // Open Modal for Protected Download
@@ -114,13 +115,9 @@ export function DownloadableCataloguesSection() {
       setErrorMsg('')
 
       setTimeout(() => {
-        // Trigger file download
-        const link = document.createElement('a')
-        link.href = selectedCatalogue.pdfUrl
-        link.download = `${selectedCatalogue.title.toLowerCase().replace(/\s+/g, '-')}-catalogue.pdf`
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
+        // Trigger file download safely
+        const fileName = `${selectedCatalogue.title.toLowerCase().replace(/\s+/g, '-')}-catalogue.pdf`
+        safeDownloadPdf(selectedCatalogue.pdfUrl, fileName)
 
         // Close modal after download
         setTimeout(() => {

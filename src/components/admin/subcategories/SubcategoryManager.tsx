@@ -26,6 +26,7 @@ import {
   CategoryItem,
 } from '@/src/lib/dataStore'
 import { getItemIDB } from '@/src/lib/persistentStorage'
+import { safeViewPdf } from '@/src/lib/pdfHelper'
 
 const MAIN_CATEGORIES = [
   { slug: 'general-surgery', name: 'General Surgery' },
@@ -371,7 +372,7 @@ export function SubcategoryManager() {
               <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
                 <button
                   type="button"
-                  onClick={() => window.open(item.pdfUrl, '_blank')}
+                  onClick={() => safeViewPdf(item.pdfUrl)}
                   className="px-3 py-1.5 text-[11px] font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all cursor-pointer"
                 >
                   View PDF
