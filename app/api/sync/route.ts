@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
+import { createClient as createServerClient } from '@/src/lib/supabase/server'
 import { createPublicClient } from '@/src/lib/supabase/public'
 
-// Global in-memory cache on server for ultra-fast response across all devices
+// Global in-memory cache on server for ultra-fast response across lambdas
 const globalServerStore = new Map<string, any>()
 
 export async function GET(request: Request) {
@@ -52,7 +53,12 @@ export async function POST(request: Request) {
 
     // 2. Try saving to Supabase page_sections as global key-value store
     try {
-      const supabase = createPublicClient()
+      let supabase: any
+      try {
+        supabase = await createServerClient()
+      } catch (e) {
+        supabase = createPublicClient()
+      }
 
       // Find if entry already exists
       const { data: existing } = await supabase
@@ -70,7 +76,9 @@ export async function POST(request: Request) {
           })
           .eq('id', existing.id)
       } else {
-        // Need a default page_id or homepage id
+        // Need a valid page_id from pages table
+        let targetPageId: string | null = null
+
         const { data: homePage } = await supabase
           .from('pages')
           .select('id')
@@ -78,8 +86,38 @@ export async function POST(request: Request) {
           .maybeSingle()
 
         if (homePage && homePage.id) {
+          targetPageId = homePage.id
+        } else {
+          const { data: anyPage } = await supabase
+            .from('pages')
+            .select('id')
+            .limit(1)
+            .maybeSingle()
+
+          if (anyPage && anyPage.id) {
+            targetPageId = anyPage.id
+          } else {
+            // Create a default home page row
+            const { data: createdPage } = await supabase
+              .from('pages')
+              .insert({
+                title: 'Home Page',
+                slug: 'home',
+                page_type: 'home',
+                is_published: true,
+              })
+              .select('id')
+              .maybeSingle()
+
+            if (createdPage && createdPage.id) {
+              targetPageId = createdPage.id
+            }
+          }
+        }
+
+        if (targetPageId) {
           await supabase.from('page_sections').insert({
-            page_id: homePage.id,
+            page_id: targetPageId,
             section_type: 'custom_sync',
             heading: key,
             content: { data: value },

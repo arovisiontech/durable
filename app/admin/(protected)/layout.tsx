@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/src/lib/supabase/server'
 import { AdminShell } from '@/src/components/admin/AdminShell'
+import { AdminAutoSync } from '@/src/components/admin/AdminAutoSync'
 
 export const dynamic = 'force-dynamic'
 
@@ -37,6 +38,7 @@ export default async function AdminProtectedLayout({
         fullName={profile.full_name || undefined}
         role={profile.role}
       >
+        <AdminAutoSync />
         {children}
       </AdminShell>
     )
