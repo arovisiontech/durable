@@ -95,43 +95,37 @@ export function SolutionsSection() {
           </p>
         </div>
 
-        {/* 6 Compact Category Cards Grid (Slightly Smaller Cards matching SS 1 Request) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 3xl:grid-cols-6 gap-3.5 sm:gap-4">
+        {/* 6 Category Cards Grid - Compact Cards with Prominent Large Icons & Bigger Text matching SS 1 Request */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
           {solutions.map((item) => (
             <Link
               key={item.id}
               href={`/category/${item.slug}`}
-              className="group bg-white rounded-xl p-3.5 sm:p-4 shadow-2xs hover:shadow-lg border border-slate-200/90 hover:border-[#E31B23]/40 transition-all duration-300 flex flex-col justify-between space-y-3"
+              className="group bg-white rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-xl border border-slate-200/90 hover:border-[#E31B23]/50 transition-all duration-300 flex items-center gap-4 sm:gap-5"
             >
-              {/* Top Circular Icon / Image (Smaller size) */}
-              <div className="w-9 h-9 rounded-full bg-slate-100/90 flex items-center justify-center group-hover:bg-red-50 transition-colors shrink-0 overflow-hidden p-1.5">
+              {/* Prominent Large Icon Box */}
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-slate-100/90 group-hover:bg-red-50 text-[#0B1B3D] transition-colors shrink-0 flex items-center justify-center p-3 border border-slate-200/70 shadow-2xs">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={item.image_url}
                   alt={item.title}
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300"
                 />
               </div>
 
-              {/* Bottom Content: Number | Title & Description */}
-              <div className="flex items-center gap-2.5 pt-0.5">
-                {/* Number */}
-                <span className="text-base sm:text-lg font-black text-[#0B1B3D] shrink-0 font-mono">
-                  {item.id}
-                </span>
-
-                {/* Vertical Divider */}
-                <div className="w-[1.5px] h-6 bg-slate-200 shrink-0" />
-
-                {/* Title & Subtitle */}
-                <div className="space-y-0.5 min-w-0">
-                  <h3 className="text-xs sm:text-sm font-black text-[#0B1B3D] group-hover:text-[#E31B23] transition-colors leading-tight truncate">
+              {/* Number + Title & Description (Bigger & Bolder Text) */}
+              <div className="space-y-1 min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-mono font-black text-[#E31B23] bg-red-50 px-2 py-0.5 rounded-md border border-red-100 shrink-0">
+                    {item.id}
+                  </span>
+                  <h3 className="text-base sm:text-lg font-black text-[#0B1B3D] group-hover:text-[#E31B23] transition-colors leading-snug truncate">
                     {item.title}
                   </h3>
-                  <p className="text-[10px] text-slate-500 font-medium leading-normal line-clamp-1">
-                    {item.description}
-                  </p>
                 </div>
+                <p className="text-xs sm:text-sm font-semibold text-slate-500 leading-snug line-clamp-2">
+                  {item.description}
+                </p>
               </div>
             </Link>
           ))}

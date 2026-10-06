@@ -97,42 +97,19 @@ export function SubcategoryPdfSection({ categorySlug, categoryTitle }: Subcatego
               key={item.id}
               className="group bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col justify-between"
             >
-              {/* Top Subcategory Cover Artwork matching Site Navy Blue (#0B1B3D) Theme */}
-              <div className="relative aspect-[3/4] w-full bg-[#0B1B3D] overflow-hidden">
-                {/* Background Cover Image with Navy Gradient Overlay */}
+              {/* Clean Subcategory Cover Artwork without dark blue filter or overlay text matching SS 2 */}
+              <div className="relative aspect-[3/4] w-full bg-slate-100 overflow-hidden border-b border-slate-100">
+                {/* Clean Cover Image */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={coverImg}
                   alt={item.title}
-                  className="w-full h-full object-cover opacity-65 group-hover:scale-105 transition-transform duration-500"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
 
-                {/* Dark Navy Blue & Black Diagonal Overlay Banner */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0B1B3D] via-[#0B1B3D]/70 to-transparent flex flex-col justify-between p-5 text-white">
-                  {/* Top Left Header Text - Clean White */}
-                  <div className="space-y-1">
-                    <span className="text-[9px] font-extrabold tracking-widest text-slate-200 uppercase block drop-shadow-xs">
-                      CRAFTING THE INSTRUMENTS
-                    </span>
-                    <h3 className="text-xl font-black text-white italic tracking-tight uppercase leading-snug drop-shadow-md">
-                      {item.title}
-                    </h3>
-                  </div>
-
-                  {/* Plus Icon Accent */}
-                  <div className="text-white text-3xl font-black font-mono opacity-90">+</div>
-
-                  {/* Bottom Subcategory Description in White Text */}
-                  <div className="space-y-1">
-                    <p className="text-[11px] font-bold text-slate-100 leading-snug uppercase drop-shadow-sm line-clamp-3">
-                      {item.description || `Experience Future of ${item.title} with ENDO Tech`}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Navy Blue Top Right Badge */}
+                {/* Category Name Tag on top right */}
                 <div className="absolute top-3 right-3 z-10">
-                  <span className="px-2.5 py-1 bg-[#0B1B3D]/90 backdrop-blur-xs text-white text-[9px] font-mono font-bold rounded-md border border-white/20 uppercase tracking-wider">
+                  <span className="px-2.5 py-1 bg-slate-900/80 backdrop-blur-xs text-white text-[9px] font-mono font-bold rounded-md uppercase tracking-wider">
                     {item.categoryName}
                   </span>
                 </div>

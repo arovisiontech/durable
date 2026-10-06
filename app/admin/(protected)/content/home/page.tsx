@@ -30,6 +30,7 @@ import {
   Factory,
 } from 'lucide-react'
 import { AdminMediaUploadPlaceholder } from '@/src/components/admin/AdminMediaUploadPlaceholder'
+import { RichTextToolbar } from '@/src/components/admin/RichTextToolbar'
 
 // Interfaces
 export interface AdminHeroSlide {
@@ -606,22 +607,18 @@ export default function AdminContentHomePage() {
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <label className="text-xs font-extrabold text-slate-800 uppercase">Description Paragraph 1</label>
-              <textarea
-                rows={3}
+              <RichTextToolbar
+                label="Description Paragraph 1"
                 value={aboutData.desc1}
-                onChange={(e) => setAboutData({ ...aboutData, desc1: e.target.value })}
-                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-[#E31B23]"
+                onChange={(val) => setAboutData({ ...aboutData, desc1: val })}
               />
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <label className="text-xs font-extrabold text-slate-800 uppercase">Description Paragraph 2</label>
-              <textarea
-                rows={3}
+              <RichTextToolbar
+                label="Description Paragraph 2"
                 value={aboutData.desc2}
-                onChange={(e) => setAboutData({ ...aboutData, desc2: e.target.value })}
-                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-[#E31B23]"
+                onChange={(val) => setAboutData({ ...aboutData, desc2: val })}
               />
             </div>
 

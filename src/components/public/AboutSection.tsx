@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Mail, Download, ArrowRight } from 'lucide-react'
+import { RichText } from '@/src/components/ui/RichText'
 
 const DEFAULT_ABOUT = {
   badge: 'SINCE 1973',
@@ -71,14 +72,10 @@ export function AboutSection() {
             </div>
 
             {/* Description Paragraph 1 */}
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
-              {aboutData.desc1}
-            </p>
+            <RichText content={aboutData.desc1} className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed" />
 
             {/* Description Paragraph 2 */}
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
-              {aboutData.desc2}
-            </p>
+            <RichText content={aboutData.desc2} className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed" />
 
             {/* CTA Action Buttons */}
             <div className="flex flex-wrap items-center gap-3 pt-1">

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { RichText } from '@/src/components/ui/RichText'
 
 const DEFAULT_JOURNEY = {
   badge: 'OUR JOURNEY',
@@ -47,11 +48,7 @@ export function OurJourneySection() {
     {
       id: 'past',
       tag: 'PAST',
-      content: (
-        <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
-          {data.pastText}
-        </p>
-      ),
+      content: <RichText content={data.pastText} className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed" />,
     },
     {
       id: 'present',
@@ -60,9 +57,9 @@ export function OurJourneySection() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
           {/* Left Text Column (7 Cols) */}
           <div className="lg:col-span-7 space-y-2 text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
-            <p>{data.presentText1}</p>
-            <p>{data.presentText2}</p>
-            <p>{data.presentText3}</p>
+            <RichText content={data.presentText1} />
+            <RichText content={data.presentText2} />
+            <RichText content={data.presentText3} />
           </div>
 
           {/* Right Column: World Map */}
@@ -80,11 +77,7 @@ export function OurJourneySection() {
     {
       id: 'future',
       tag: 'FUTURE',
-      content: (
-        <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
-          {data.futureText}
-        </p>
-      ),
+      content: <RichText content={data.futureText} className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed" />,
     },
   ]
 

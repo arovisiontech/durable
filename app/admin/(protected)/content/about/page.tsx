@@ -18,6 +18,7 @@ import {
   X,
 } from 'lucide-react'
 import { AdminMediaUploadPlaceholder } from '@/src/components/admin/AdminMediaUploadPlaceholder'
+import { RichTextToolbar } from '@/src/components/admin/RichTextToolbar'
 
 export interface HistoryCard {
   id: string
@@ -268,42 +269,34 @@ export default function AdminContentAboutPage() {
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <label className="text-xs font-extrabold text-slate-800 uppercase">Paragraph 1 (Since 1980...)</label>
-              <textarea
-                rows={3}
+              <RichTextToolbar
+                label="Paragraph 1 (Since 1980...)"
                 value={historyForm.p1}
-                onChange={(e) => setHistoryForm({ ...historyForm, p1: e.target.value })}
-                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800"
+                onChange={(val) => setHistoryForm({ ...historyForm, p1: val })}
               />
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <label className="text-xs font-extrabold text-slate-800 uppercase">Paragraph 2 (Four Decades...)</label>
-              <textarea
-                rows={3}
+              <RichTextToolbar
+                label="Paragraph 2 (Four Decades...)"
                 value={historyForm.p2}
-                onChange={(e) => setHistoryForm({ ...historyForm, p2: e.target.value })}
-                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800"
+                onChange={(val) => setHistoryForm({ ...historyForm, p2: val })}
               />
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <label className="text-xs font-extrabold text-slate-800 uppercase">Paragraph 3 (Our Expertise Covers...)</label>
-              <textarea
-                rows={3}
+              <RichTextToolbar
+                label="Paragraph 3 (Our Expertise Covers...)"
                 value={historyForm.p3}
-                onChange={(e) => setHistoryForm({ ...historyForm, p3: e.target.value })}
-                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800"
+                onChange={(val) => setHistoryForm({ ...historyForm, p3: val })}
               />
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <label className="text-xs font-extrabold text-slate-800 uppercase">Paragraph 4 (ISO 13485, FDA, MDR...)</label>
-              <textarea
-                rows={3}
+              <RichTextToolbar
+                label="Paragraph 4 (ISO 13485, FDA, MDR...)"
                 value={historyForm.p4}
-                onChange={(e) => setHistoryForm({ ...historyForm, p4: e.target.value })}
-                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800"
+                onChange={(val) => setHistoryForm({ ...historyForm, p4: val })}
               />
             </div>
 
@@ -436,42 +429,34 @@ export default function AdminContentAboutPage() {
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <label className="text-xs font-extrabold text-[#E31B23] uppercase">PAST Narrative Block</label>
-              <textarea
-                rows={4}
+              <RichTextToolbar
+                label="PAST Narrative Block"
                 value={journeyForm.pastText}
-                onChange={(e) => setJourneyForm({ ...journeyForm, pastText: e.target.value })}
-                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800"
+                onChange={(val) => setJourneyForm({ ...journeyForm, pastText: val })}
               />
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <label className="text-xs font-extrabold text-[#E31B23] uppercase">PRESENT Paragraph 1 (Sialkot 20,000+ OEM...)</label>
-              <textarea
-                rows={3}
+              <RichTextToolbar
+                label="PRESENT Paragraph 1 (Sialkot 20,000+ OEM...)"
                 value={journeyForm.presentText1}
-                onChange={(e) => setJourneyForm({ ...journeyForm, presentText1: e.target.value })}
-                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800"
+                onChange={(val) => setJourneyForm({ ...journeyForm, presentText1: val })}
               />
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <label className="text-xs font-extrabold text-[#E31B23] uppercase">PRESENT Paragraph 2 (Thousands of Hospitals...)</label>
-              <textarea
-                rows={2}
+              <RichTextToolbar
+                label="PRESENT Paragraph 2 (Thousands of Hospitals...)"
                 value={journeyForm.presentText2}
-                onChange={(e) => setJourneyForm({ ...journeyForm, presentText2: e.target.value })}
-                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800"
+                onChange={(val) => setJourneyForm({ ...journeyForm, presentText2: val })}
               />
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <label className="text-xs font-extrabold text-[#E31B23] uppercase">PRESENT Paragraph 3 (Global Certifications & EO Sterile Packs...)</label>
-              <textarea
-                rows={2}
+              <RichTextToolbar
+                label="PRESENT Paragraph 3 (Global Certifications & EO Sterile Packs...)"
                 value={journeyForm.presentText3}
-                onChange={(e) => setJourneyForm({ ...journeyForm, presentText3: e.target.value })}
-                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800"
+                onChange={(val) => setJourneyForm({ ...journeyForm, presentText3: val })}
               />
             </div>
 
@@ -485,12 +470,10 @@ export default function AdminContentAboutPage() {
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <label className="text-xs font-extrabold text-[#E31B23] uppercase">FUTURE Narrative Block</label>
-              <textarea
-                rows={3}
+              <RichTextToolbar
+                label="FUTURE Narrative Block"
                 value={journeyForm.futureText}
-                onChange={(e) => setJourneyForm({ ...journeyForm, futureText: e.target.value })}
-                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800"
+                onChange={(val) => setJourneyForm({ ...journeyForm, futureText: val })}
               />
             </div>
           </div>
