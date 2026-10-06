@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Mail, Download, ArrowRight } from 'lucide-react'
 import { RichText } from '@/src/components/ui/RichText'
+import { loadPersistentData } from '@/src/lib/persistentStorage'
 
 const DEFAULT_ABOUT = {
   badge: 'SINCE 1973',
@@ -21,23 +22,20 @@ const DEFAULT_ABOUT = {
 export function AboutSection() {
   const [aboutData, setAboutData] = useState(DEFAULT_ABOUT)
 
-  const loadData = () => {
-    try {
-      const saved = localStorage.getItem('durable_about_data')
-      if (saved) {
-        const parsed = JSON.parse(saved)
-        if (parsed && typeof parsed === 'object') {
-          setAboutData((prev) => ({ ...prev, ...parsed }))
-        }
-      }
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
   useEffect(() => {
-    loadData()
-    const handleUpdate = () => loadData()
+    loadPersistentData('durable_about_data', DEFAULT_ABOUT, (data) => {
+      if (data && typeof data === 'object') {
+        setAboutData((prev) => ({ ...prev, ...data }))
+      }
+    })
+
+    const handleUpdate = () => {
+      loadPersistentData('durable_about_data', DEFAULT_ABOUT, (data) => {
+        if (data && typeof data === 'object') {
+          setAboutData((prev) => ({ ...prev, ...data }))
+        }
+      })
+    }
     window.addEventListener('durable_content_updated', handleUpdate)
     return () => window.removeEventListener('durable_content_updated', handleUpdate)
   }, [])

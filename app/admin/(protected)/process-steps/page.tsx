@@ -15,6 +15,7 @@ import {
   Filter,
 } from 'lucide-react'
 import { AdminMediaUploadPlaceholder } from '@/src/components/admin/AdminMediaUploadPlaceholder'
+import { savePersistentData, loadPersistentData } from '@/src/lib/persistentStorage'
 
 export interface ProcessStepItem {
   id: string
@@ -144,50 +145,40 @@ export default function AdminProcessStepsPage() {
     image: '/images/process-hand-filing.png',
   })
 
-  // Load from localStorage on mount
+  // Load from Cloud / LocalStorage on mount
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('durable_process_data')
-      if (saved) {
-        const parsed = JSON.parse(saved)
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const loaded: ProcessStepItem[] = parsed.map((item: any, idx: number) => ({
-            id: item.id || `step-${idx + 1}`,
-            stepNumber: item.stepNumber || (item.step_number ? `0${item.step_number}` : `0${idx + 1}`),
-            step_number: item.step_number || idx + 1,
-            title: item.title || '',
-            category: normalizeCategory(item.category, item.subtitle),
-            subtitle: item.subtitle || item.category || '',
-            description: item.description || '',
-            image: item.image || item.image_url || '/images/process-hand-filing.png',
-            image_url: item.image_url || item.image || '/images/process-hand-filing.png',
-          }))
+    loadPersistentData('durable_process_data', DEFAULT_STEPS, (parsed) => {
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const loaded: ProcessStepItem[] = parsed.map((item: any, idx: number) => ({
+          id: item.id || `step-${idx + 1}`,
+          stepNumber: item.stepNumber || (item.step_number ? `0${item.step_number}` : `0${idx + 1}`),
+          step_number: item.step_number || idx + 1,
+          title: item.title || '',
+          category: normalizeCategory(item.category, item.subtitle),
+          subtitle: item.subtitle || item.category || '',
+          description: item.description || '',
+          image: item.image || item.image_url || '/images/process-hand-filing.png',
+          image_url: item.image_url || item.image || '/images/process-hand-filing.png',
+        }))
 
-          // Merge loaded with default items if any category is missing
-          const existingCats = new Set(loaded.map((l) => l.category))
-          const missing = DEFAULT_STEPS.filter((d) => !existingCats.has(d.category))
-          const merged = [...loaded, ...missing]
+        // Merge loaded with default items if any category is missing
+        const existingCats = new Set(loaded.map((l) => l.category))
+        const missing = DEFAULT_STEPS.filter((d) => !existingCats.has(d.category))
+        const merged = [...loaded, ...missing]
 
-          setSteps(merged)
-          return
-        }
+        setSteps(merged)
       }
-      setSteps(DEFAULT_STEPS)
-    } catch (e) {
-      console.error('Error reading durable_process_data from localStorage:', e)
-      setSteps(DEFAULT_STEPS)
-    }
+    })
   }, [])
 
   const saveToStorage = (updatedSteps: ProcessStepItem[], customMsg?: string) => {
     try {
-      localStorage.setItem('durable_process_data', JSON.stringify(updatedSteps))
-      window.dispatchEvent(new Event('durable_content_updated'))
-      setSaveMessage(customMsg || 'Process steps updated and published live!')
+      savePersistentData('durable_process_data', updatedSteps)
+      setSaveMessage(customMsg || 'Process steps updated and published live across all devices!')
       setIsSaved(true)
       setTimeout(() => setIsSaved(false), 4000)
     } catch (e) {
-      console.error('Error saving durable_process_data to localStorage:', e)
+      console.error('Error saving durable_process_data:', e)
     }
   }
 

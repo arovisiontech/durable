@@ -31,6 +31,7 @@ import {
 } from 'lucide-react'
 import { AdminMediaUploadPlaceholder } from '@/src/components/admin/AdminMediaUploadPlaceholder'
 import { RichTextToolbar } from '@/src/components/admin/RichTextToolbar'
+import { savePersistentData, loadPersistentData } from '@/src/lib/persistentStorage'
 
 // Interfaces
 export interface AdminHeroSlide {
@@ -290,112 +291,63 @@ export default function AdminContentHomePage() {
   const [certForm, setCertForm] = useState({ name: '', logo_url: '/images/icon-iso.png' })
   const [customModalForm, setCustomModalForm] = useState({ title: '', subheading: '', description: '', image_url: '' })
 
-  // SYNC FROM LOCALSTORAGE ON MOUNT
+  // SYNC FROM STORAGE AND CLOUD API ON MOUNT
   useEffect(() => {
-    try {
-      const savedHero = localStorage.getItem('durable_hero_slides')
-      if (savedHero) {
-        const parsed = JSON.parse(savedHero)
-        if (Array.isArray(parsed) && parsed.length > 0) setHeroSlides(parsed)
-      }
-
-      const savedAbout = localStorage.getItem('durable_about_data')
-      if (savedAbout) {
-        const parsed = JSON.parse(savedAbout)
-        if (parsed && typeof parsed === 'object') setAboutData((prev) => ({ ...prev, ...parsed }))
-      }
-
-      const savedStats = localStorage.getItem('durable_stats_data')
-      if (savedStats) {
-        const parsed = JSON.parse(savedStats)
-        if (Array.isArray(parsed) && parsed.length > 0) setStatsData(parsed)
-      }
-
-      const savedSolutions = localStorage.getItem('durable_solutions_data')
-      if (savedSolutions) {
-        const parsed = JSON.parse(savedSolutions)
-        if (Array.isArray(parsed) && parsed.length > 0) setSolutionsData(parsed)
-      }
-
-      const savedQualityTrust = localStorage.getItem('durable_quality_trust_data')
-      if (savedQualityTrust) {
-        const parsed = JSON.parse(savedQualityTrust)
-        if (parsed && typeof parsed === 'object') setQualityTrustData((prev) => ({ ...prev, ...parsed }))
-      }
-
-      const savedPillars = localStorage.getItem('durable_pillars_data')
-      if (savedPillars) {
-        const parsed = JSON.parse(savedPillars)
-        if (parsed && typeof parsed === 'object') setPillarsData((prev) => ({ ...prev, ...parsed }))
-      }
-
-      const savedPrecision = localStorage.getItem('durable_precision_data')
-      if (savedPrecision) {
-        const parsed = JSON.parse(savedPrecision)
-        if (parsed && typeof parsed === 'object') setPrecisionData((prev) => ({ ...prev, ...parsed }))
-      }
-
-      const savedProcess = localStorage.getItem('durable_process_data')
-      if (savedProcess) {
-        const parsed = JSON.parse(savedProcess)
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const mapped = parsed.map((item: any, idx: number) => ({
-            id: item.id || `step-${idx + 1}`,
-            step_number: item.step_number || (item.stepNumber ? parseInt(item.stepNumber, 10) : idx + 1),
-            title: item.title,
-            category: item.category || item.subtitle || 'Precision Manufacturing',
-            subtitle: item.subtitle || item.category || '',
-            description: item.description || '',
-            image_url: item.image_url || item.image || '/images/process-hand-filing.png',
-          }))
-          setProcessSteps(mapped)
-        }
-      }
-
-      const savedVideo = localStorage.getItem('durable_video_data')
-      if (savedVideo) {
-        const parsed = JSON.parse(savedVideo)
-        if (parsed && typeof parsed === 'object') setVideoData((prev) => ({ ...prev, ...parsed }))
-      }
-
-      const savedCertLogos = localStorage.getItem('durable_cert_logos')
-      if (savedCertLogos) {
-        const parsed = JSON.parse(savedCertLogos)
-        if (Array.isArray(parsed) && parsed.length > 0) setCertLogos(parsed)
-      }
-
-      const savedCustom = localStorage.getItem('durable_custom_home_blocks')
-      if (savedCustom) {
-        const parsed = JSON.parse(savedCustom)
-        if (Array.isArray(parsed)) setCustomBlocks(parsed)
-      }
-    } catch (e) {
-      console.error('LocalStorage Home mount read error:', e)
-    }
+    loadPersistentData('durable_hero_slides', heroSlides, (data) => {
+      if (Array.isArray(data) && data.length > 0) setHeroSlides(data)
+    })
+    loadPersistentData('durable_about_data', aboutData, (data) => {
+      if (data && typeof data === 'object') setAboutData((prev) => ({ ...prev, ...data }))
+    })
+    loadPersistentData('durable_stats_data', statsData, (data) => {
+      if (Array.isArray(data) && data.length > 0) setStatsData(data)
+    })
+    loadPersistentData('durable_solutions_data', solutionsData, (data) => {
+      if (Array.isArray(data) && data.length > 0) setSolutionsData(data)
+    })
+    loadPersistentData('durable_quality_trust_data', qualityTrustData, (data) => {
+      if (data && typeof data === 'object') setQualityTrustData((prev) => ({ ...prev, ...data }))
+    })
+    loadPersistentData('durable_pillars_data', pillarsData, (data) => {
+      if (data && typeof data === 'object') setPillarsData((prev) => ({ ...prev, ...data }))
+    })
+    loadPersistentData('durable_precision_data', precisionData, (data) => {
+      if (data && typeof data === 'object') setPrecisionData((prev) => ({ ...prev, ...data }))
+    })
+    loadPersistentData('durable_process_data', processSteps, (data) => {
+      if (Array.isArray(data) && data.length > 0) setProcessSteps(data)
+    })
+    loadPersistentData('durable_video_data', videoData, (data) => {
+      if (data && typeof data === 'object') setVideoData((prev) => ({ ...prev, ...data }))
+    })
+    loadPersistentData('durable_cert_logos', certLogos, (data) => {
+      if (Array.isArray(data) && data.length > 0) setCertLogos(data)
+    })
+    loadPersistentData('durable_custom_home_blocks', customBlocks, (data) => {
+      if (Array.isArray(data)) setCustomBlocks(data)
+    })
   }, [])
 
-  // SAVE ALL CHANGES TO LOCALSTORAGE & EMIT EVENT
+  // SAVE ALL CHANGES TO STORAGE & CLOUD AUTOMATICALLY
   const saveAllToStorage = (overrideHero?: AdminHeroSlide[]) => {
     try {
-      localStorage.setItem('durable_hero_slides', JSON.stringify(overrideHero || heroSlides))
-      localStorage.setItem('durable_about_data', JSON.stringify(aboutData))
-      localStorage.setItem('durable_stats_data', JSON.stringify(statsData))
-      localStorage.setItem('durable_solutions_data', JSON.stringify(solutionsData))
-      localStorage.setItem('durable_quality_trust_data', JSON.stringify(qualityTrustData))
-      localStorage.setItem('durable_pillars_data', JSON.stringify(pillarsData))
-      localStorage.setItem('durable_precision_data', JSON.stringify(precisionData))
-      localStorage.setItem('durable_process_data', JSON.stringify(processSteps))
-      localStorage.setItem('durable_video_data', JSON.stringify(videoData))
-      localStorage.setItem('durable_cert_logos', JSON.stringify(certLogos))
-      localStorage.setItem('durable_custom_home_blocks', JSON.stringify(customBlocks))
-
-      window.dispatchEvent(new Event('durable_content_updated'))
+      savePersistentData('durable_hero_slides', overrideHero || heroSlides)
+      savePersistentData('durable_about_data', aboutData)
+      savePersistentData('durable_stats_data', statsData)
+      savePersistentData('durable_solutions_data', solutionsData)
+      savePersistentData('durable_quality_trust_data', qualityTrustData)
+      savePersistentData('durable_pillars_data', pillarsData)
+      savePersistentData('durable_precision_data', precisionData)
+      savePersistentData('durable_process_data', processSteps)
+      savePersistentData('durable_video_data', videoData)
+      savePersistentData('durable_cert_logos', certLogos)
+      savePersistentData('durable_custom_home_blocks', customBlocks)
 
       setIsSaved(true)
-      setSaveMessage('Home Page changes saved & published live!')
+      setSaveMessage('Home Page changes saved & synced live across all devices!')
       setTimeout(() => setIsSaved(false), 4000)
     } catch (e) {
-      console.error('LocalStorage write error:', e)
+      console.error('Persistent write error:', e)
     }
   }
 

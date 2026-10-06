@@ -19,6 +19,7 @@ import {
 } from 'lucide-react'
 import { AdminMediaUploadPlaceholder } from '@/src/components/admin/AdminMediaUploadPlaceholder'
 import { RichTextToolbar } from '@/src/components/admin/RichTextToolbar'
+import { savePersistentData, loadPersistentData } from '@/src/lib/persistentStorage'
 
 export interface HistoryCard {
   id: string
@@ -94,59 +95,43 @@ export default function AdminContentAboutPage() {
   const [cardModalForm, setCardModalForm] = useState({ title: '', subtitle: '', icon: '/images/icon-history-40years.png' })
   const [customModalForm, setCustomModalForm] = useState({ title: '', subheading: '', description: '', image_url: '' })
 
-  // SYNC FROM LOCALSTORAGE ON MOUNT
+  // SYNC FROM CLOUD / LOCALSTORAGE ON MOUNT
   useEffect(() => {
-    try {
-      const savedHero = localStorage.getItem('durable_about_hero_data')
-      if (savedHero) {
-        const parsed = JSON.parse(savedHero)
-        if (parsed && typeof parsed === 'object') setHeroForm((prev) => ({ ...prev, ...parsed }))
-      }
+    loadPersistentData('durable_about_hero_data', heroForm, (data) => {
+      if (data && typeof data === 'object') setHeroForm((prev) => ({ ...prev, ...data }))
+    })
 
-      const savedHist = localStorage.getItem('durable_history_data')
-      if (savedHist) {
-        const parsed = JSON.parse(savedHist)
-        if (parsed && typeof parsed === 'object') setHistoryForm((prev) => ({ ...prev, ...parsed }))
-      }
+    loadPersistentData('durable_history_data', historyForm, (data) => {
+      if (data && typeof data === 'object') setHistoryForm((prev) => ({ ...prev, ...data }))
+    })
 
-      const savedCards = localStorage.getItem('durable_history_cards')
-      if (savedCards) {
-        const parsed = JSON.parse(savedCards)
-        if (Array.isArray(parsed) && parsed.length > 0) setHistoryCards(parsed)
-      }
+    loadPersistentData('durable_history_cards', historyCards, (data) => {
+      if (Array.isArray(data) && data.length > 0) setHistoryCards(data)
+    })
 
-      const savedJourney = localStorage.getItem('durable_journey_data')
-      if (savedJourney) {
-        const parsed = JSON.parse(savedJourney)
-        if (parsed && typeof parsed === 'object') setJourneyForm((prev) => ({ ...prev, ...parsed }))
-      }
+    loadPersistentData('durable_journey_data', journeyForm, (data) => {
+      if (data && typeof data === 'object') setJourneyForm((prev) => ({ ...prev, ...data }))
+    })
 
-      const savedCustom = localStorage.getItem('durable_custom_about_blocks')
-      if (savedCustom) {
-        const parsed = JSON.parse(savedCustom)
-        if (Array.isArray(parsed)) setCustomBlocks(parsed)
-      }
-    } catch (e) {
-      console.error('LocalStorage About mount read error:', e)
-    }
+    loadPersistentData('durable_custom_about_blocks', customBlocks, (data) => {
+      if (Array.isArray(data)) setCustomBlocks(data)
+    })
   }, [])
 
-  // SAVE ALL CHANGES TO LOCALSTORAGE & EMIT EVENT
+  // SAVE ALL CHANGES TO CLOUD & DUAL STORAGE ENGINE
   const saveAllToStorage = () => {
     try {
-      localStorage.setItem('durable_about_hero_data', JSON.stringify(heroForm))
-      localStorage.setItem('durable_history_data', JSON.stringify(historyForm))
-      localStorage.setItem('durable_history_cards', JSON.stringify(historyCards))
-      localStorage.setItem('durable_journey_data', JSON.stringify(journeyForm))
-      localStorage.setItem('durable_custom_about_blocks', JSON.stringify(customBlocks))
-
-      window.dispatchEvent(new Event('durable_content_updated'))
+      savePersistentData('durable_about_hero_data', heroForm)
+      savePersistentData('durable_history_data', historyForm)
+      savePersistentData('durable_history_cards', historyCards)
+      savePersistentData('durable_journey_data', journeyForm)
+      savePersistentData('durable_custom_about_blocks', customBlocks)
 
       setIsSaved(true)
-      setSaveMessage('About Us page content updated and published live!')
+      setSaveMessage('About Us page content updated and published live across all devices!')
       setTimeout(() => setIsSaved(false), 4000)
     } catch (e) {
-      console.error('LocalStorage write error:', e)
+      console.error('Storage save error:', e)
     }
   }
 

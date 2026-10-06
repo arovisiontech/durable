@@ -118,12 +118,21 @@ export function savePersistentData<T>(key: string, value: T): void {
     }
   }
 
-  // 3. Dispatch global live update event
+  // 3. Sync to Cloud API globally across all devices & browsers automatically
+  fetch('/api/sync', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ key, value }),
+  }).catch((err) => {
+    console.warn(`[persistentStorage] Cloud sync POST notice for "${key}":`, err)
+  })
+
+  // 4. Dispatch global live update event
   window.dispatchEvent(new Event('durable_content_updated'))
 }
 
 /**
- * Unified Load Function (Fast LocalStorage Sync read + IDB Async fallback sync)
+ * Unified Load Function (Fast LocalStorage Sync read + IDB Async + Cloud API Sync)
  */
 export function loadPersistentData<T>(
   key: string,
@@ -133,6 +142,7 @@ export function loadPersistentData<T>(
   const syncData = getLocalStorageSync<T>(key, defaultValue)
 
   if (typeof window !== 'undefined') {
+    // 1. Load from IndexedDB
     getItemIDB<T>(key)
       .then((idbData) => {
         if (idbData !== null && idbData !== undefined) {
@@ -143,6 +153,23 @@ export function loadPersistentData<T>(
       })
       .catch(() => {
         onLoaded(syncData)
+      })
+
+    // 2. Fetch latest saved data from Cloud DB (/api/sync) automatically across all devices
+    fetch(`/api/sync?key=${encodeURIComponent(key)}`)
+      .then((res) => res.json())
+      .then((resData) => {
+        if (resData && resData.success && resData.data !== null && resData.data !== undefined) {
+          onLoaded(resData.data)
+          // Update local IDB & LocalStorage with latest cloud data
+          setItemIDB(key, resData.data).catch(() => {})
+          try {
+            localStorage.setItem(key, JSON.stringify(resData.data))
+          } catch (e) {}
+        }
+      })
+      .catch((err) => {
+        console.warn(`[persistentStorage] Cloud sync GET notice for "${key}":`, err)
       })
   }
 

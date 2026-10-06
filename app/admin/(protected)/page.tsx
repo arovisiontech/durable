@@ -18,7 +18,7 @@ import { createClient } from '@/src/lib/supabase/server'
 import { StatCard } from '@/src/components/admin/StatCard'
 import { RecentProductsCard } from '@/src/components/admin/RecentProductsCard'
 import { RecentMessagesCard } from '@/src/components/admin/RecentMessagesCard'
-import { ContentBackupWidget } from '@/src/components/admin/ContentBackupWidget'
+
 
 export default async function AdminDashboardPage() {
   const supabase = await createClient()
@@ -132,8 +132,7 @@ export default async function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* Cross-Device Content Backup & Sync Widget */}
-      <ContentBackupWidget />
+
 
       {/* 2. Quick Actions Bar */}
       <div className="space-y-3">
