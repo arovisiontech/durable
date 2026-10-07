@@ -207,43 +207,43 @@ export function ComplianceVideoSection() {
             <span className="text-[10px] sm:text-xs font-extrabold tracking-wider text-slate-300 leading-tight">13485 : 2016</span>
           </div>
 
-          {/* Logo 4: SIMA Pakistan (Official Cropped Icon from SS 2) */}
+          {/* Logo 4: SIMA Pakistan (Transparent White Emblem) */}
           <div className="h-10 sm:h-14 lg:h-16 flex items-center justify-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images/icon-sima-scci.png"
               alt="SIMAP Surgical Instrument Manufacturers Association"
-              className="h-full object-contain mix-blend-screen filter brightness-150 contrast-150"
+              className="h-full object-contain"
             />
           </div>
 
-          {/* Logo 5: CE Mark (Official Cropped Icon from SS 3) */}
+          {/* Logo 5: CE Mark (Transparent White Emblem) */}
           <div className="h-10 sm:h-14 lg:h-16 flex items-center justify-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images/icon-ce-official.png"
               alt="CE Mark"
-              className="h-full object-contain mix-blend-screen filter brightness-150 contrast-150"
+              className="h-full object-contain"
             />
           </div>
 
-          {/* Logo 6: FDA Registered (Official Cropped Icon from SS 4) */}
+          {/* Logo 6: FDA Registered (Transparent White Emblem) */}
           <div className="h-10 sm:h-14 lg:h-16 flex items-center justify-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images/icon-fda-official.png"
               alt="FDA Registered"
-              className="h-full object-contain mix-blend-screen filter brightness-150 contrast-150"
+              className="h-full object-contain"
             />
           </div>
 
-          {/* Logo 7: EU-MDR Ready (Official Icon from SS 1) */}
+          {/* Logo 7: EU-MDR Ready (Transparent White Emblem) */}
           <div className="h-10 sm:h-14 lg:h-16 flex items-center justify-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images/icon-eumdr.png"
               alt="EU-MDR Ready"
-              className="h-full object-contain filter brightness-0 invert"
+              className="h-full object-contain"
             />
           </div>
         </div>
