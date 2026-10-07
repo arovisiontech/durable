@@ -207,7 +207,7 @@ export function ComplianceVideoSection() {
             <span className="text-[10px] sm:text-xs font-extrabold tracking-wider text-slate-300 leading-tight">13485 : 2016</span>
           </div>
 
-          {/* Logo 4: SIMA Pakistan (Official Icon from SS 1) */}
+          {/* Logo 4: SIMA Pakistan (Official Cropped Icon from SS 2) */}
           <div className="h-10 sm:h-14 lg:h-16 flex items-center justify-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -217,7 +217,7 @@ export function ComplianceVideoSection() {
             />
           </div>
 
-          {/* Logo 5: CE Mark (Official Icon from SS 2) */}
+          {/* Logo 5: CE Mark (Official Cropped Icon from SS 3) */}
           <div className="h-10 sm:h-14 lg:h-16 flex items-center justify-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -227,7 +227,7 @@ export function ComplianceVideoSection() {
             />
           </div>
 
-          {/* Logo 6: FDA Registered (Official Icon from SS 3) */}
+          {/* Logo 6: FDA Registered (Official Cropped Icon from SS 4) */}
           <div className="h-10 sm:h-14 lg:h-16 flex items-center justify-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
