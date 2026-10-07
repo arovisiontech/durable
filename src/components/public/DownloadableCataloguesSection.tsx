@@ -1,9 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Lock, Download, Eye, X, ShieldCheck, Mail, PhoneCall, CheckCircle2, AlertCircle } from 'lucide-react'
 import { safeViewPdf, safeDownloadPdf } from '@/src/lib/pdfHelper'
+import { loadPersistentData } from '@/src/lib/persistentStorage'
+import { INITIAL_CATALOGUES_SEED, CatalogueItem } from '@/src/lib/dataStore'
 
 interface CatalogueCardItem {
   id: string
@@ -16,75 +18,58 @@ interface CatalogueCardItem {
   accessCode: string
 }
 
+const DEFAULT_CARD_ITEMS: CatalogueCardItem[] = INITIAL_CATALOGUES_SEED.map((c, idx) => ({
+  id: c.id,
+  code: `CATALOG 0${idx + 1}`,
+  tag: c.category_name || 'Medical Catalog',
+  title: c.title,
+  description: c.description || 'Official medical instruments catalogue with technical specifications.',
+  image: c.cover_image || '/images/catalogue-cover-yellow.png',
+  pdfUrl: c.pdf_url,
+  accessCode: '12345',
+}))
+
 export function DownloadableCataloguesSection() {
-  const catalogues: CatalogueCardItem[] = [
-    {
-      id: 'cat-1',
-      code: 'CATALOG 01',
-      tag: 'Hospital Furniture',
-      title: 'HOSPITAL FURNITURE',
-      description:
-        'We Provide High-Quality Hospital Furniture Designed To Support Healthcare Professionals While Creating Safe, Comfortable, And Efficient Environments For Patients. Our Products Combine Durable Materials, Practical Functionality, Modern Design, And Reliable Performance For Hospitals, Clinics, Laboratories, And Healthcare Facilities.',
-      image: '/images/catalogue-cover-yellow.png',
-      pdfUrl: '/pdf/general-surgical-instruments-catalogue.pdf',
-      accessCode: '12345',
-    },
-    {
-      id: 'cat-2',
-      code: 'CATALOG 02',
-      tag: 'General Surgery',
-      title: 'GENERAL SURGICAL INSTRUMENTS',
-      description:
-        'Comprehensive Range Of High-Precision Surgical Scissors, Scalpels, Forceps, Retractors, And Needle Holders Crafted From Medical-Grade Stainless Steel For General Surgical Procedures.',
-      image: '/images/catalogue-cover-yellow.png',
-      pdfUrl: '/pdf/general-surgical-instruments-catalogue.pdf',
-      accessCode: '12345',
-    },
-    {
-      id: 'cat-3',
-      code: 'CATALOG 03',
-      tag: 'Dental Instruments',
-      title: 'DENTAL & MAXILLOFACIAL',
-      description:
-        'Precision Dental Scalers, Probes, Extracting Forceps, Elevator Sets, And Restorative Instruments Designed For Orthodontic And Maxillofacial Specialists Worldwide.',
-      image: '/images/catalogue-cover-yellow.png',
-      pdfUrl: '/pdf/dental-maxillofacial-catalogue.pdf',
-      accessCode: '12345',
-    },
-    {
-      id: 'cat-4',
-      code: 'CATALOG 04',
-      tag: 'Orthopedic',
-      title: 'ORTHOPEDIC INSTRUMENTATION',
-      description:
-        'Bone Holding Forceps, Rongeurs, Bone Chisels, Mallets, And Implant Placement Toolkits Engineered Under Strict ISO 13485 Standards.',
-      image: '/images/catalogue-cover-yellow.png',
-      pdfUrl: '/pdf/orthopedic-instruments-catalogue.pdf',
-      accessCode: '12345',
-    },
-    {
-      id: 'cat-5',
-      code: 'CATALOG 05',
-      tag: 'Medical Hollowware',
-      title: 'MEDICAL HOLLOWWARE & TRAYS',
-      description:
-        'Sterilization Trays, Kidney Dishes, Gallipots, Instrument Containers, And Procedure Bowls Built With Corrosion-Resistant Stainless Steel.',
-      image: '/images/catalogue-cover-yellow.png',
-      pdfUrl: '/pdf/general-surgical-instruments-catalogue.pdf',
-      accessCode: '12345',
-    },
-    {
-      id: 'cat-6',
-      code: 'CATALOG 06',
-      tag: 'Single Use',
-      title: 'SINGLE USE & STERILE PACKS',
-      description:
-        'Sterile Procedure Packs, Single-Use Scissors, Forceps, And Custom Medical Kitting Solutions Tailored For Infection Control And Single-Use Convenience.',
-      image: '/images/catalogue-cover-yellow.png',
-      pdfUrl: '/pdf/general-surgical-instruments-catalogue.pdf',
-      accessCode: '12345',
-    },
-  ]
+  const [catalogues, setCatalogues] = useState<CatalogueCardItem[]>(DEFAULT_CARD_ITEMS)
+
+  useEffect(() => {
+    loadPersistentData('durable_catalogues', INITIAL_CATALOGUES_SEED, (storedData: any) => {
+      if (Array.isArray(storedData) && storedData.length > 0) {
+        const mapped: CatalogueCardItem[] = storedData.map((item: any, idx: number) => ({
+          id: item.id || `cat-${idx + 1}`,
+          code: item.code || `CATALOG 0${idx + 1}`,
+          tag: item.category_name || item.tag || 'Medical Catalog',
+          title: item.title || 'Medical Catalogue',
+          description: item.description || 'Technical specifications and product sizing guide.',
+          image: item.cover_image || item.image || '/images/catalogue-cover-yellow.png',
+          pdfUrl: item.pdf_url || item.pdfUrl || '/pdf/general-surgical-instruments-catalogue.pdf',
+          accessCode: item.accessCode || '12345',
+        }))
+        setCatalogues(mapped)
+      }
+    })
+
+    const handleUpdate = () => {
+      loadPersistentData('durable_catalogues', INITIAL_CATALOGUES_SEED, (storedData: any) => {
+        if (Array.isArray(storedData) && storedData.length > 0) {
+          const mapped: CatalogueCardItem[] = storedData.map((item: any, idx: number) => ({
+            id: item.id || `cat-${idx + 1}`,
+            code: item.code || `CATALOG 0${idx + 1}`,
+            tag: item.category_name || item.tag || 'Medical Catalog',
+            title: item.title || 'Medical Catalogue',
+            description: item.description || 'Technical specifications and product sizing guide.',
+            image: item.cover_image || item.image || '/images/catalogue-cover-yellow.png',
+            pdfUrl: item.pdf_url || item.pdfUrl || '/pdf/general-surgical-instruments-catalogue.pdf',
+            accessCode: item.accessCode || '12345',
+          }))
+          setCatalogues(mapped)
+        }
+      })
+    }
+
+    window.addEventListener('durable_content_updated', handleUpdate)
+    return () => window.removeEventListener('durable_content_updated', handleUpdate)
+  }, [])
 
   // Modal State for Access Code Protection (Download Only)
   const [selectedCatalogue, setSelectedCatalogue] = useState<CatalogueCardItem | null>(null)

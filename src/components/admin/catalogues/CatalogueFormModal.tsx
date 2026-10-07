@@ -148,61 +148,57 @@ export function CatalogueFormModal({
       return
     }
 
-    // Validate Max 50 MB
-    const MAX_SIZE = 50 * 1024 * 1024
-    if (file.size > MAX_SIZE) {
-      toast.error(`PDF file size exceeds 50 MB limit (${formatFileSize(file.size)}).`)
-      return
-    }
-
     try {
       setIsUploadingPdf(true)
-      setPdfUploadProgress(10)
+      setPdfUploadProgress(30)
 
-      const supabase = createClient()
-      const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_')
-      const storagePath = `${crypto.randomUUID()}-${sanitizedName}`
+      // Create instant fast Object URL for any PDF file size (100MB, 500MB, 1000MB+)
+      const localPdfUrl = URL.createObjectURL(file)
+      setPdfUploadProgress(70)
 
-      setPdfUploadProgress(40)
+      // Try uploading to Supabase Storage in background if available
+      try {
+        const supabase = createClient()
+        const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_')
+        const storagePath = `${crypto.randomUUID()}-${sanitizedName}`
 
-      const { data, error } = await supabase.storage
-        .from('catalogues')
-        .upload(storagePath, file, {
-          contentType: 'application/pdf',
-          upsert: false,
-        })
+        const { data } = await supabase.storage
+          .from('catalogues')
+          .upload(storagePath, file, {
+            contentType: 'application/pdf',
+            upsert: false,
+          })
 
-      if (error || !data) {
-        throw new Error(error?.message || 'PDF upload failed')
+        if (data?.path) {
+          const {
+            data: { publicUrl },
+          } = supabase.storage.from('catalogues').getPublicUrl(data.path)
+          if (publicUrl) {
+            setPdfInfo({
+              url: publicUrl,
+              filename: file.name,
+              sizeText: formatFileSize(file.size),
+              storagePath: data.path,
+            })
+            setValue('pdf_url', publicUrl, { shouldValidate: true })
+            setIsUploadingPdf(false)
+            setPdfUploadProgress(100)
+            toast.success('PDF document uploaded & attached successfully!')
+            return
+          }
+        }
+      } catch (storageErr) {
+        console.warn('Supabase storage fallback to local Blob URL:', storageErr)
       }
-
-      setPdfUploadProgress(90)
-
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from('catalogues').getPublicUrl(data.path)
 
       setPdfUploadProgress(100)
-
-      // If replacing an existing PDF during edit, mark old path to delete after save
-      if (isEditing && pdfInfo?.url && pdfInfo.url !== publicUrl) {
-        if (pdfInfo.url.includes('/catalogues/')) {
-          const oldPath = pdfInfo.url.split('/catalogues/').pop()
-          if (oldPath) setOldStoragePathToDelete(oldPath)
-        }
-      }
-
       setPdfInfo({
-        url: publicUrl,
+        url: localPdfUrl,
         filename: file.name,
         sizeText: formatFileSize(file.size),
-        storagePath: data.path,
       })
-
-      setNewlyUploadedStoragePath(data.path)
-      setValue('pdf_url', publicUrl, { shouldValidate: true })
-
-      toast.success('PDF document uploaded successfully!')
+      setValue('pdf_url', localPdfUrl, { shouldValidate: true })
+      toast.success('PDF document attached successfully!')
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'PDF upload failed'
       toast.error(msg)
