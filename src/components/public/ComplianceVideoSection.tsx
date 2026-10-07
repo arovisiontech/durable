@@ -217,21 +217,24 @@ export function ComplianceVideoSection() {
             />
           </div>
 
-          {/* Logo 5: CE Mark (Large Bold Vector CE, No Box matching SS 2) */}
-          <div className="h-10 sm:h-14 lg:h-16 flex items-center justify-center select-none text-white">
-            <svg className="h-full w-auto text-white fill-current" viewBox="0 0 160 100">
-              <path d="M50,10 C27.9,10 10,27.9 10,50 C10,72.1 27.9,90 50,90 C62.3,90 73.3,84.4 80.6,75.6 L68.8,63.8 C64.3,69.5 57.6,73.2 50,73.2 C37.2,73.2 26.8,62.8 26.8,50 C26.8,37.2 37.2,26.8 50,26.8 C57.6,26.8 64.3,30.5 68.8,36.2 L80.6,24.4 C73.3,15.6 62.3,10 50,10 Z" />
-              <path d="M125,10 C104.5,10 87.4,24.4 82.5,43 L125,43 L125,57 L82.5,57 C87.4,75.6 104.5,90 125,90 C137.3,90 148.3,84.4 155.6,75.6 L143.8,63.8 C139.3,69.5 132.6,73.2 125,73.2 C113.8,73.2 104.4,65 101.5,54 L155,54 L155,46 L101.5,46 C104.4,35 113.8,26.8 125,26.8 C132.6,26.8 139.3,30.5 143.8,36.2 L155.6,24.4 C148.3,15.6 137.3,10 125,10 Z" />
-            </svg>
+          {/* Logo 5: CE Mark (Official Icon from SS 2) */}
+          <div className="h-10 sm:h-14 lg:h-16 flex items-center justify-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/icon-ce-official.png"
+              alt="CE Mark"
+              className="h-full object-contain filter brightness-0 invert"
+            />
           </div>
 
-          {/* Logo 6: FDA Registered (Large Bold Vector FDA, No Box matching SS 2) */}
-          <div className="h-10 sm:h-14 lg:h-16 flex items-center justify-center select-none text-white">
-            <svg className="h-full w-auto text-white fill-current" viewBox="0 0 200 80">
-              <path d="M15 15 H65 V27 H33 V40 H60 V52 H33 V75 H15 Z" />
-              <path d="M75 15 H115 C132 15 145 28 145 45 C145 62 132 75 115 75 H75 Z M93 27 V63 H113 C123 63 127 55 127 45 C127 35 123 27 113 27 Z" />
-              <path d="M165 15 L145 75 H163 L168 58 H187 L192 75 H210 L190 15 Z M172 45 L177.5 27 L183 45 Z" />
-            </svg>
+          {/* Logo 6: FDA Registered (Official Icon from SS 3) */}
+          <div className="h-10 sm:h-14 lg:h-16 flex items-center justify-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/icon-fda-official.png"
+              alt="FDA Registered"
+              className="h-full object-contain filter brightness-0 invert"
+            />
           </div>
 
           {/* Logo 7: EU-MDR Ready (Official Icon from SS 1) */}
