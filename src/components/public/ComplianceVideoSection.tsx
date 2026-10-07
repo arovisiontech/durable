@@ -159,26 +159,26 @@ export function ComplianceVideoSection() {
         </div>
       )}
 
-      {/* Bottom Content & Global Compliance Badges */}
-      <div className="max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-6 sm:space-y-8 pt-6 sm:pt-8">
+      {/* Bottom Content & Global Compliance Badges matching SS 2 */}
+      <div className="max-w-[1440px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-8 pt-8">
         {/* Text Row: Left Title + Right Description */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-start">
           <div className="lg:col-span-6">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight leading-tight">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight">
               {videoData.title || 'Committed To Global Standards'}
             </h2>
           </div>
           <div className="lg:col-span-6">
-            <p className="text-xs font-semibold text-slate-300 leading-relaxed">
+            <p className="text-xs sm:text-sm font-semibold text-slate-300 leading-relaxed">
               {videoData.description}
             </p>
           </div>
         </div>
 
-        {/* Compliance & Quality Logo Row */}
-        <div className="pt-4 border-t border-slate-700/60 flex flex-wrap items-center justify-between gap-4 sm:gap-6 opacity-90">
+        {/* Compliance & Quality Logo Row matching SS 2 (7 Logos Distributed Evenly Across Screen) */}
+        <div className="pt-8 sm:pt-10 border-t border-slate-700/60 grid grid-cols-3 sm:grid-cols-7 gap-4 sm:gap-6 lg:gap-8 items-center justify-items-center w-full">
           {/* Logo 1: SCCI Sialkot Chamber */}
-          <div className="h-8 sm:h-10 flex items-center justify-center">
+          <div className="h-10 sm:h-14 lg:h-16 flex items-center justify-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images/icon-scci-white.png"
@@ -188,53 +188,81 @@ export function ComplianceVideoSection() {
           </div>
 
           {/* Logo 2: ISO 9001:2015 */}
-          <div className="h-8 sm:h-10 flex items-center justify-center">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/images/icon-iso.png"
-              alt="ISO 9001:2015"
-              className="h-full object-contain filter brightness-0 invert"
-            />
+          <div className="flex flex-col items-center justify-center text-white select-none">
+            <svg className="w-8 h-8 sm:w-11 sm:h-11 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+            </svg>
+            <span className="text-xs sm:text-sm font-black tracking-wider uppercase mt-1 leading-none">ISO</span>
+            <span className="text-[10px] sm:text-xs font-extrabold tracking-wider text-slate-300 leading-tight">9001:2015</span>
           </div>
 
           {/* Logo 3: ISO 13485:2016 */}
-          <div className="h-8 sm:h-10 flex items-center justify-center">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/images/icon-iso-13485-white.png"
-              alt="ISO 13485:2016"
-              className="h-full object-contain filter brightness-0 invert"
-            />
+          <div className="flex flex-col items-center justify-center text-white select-none">
+            <svg className="w-8 h-8 sm:w-11 sm:h-11 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+            </svg>
+            <span className="text-xs sm:text-sm font-black tracking-wider uppercase mt-1 leading-none">ISO</span>
+            <span className="text-[10px] sm:text-xs font-extrabold tracking-wider text-slate-300 leading-tight">13485 : 2016</span>
           </div>
 
           {/* Logo 4: SIMA Pakistan */}
-          <div className="h-8 sm:h-10 flex items-center justify-center">
+          <div className="h-10 sm:h-14 lg:h-16 flex items-center justify-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images/icon-sima-scci.png"
-              alt="SIMA Surgical Instrument Manufacturers Association"
+              alt="SIMAP Surgical Instrument Manufacturers Association"
               className="h-full object-contain filter brightness-0 invert"
             />
           </div>
 
-          {/* Logo 5: CE Mark */}
-          <div className="h-8 sm:h-9 flex items-center justify-center font-black text-xl tracking-widest text-white border-2 border-white px-2.5 rounded-md">
-            CE
+          {/* Logo 5: CE Mark (Large Bold Vector CE, No Box matching SS 2) */}
+          <div className="h-10 sm:h-14 lg:h-16 flex items-center justify-center select-none text-white">
+            <svg className="h-full w-auto text-white fill-current" viewBox="0 0 160 100">
+              <path d="M50,10 C27.9,10 10,27.9 10,50 C10,72.1 27.9,90 50,90 C62.3,90 73.3,84.4 80.6,75.6 L68.8,63.8 C64.3,69.5 57.6,73.2 50,73.2 C37.2,73.2 26.8,62.8 26.8,50 C26.8,37.2 37.2,26.8 50,26.8 C57.6,26.8 64.3,30.5 68.8,36.2 L80.6,24.4 C73.3,15.6 62.3,10 50,10 Z" />
+              <path d="M125,10 C104.5,10 87.4,24.4 82.5,43 L125,43 L125,57 L82.5,57 C87.4,75.6 104.5,90 125,90 C137.3,90 148.3,84.4 155.6,75.6 L143.8,63.8 C139.3,69.5 132.6,73.2 125,73.2 C113.8,73.2 104.4,65 101.5,54 L155,54 L155,46 L101.5,46 C104.4,35 113.8,26.8 125,26.8 C132.6,26.8 139.3,30.5 143.8,36.2 L155.6,24.4 C148.3,15.6 137.3,10 125,10 Z" />
+            </svg>
           </div>
 
-          {/* Logo 6: FDA Registered */}
-          <div className="h-8 sm:h-9 flex items-center justify-center font-black text-xl tracking-tighter text-white border-2 border-white px-2.5 rounded-md">
-            FDA
+          {/* Logo 6: FDA Registered (Large Bold Vector FDA, No Box matching SS 2) */}
+          <div className="h-10 sm:h-14 lg:h-16 flex items-center justify-center select-none text-white">
+            <svg className="h-full w-auto text-white fill-current" viewBox="0 0 200 80">
+              <path d="M15 15 H65 V27 H33 V40 H60 V52 H33 V75 H15 Z" />
+              <path d="M75 15 H115 C132 15 145 28 145 45 C145 62 132 75 115 75 H75 Z M93 27 V63 H113 C123 63 127 55 127 45 C127 35 123 27 113 27 Z" />
+              <path d="M165 15 L145 75 H163 L168 58 H187 L192 75 H210 L190 15 Z M172 45 L177.5 27 L183 45 Z" />
+            </svg>
           </div>
 
-          {/* Logo 7: EU-MDR Ready */}
-          <div className="h-8 sm:h-10 flex items-center justify-center">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/images/icon-eumdr.png"
-              alt="EU-MDR Ready"
-              className="h-full object-contain filter brightness-0 invert"
-            />
+          {/* Logo 7: EU-MDR Ready (Stars Circle + EU-MDR + Checkmark matching SS 2) */}
+          <div className="h-10 sm:h-14 lg:h-16 flex items-center justify-center select-none text-white">
+            <svg className="h-full w-auto text-white" viewBox="0 0 220 70" fill="none">
+              <g transform="translate(30, 35)">
+                {Array.from({ length: 12 }).map((_, i) => {
+                  const angle = (i * 30 * Math.PI) / 180
+                  const x = 22 * Math.sin(angle)
+                  const y = -22 * Math.cos(angle)
+                  return (
+                    <path
+                      key={i}
+                      d="M0 -3.5 L0.9 -1 L3.5 -1 L1.4 0.6 L2.1 3.2 L0 1.6 L-2.1 3.2 L-1.4 0.6 L-3.5 -1 L-0.9 -1 Z"
+                      transform={`translate(${x}, ${y})`}
+                      fill="currentColor"
+                    />
+                  );
+                })}
+              </g>
+              <text x="65" y="44" fontFamily="sans-serif" fontWeight="900" fontSize="30" fill="currentColor" letterSpacing="1">
+                EU-MDR
+              </text>
+              <path
+                d="M175 38 L188 52 L215 15"
+                stroke="currentColor"
+                strokeWidth="6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </div>
         </div>
       </div>
