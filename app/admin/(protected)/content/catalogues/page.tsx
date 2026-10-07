@@ -1,5 +1,5 @@
-import { CatalogueManager } from '@/src/components/admin/catalogues/CatalogueManager'
+import AdminCataloguesContentPage from '@/app/admin/(protected)/catalogues/page'
 
 export default function AdminContentCataloguesPage() {
-  return <CatalogueManager />
+  return <AdminCataloguesContentPage />
 }

@@ -95,7 +95,8 @@ export function DownloadableCataloguesSection() {
     if (!selectedCatalogue) return
 
     const trimmed = inputCode.trim()
-    if (trimmed === '12345' || trimmed === '2026' || trimmed.toUpperCase() === 'DURABLE') {
+    const catCode = selectedCatalogue.accessCode?.trim() || '12345'
+    if (trimmed === catCode || trimmed === '12345' || trimmed === '2026' || trimmed.toUpperCase() === 'DURABLE') {
       setIsSuccess(true)
       setErrorMsg('')
 

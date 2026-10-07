@@ -577,26 +577,41 @@ export default function AdminCataloguesContentPage() {
               </div>
 
               {/* Direct PDF Upload from Computer / Gallery (No file size limit!) */}
-              <div className="space-y-2 p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+              <div className="space-y-3 p-4 bg-slate-50 border border-slate-200 rounded-2xl">
                 <label className="text-xs font-extrabold text-slate-800 uppercase block">
                   Direct PDF Document Upload (Gallery / Computer)
                 </label>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col gap-2">
                   <input
                     type="file"
                     accept="application/pdf,.pdf"
                     onChange={(e) => {
                       const file = e.target.files?.[0]
                       if (!file) return
-                      const url = URL.createObjectURL(file)
-                      setCatModalForm({ ...catModalForm, pdf_url: url })
+                      const reader = new FileReader()
+                      reader.onload = (evt) => {
+                        const dataUrl = evt.target?.result as string
+                        setCatModalForm((prev) => ({ ...prev, pdf_url: dataUrl }))
+                      }
+                      reader.readAsDataURL(file)
                     }}
                     className="text-xs text-slate-600 font-semibold file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-[#0B1B3D] file:text-white cursor-pointer"
                   />
+
+                  <div className="space-y-1 pt-1">
+                    <label className="text-[10px] font-bold text-slate-600 uppercase">Or Enter PDF URL / Path Directly</label>
+                    <input
+                      type="text"
+                      value={catModalForm.pdf_url}
+                      onChange={(e) => setCatModalForm({ ...catModalForm, pdf_url: e.target.value })}
+                      placeholder="e.g. /pdf/hospital-furniture.pdf or https://..."
+                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-900"
+                    />
+                  </div>
                 </div>
                 {catModalForm.pdf_url && (
                   <p className="text-[11px] font-mono text-emerald-700 font-bold truncate">
-                    Attached: {catModalForm.pdf_url}
+                    Attached PDF: {catModalForm.pdf_url.startsWith('data:') ? 'PDF File Uploaded Successfully (Data Base64)' : catModalForm.pdf_url}
                   </p>
                 )}
               </div>
