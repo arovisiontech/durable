@@ -8,9 +8,14 @@ interface RichTextProps {
 export function RichText({ content, className = '' }: RichTextProps) {
   if (!content) return null
 
-  // If content contains raw HTML tags (e.g. <b>, <i>, <ul>), render raw HTML safely
+  // If content contains raw HTML tags (e.g. <b>, <i>, <ul>, <strong>, <em>), render raw HTML safely with rich styling
   if (/<[a-z][\s\S]*>/i.test(content)) {
-    return <div className={className} dangerouslySetInnerHTML={{ __html: content }} />
+    return (
+      <div
+        className={`leading-relaxed [&_b]:font-black [&_b]:text-[#0B1B3D] [&_strong]:font-black [&_strong]:text-[#0B1B3D] [&_i]:italic [&_i]:font-bold [&_i]:text-[#E31B23] [&_em]:italic [&_em]:font-bold [&_em]:text-[#E31B23] [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1 [&_ul]:my-2 [&_li]:text-slate-700 ${className}`}
+        dangerouslySetInnerHTML={{ __html: content }}
+      />
+    )
   }
 
   // Otherwise parse Markdown style syntax:
@@ -38,7 +43,7 @@ export function RichText({ content, className = '' }: RichTextProps) {
           }
           if (part.startsWith('*') && part.endsWith('*')) {
             return (
-              <em key={partIdx} className="italic font-semibold text-[#E31B23]">
+              <em key={partIdx} className="italic font-bold text-[#E31B23]">
                 {part.slice(1, -1)}
               </em>
             )
