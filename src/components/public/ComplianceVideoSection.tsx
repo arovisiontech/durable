@@ -234,35 +234,14 @@ export function ComplianceVideoSection() {
             </svg>
           </div>
 
-          {/* Logo 7: EU-MDR Ready (Stars Circle + EU-MDR + Checkmark matching SS 2) */}
-          <div className="h-10 sm:h-14 lg:h-16 flex items-center justify-center select-none text-white">
-            <svg className="h-full w-auto text-white" viewBox="0 0 220 70" fill="none">
-              <g transform="translate(30, 35)">
-                {Array.from({ length: 12 }).map((_, i) => {
-                  const angle = (i * 30 * Math.PI) / 180
-                  const x = 22 * Math.sin(angle)
-                  const y = -22 * Math.cos(angle)
-                  return (
-                    <path
-                      key={i}
-                      d="M0 -3.5 L0.9 -1 L3.5 -1 L1.4 0.6 L2.1 3.2 L0 1.6 L-2.1 3.2 L-1.4 0.6 L-3.5 -1 L-0.9 -1 Z"
-                      transform={`translate(${x}, ${y})`}
-                      fill="currentColor"
-                    />
-                  );
-                })}
-              </g>
-              <text x="65" y="44" fontFamily="sans-serif" fontWeight="900" fontSize="30" fill="currentColor" letterSpacing="1">
-                EU-MDR
-              </text>
-              <path
-                d="M175 38 L188 52 L215 15"
-                stroke="currentColor"
-                strokeWidth="6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+          {/* Logo 7: EU-MDR Ready (Official Icon from SS 1) */}
+          <div className="h-10 sm:h-14 lg:h-16 flex items-center justify-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/icon-eumdr.png"
+              alt="EU-MDR Ready"
+              className="h-full object-contain filter brightness-0 invert"
+            />
           </div>
         </div>
       </div>
