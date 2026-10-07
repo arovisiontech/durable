@@ -207,13 +207,13 @@ export function ComplianceVideoSection() {
             <span className="text-[10px] sm:text-xs font-extrabold tracking-wider text-slate-300 leading-tight">13485 : 2016</span>
           </div>
 
-          {/* Logo 4: SIMA Pakistan */}
+          {/* Logo 4: SIMA Pakistan (Official Icon from SS 1) */}
           <div className="h-10 sm:h-14 lg:h-16 flex items-center justify-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images/icon-sima-scci.png"
               alt="SIMAP Surgical Instrument Manufacturers Association"
-              className="h-full object-contain filter brightness-0 invert"
+              className="h-full object-contain mix-blend-screen filter brightness-150 contrast-150"
             />
           </div>
 
@@ -223,7 +223,7 @@ export function ComplianceVideoSection() {
             <img
               src="/images/icon-ce-official.png"
               alt="CE Mark"
-              className="h-full object-contain filter brightness-0 invert"
+              className="h-full object-contain mix-blend-screen filter brightness-150 contrast-150"
             />
           </div>
 
@@ -233,7 +233,7 @@ export function ComplianceVideoSection() {
             <img
               src="/images/icon-fda-official.png"
               alt="FDA Registered"
-              className="h-full object-contain filter brightness-0 invert"
+              className="h-full object-contain mix-blend-screen filter brightness-150 contrast-150"
             />
           </div>
 
