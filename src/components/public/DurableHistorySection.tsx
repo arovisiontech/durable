@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { RichText } from '@/src/components/ui/RichText'
+import { loadPersistentData } from '@/src/lib/persistentStorage'
 
 const DEFAULT_HISTORY = {
   title: 'DURABLE HISTORY',
@@ -49,31 +51,32 @@ export function DurableHistorySection() {
   const [historyData, setHistoryData] = useState(DEFAULT_HISTORY)
   const [cards, setCards] = useState(DEFAULT_CARDS)
 
-  const loadData = () => {
-    try {
-      const savedHist = localStorage.getItem('durable_history_data')
-      if (savedHist) {
-        const parsed = JSON.parse(savedHist)
-        if (parsed && typeof parsed === 'object') {
-          setHistoryData((prev) => ({ ...prev, ...parsed }))
-        }
-      }
-
-      const savedCards = localStorage.getItem('durable_history_cards')
-      if (savedCards) {
-        const parsed = JSON.parse(savedCards)
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setCards(parsed)
-        }
-      }
-    } catch (e) {
-      console.error('LocalStorage DurableHistory read error:', e)
-    }
-  }
-
   useEffect(() => {
-    loadData()
-    const handleUpdate = () => loadData()
+    loadPersistentData('durable_history_data', DEFAULT_HISTORY, (data) => {
+      if (data && typeof data === 'object') {
+        setHistoryData((prev) => ({ ...prev, ...data }))
+      }
+    })
+
+    loadPersistentData('durable_history_cards', DEFAULT_CARDS, (data) => {
+      if (Array.isArray(data) && data.length > 0) {
+        setCards(data)
+      }
+    })
+
+    const handleUpdate = () => {
+      loadPersistentData('durable_history_data', DEFAULT_HISTORY, (data) => {
+        if (data && typeof data === 'object') {
+          setHistoryData((prev) => ({ ...prev, ...data }))
+        }
+      })
+      loadPersistentData('durable_history_cards', DEFAULT_CARDS, (data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setCards(data)
+        }
+      })
+    }
+
     window.addEventListener('durable_content_updated', handleUpdate)
     return () => window.removeEventListener('durable_content_updated', handleUpdate)
   }, [])
@@ -98,14 +101,12 @@ export function DurableHistorySection() {
 
             {/* Paragraphs */}
             <div className="space-y-3.5 text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
-              <p>{historyData.p1}</p>
-              <p>{historyData.p2}</p>
-              <p>{historyData.p3}</p>
-              <p>{historyData.p4}</p>
+              <RichText content={historyData.p1} />
+              <RichText content={historyData.p2} />
+              <RichText content={historyData.p3} />
+              <RichText content={historyData.p4} />
 
-              <p className="pt-1 font-bold text-slate-800 text-xs sm:text-sm">
-                {historyData.tagline}
-              </p>
+              <RichText content={historyData.tagline} className="pt-1 font-bold text-slate-800 text-xs sm:text-sm" />
             </div>
 
           </div>
