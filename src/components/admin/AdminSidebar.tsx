@@ -63,6 +63,7 @@ const contentNavGroup: NavGroup = {
     { name: 'Home Page', href: '/admin/content/home', icon: Home },
     { name: 'Products Page', href: '/admin/content/products', icon: Package },
     { name: 'Categories Page', href: '/admin/content/categories', icon: FolderTree },
+    { name: 'Catalogues Page', href: '/admin/catalogues', icon: FileText },
     { name: 'About Us', href: '/admin/content/about', icon: Info },
     { name: 'Strengths', href: '/admin/content/strengths', icon: Award },
     { name: 'Events Page', href: '/admin/content/events', icon: Calendar },
@@ -73,6 +74,7 @@ const contentNavGroup: NavGroup = {
 }
 
 const catalogNavItems: NavItem[] = [
+  { name: 'Catalogues & PDFs', href: '/admin/catalogues', icon: FileText },
   { name: 'Categories', href: '/admin/categories', icon: FolderTree },
   { name: 'Subcategories', href: '/admin/subcategories', icon: FolderTree },
   { name: 'Blogs', href: '/admin/blogs', icon: Newspaper },
