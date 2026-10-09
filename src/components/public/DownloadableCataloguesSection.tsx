@@ -175,16 +175,6 @@ export function DownloadableCataloguesSection() {
             </div>
           ))}
         </div>
-
-        {/* Bottom Centered CTA Button */}
-        <div className="text-center pt-4">
-          <Link
-            href="/products"
-            className="inline-flex items-center justify-center bg-[#E31B23] hover:bg-red-700 text-white font-black text-xs sm:text-sm tracking-wider uppercase px-8 py-3.5 rounded-full shadow-lg transition-all transform hover:scale-105"
-          >
-            Browse Product Categories
-          </Link>
-        </div>
       </div>
 
       {/* Access Code Verification Protection Modal */}
