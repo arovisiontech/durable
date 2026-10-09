@@ -6,11 +6,11 @@ import Link from 'next/link'
 const DEFAULT_PRECISION = {
   badge: 'GLOBAL HEALTHCARE PARTNER',
   title: 'Precision Solutions. Trusted Quality. Better Healthcare.',
-  subtitle: 'Your Global Partner in Medical Manufacturing',
+  subtitle: 'Partner with Sialkot’s premier surgical manufacturing facility.',
   description: 'We manufacture premium surgical instruments and sterile solutions with the highest standards of quality, compliance and precision - empowering healthcare brands worldwide.',
   bgImage: '/images/precision-healthcare-banner.png',
-  ctaText: 'OUR STRENGTHS',
-  ctaUrl: '/partner-with-us',
+  ctaText: 'Partner With Us',
+  ctaUrl: '/contact',
 }
 
 export function PrecisionHealthcareSection() {

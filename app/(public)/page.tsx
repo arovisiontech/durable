@@ -9,7 +9,8 @@ import { ProcessAcrossSection } from '@/src/components/public/ProcessAcrossSecti
 import { ComplianceVideoSection } from '@/src/components/public/ComplianceVideoSection'
 import { LatestBlogsSection } from '@/src/components/public/LatestBlogsSection'
 
-export const revalidate = 60
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 export default function HomePage() {
   return (
