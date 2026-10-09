@@ -39,8 +39,13 @@ export async function fetchCategoriesAction(params?: {
         .select('*')
         .order('sort_order', { ascending: true })
 
-      if (!error && data && data.length > 0) {
-        rawCategories = data
+      if (!error && data) {
+        const dbSlugs = new Set(data.map((c) => c.slug.toLowerCase()))
+        const dbNames = new Set(data.map((c) => c.name.toLowerCase()))
+        const missingSeed = INITIAL_CATEGORIES_SEED.filter(
+          (s) => !dbSlugs.has(s.slug.toLowerCase()) && !dbNames.has(s.name.toLowerCase())
+        )
+        rawCategories = [...data, ...missingSeed]
         supabaseSuccess = true
       }
     } catch (e) {

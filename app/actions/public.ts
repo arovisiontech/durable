@@ -38,6 +38,8 @@ export async function fetchPublicNavigation(): Promise<PublicNavigationItem[]> {
   }
 }
 
+import { INITIAL_CATEGORIES_SEED } from '@/src/lib/dataStore'
+
 export async function fetchPublicCategories(): Promise<CategoryItem[]> {
   try {
     const supabase = createPublicClient()
@@ -49,10 +51,20 @@ export async function fetchPublicCategories(): Promise<CategoryItem[]> {
       .order('sort_order', { ascending: true })
       .order('name', { ascending: true })
 
-    if (!rawCategories || rawCategories.length === 0) return []
+    const dbCategories = rawCategories || []
+    const dbSlugs = new Set(dbCategories.map((c) => c.slug.toLowerCase()))
+    const dbNames = new Set(dbCategories.map((c) => c.name.toLowerCase()))
+
+    // Merge missing seed categories so all 9 categories in SS 2 are visible
+    const missingSeed = INITIAL_CATEGORIES_SEED.filter(
+      (s) => !dbSlugs.has(s.slug.toLowerCase()) && !dbNames.has(s.name.toLowerCase())
+    )
+
+    const combined = [...dbCategories, ...missingSeed]
+    combined.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
 
     // Fetch counts of published products
-    const categoryIds = rawCategories.map((c) => c.id)
+    const categoryIds = combined.map((c) => c.id)
     const { data: productCounts } = await supabase
       .from('products')
       .select('category_id')
@@ -68,35 +80,35 @@ export async function fetchPublicCategories(): Promise<CategoryItem[]> {
       })
     }
 
-    const categoryMap = new Map(rawCategories.map((c) => [c.id, c]))
+    const categoryMap = new Map(combined.map((c) => [c.id, c]))
 
-    const getDepth = (cat: typeof rawCategories[0], depth = 0): number => {
+    const getDepth = (cat: any, depth = 0): number => {
       if (!cat.parent_id || depth > 10) return depth
       const parent = categoryMap.get(cat.parent_id)
       return parent ? getDepth(parent, depth + 1) : depth
     }
 
-    return rawCategories.map((cat) => {
+    return combined.map((cat) => {
       const parent = cat.parent_id ? categoryMap.get(cat.parent_id) : null
       return {
         id: cat.id,
-        parent_id: cat.parent_id,
+        parent_id: cat.parent_id || null,
         name: cat.name,
         slug: cat.slug,
-        description: cat.description,
-        image_url: cat.image_url,
-        sort_order: cat.sort_order,
-        is_published: cat.is_published,
-        created_at: cat.created_at,
-        updated_at: cat.updated_at,
+        description: cat.description || null,
+        image_url: cat.image_url || null,
+        sort_order: cat.sort_order ?? 0,
+        is_published: cat.is_published ?? true,
+        created_at: cat.created_at || new Date().toISOString(),
+        updated_at: cat.updated_at || new Date().toISOString(),
         parent_name: parent?.name || null,
-        product_count: countMap[cat.id] || 0,
+        product_count: countMap[cat.id] || cat.product_count || 0,
         level: getDepth(cat),
       }
     })
   } catch (err) {
     console.error('Error fetching public categories:', err)
-    return []
+    return INITIAL_CATEGORIES_SEED
   }
 }
 
