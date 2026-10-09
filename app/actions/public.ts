@@ -49,63 +49,49 @@ export async function fetchPublicCategories(): Promise<CategoryItem[]> {
       .select('*')
       .eq('is_published', true)
       .order('sort_order', { ascending: true })
-      .order('name', { ascending: true })
 
     const dbCategories = rawCategories || []
-    const dbSlugs = new Set(dbCategories.map((c) => c.slug.toLowerCase()))
-    const dbNames = new Set(dbCategories.map((c) => c.name.toLowerCase()))
 
-    // Merge missing seed categories so all 9 categories in SS 2 are visible
-    const missingSeed = INITIAL_CATEGORIES_SEED.filter(
-      (s) => !dbSlugs.has(s.slug.toLowerCase()) && !dbNames.has(s.name.toLowerCase())
-    )
-
-    const combined = [...dbCategories, ...missingSeed]
-    combined.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
-
-    // Fetch counts of published products
-    const categoryIds = combined.map((c) => c.id)
-    const { data: productCounts } = await supabase
-      .from('products')
-      .select('category_id')
-      .eq('is_published', true)
-      .in('category_id', categoryIds)
-
-    const countMap: Record<string, number> = {}
-    if (productCounts) {
-      productCounts.forEach((p) => {
-        if (p.category_id) {
-          countMap[p.category_id] = (countMap[p.category_id] || 0) + 1
-        }
-      })
+    // Map canonical keys to prevent duplicates (e.g. dental-instruments -> dental)
+    const mapSlug = (slug: string) => {
+      const s = slug.toLowerCase()
+      if (s === 'dental-instruments') return 'dental'
+      if (s === 'medical-holloware') return 'medical-hollowware'
+      return s
     }
 
-    const categoryMap = new Map(combined.map((c) => [c.id, c]))
+    const categoryDict = new Map<string, any>()
 
-    const getDepth = (cat: any, depth = 0): number => {
-      if (!cat.parent_id || depth > 10) return depth
-      const parent = categoryMap.get(cat.parent_id)
-      return parent ? getDepth(parent, depth + 1) : depth
-    }
-
-    return combined.map((cat) => {
-      const parent = cat.parent_id ? categoryMap.get(cat.parent_id) : null
-      return {
-        id: cat.id,
-        parent_id: cat.parent_id || null,
-        name: cat.name,
-        slug: cat.slug,
-        description: cat.description || null,
-        image_url: cat.image_url || null,
-        sort_order: cat.sort_order ?? 0,
-        is_published: cat.is_published ?? true,
-        created_at: cat.created_at || new Date().toISOString(),
-        updated_at: cat.updated_at || new Date().toISOString(),
-        parent_name: parent?.name || null,
-        product_count: countMap[cat.id] || cat.product_count || 0,
-        level: getDepth(cat),
-      }
+    // First populate from INITIAL_CATEGORIES_SEED (the exact 9 categories in SS 2)
+    INITIAL_CATEGORIES_SEED.forEach((seed) => {
+      categoryDict.set(seed.slug.toLowerCase(), { ...seed })
     })
+
+    // Override with any user database edits
+    dbCategories.forEach((dbCat) => {
+      const key = mapSlug(dbCat.slug)
+      const existing = categoryDict.get(key)
+      categoryDict.set(key, {
+        id: dbCat.id,
+        parent_id: dbCat.parent_id || null,
+        name: dbCat.name,
+        slug: key,
+        description: dbCat.description || existing?.description || null,
+        image_url: dbCat.image_url || existing?.image_url || null,
+        sort_order: dbCat.sort_order ?? existing?.sort_order ?? 0,
+        is_published: dbCat.is_published ?? true,
+        created_at: dbCat.created_at || existing?.created_at || new Date().toISOString(),
+        updated_at: dbCat.updated_at || existing?.updated_at || new Date().toISOString(),
+        parent_name: null,
+        product_count: 0,
+        level: 0,
+      })
+    })
+
+    const result = Array.from(categoryDict.values())
+    result.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
+
+    return result as CategoryItem[]
   } catch (err) {
     console.error('Error fetching public categories:', err)
     return INITIAL_CATEGORIES_SEED

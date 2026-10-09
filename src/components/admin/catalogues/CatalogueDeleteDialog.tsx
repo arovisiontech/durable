@@ -30,6 +30,7 @@ export function CatalogueDeleteDialog({
     setIsDeleting(false)
 
     if (res.success) {
+      window.dispatchEvent(new Event('durable_content_updated'))
       toast.success(`Deleted catalogue "${catalogue.title}"`)
       onSuccess()
       onClose()

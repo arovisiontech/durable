@@ -80,9 +80,11 @@ export function CatalogueManager() {
   }, [loadCatalogues])
 
   const handleToggleStatus = async (id: string, currentStatus: boolean) => {
+    await toggleCatalogueStatusAction(id, currentStatus)
     const updated = catalogues.map((c) => (c.id === id ? { ...c, is_published: currentStatus } : c))
     saveStoredCatalogues(updated as any)
     setCatalogues(updated)
+    window.dispatchEvent(new Event('durable_content_updated'))
     toast.success(currentStatus ? 'Catalogue published' : 'Catalogue set to draft')
   }
 
