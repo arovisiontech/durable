@@ -149,7 +149,7 @@ export function AboutSection() {
                 <div className="flex-1 flex items-center justify-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src="/images/icon-eumdr.png"
+                    src="/images/emdr.png"
                     alt="EU-MDR Ready"
                     className="h-6 sm:h-8 object-contain"
                   />
