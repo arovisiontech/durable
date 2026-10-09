@@ -19,15 +19,15 @@ const DEFAULT_MAIN_PRODUCT_CATEGORIES: CategoryCardItem[] = [
     id: 'pr-1',
     number: '01',
     title: 'General Surgery',
-    description: 'General surgical tools including scissors, forceps, retractors, scalpel handles, and clamps.',
+    description: 'High-precision surgical scissors, forceps, scalpels, and retractors.',
     sku_count: '6+ SKUs',
     slug: 'general-surgery',
   },
   {
     id: 'pr-2',
     number: '02',
-    title: 'Dental & Restorative',
-    description: 'Ergonomic restorative, periodontal, extraction, and orthodontic dental instruments.',
+    title: 'Dental Instruments',
+    description: 'Precision dental scalpels, probes, forceps, and restorative tools.',
     sku_count: '4+ SKUs',
     slug: 'dental',
   },
@@ -35,33 +35,57 @@ const DEFAULT_MAIN_PRODUCT_CATEGORIES: CategoryCardItem[] = [
     id: 'pr-3',
     number: '03',
     title: 'Medical Hollowware',
-    description: 'Storage trays, kidney basins, gallipots, sterilization boxes, and autoclave bowls.',
+    description: 'Otoscopes, ophthalmoscopes, reflex hammers, and diagnostic sets.',
     sku_count: '4+ SKUs',
     slug: 'medical-hollowware',
   },
   {
     id: 'pr-4',
     number: '04',
-    title: 'Bone & Orthopedic Instruments',
-    description: 'Bone chisels, osteotomes, mallets, rongeurs, gouges, and bone holding forceps.',
+    title: 'Ophthalmic',
+    description: 'Bone holding forceps, rongeurs, bone chisels, and implant tools.',
     sku_count: '3+ SKUs',
-    slug: 'orthopedic-instruments',
+    slug: 'ophthalmic',
   },
   {
     id: 'pr-5',
     number: '05',
-    title: 'Ophthalmic Micro-Surgery',
-    description: 'Micro-forceps, eye speculums, corneal scissors, and micro cassettes.',
+    title: 'Hospital Furniture',
+    description: 'Functional Solutions For Hospitals',
     sku_count: '2+ SKUs',
-    slug: 'ophthalmic',
+    slug: 'hospital-furniture',
   },
   {
     id: 'pr-6',
     number: '06',
-    title: 'Hospital Furniture & Single Use',
-    description: 'Hospital beds, MAYO instrument trolleys, IV poles, and sterile single use procedure kits.',
+    title: 'Single Use Instruments',
+    description: 'Reliable Single-Use Solutions',
     sku_count: '2+ SKUs',
-    slug: 'hospital-furniture',
+    slug: 'single-use-instruments',
+  },
+  {
+    id: 'pr-7',
+    number: '07',
+    title: 'Veterinary Instruments',
+    description: 'Efficiency in veterinary procedures and animal healthcare.',
+    sku_count: '5+ SKUs',
+    slug: 'veterinary-instruments',
+  },
+  {
+    id: 'pr-8',
+    number: '08',
+    title: 'Plastic Surgery',
+    description: 'Reliable performance in delicate plastic and reconstructive procedures.',
+    sku_count: '2+ SKUs',
+    slug: 'plastic-surgery',
+  },
+  {
+    id: 'pr-9',
+    number: '09',
+    title: 'Special Surgical Instruments',
+    description: 'Specialized, precision-engineered instruments designed for demanding surgical procedures, offering excellent control, accuracy.',
+    sku_count: '2+ SKUs',
+    slug: 'special-surgical-instruments',
   },
 ]
 
@@ -185,17 +209,6 @@ export function ExploreProductCategoriesSection() {
               </div>
             </Link>
           ))}
-        </div>
-
-        {/* View All Product Categories Button */}
-        <div className="text-center pt-4">
-          <Link
-            href="/categories"
-            className="inline-flex items-center gap-2 px-7 py-3 text-xs font-black text-white bg-[#0B1B3D] hover:bg-[#E31B23] rounded-2xl shadow-lg transition-all transform hover:scale-105"
-          >
-            <span>VIEW ALL PRODUCT CATEGORIES</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
         </div>
       </div>
     </section>

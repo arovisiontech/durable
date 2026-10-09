@@ -36,17 +36,19 @@ export function DownloadableCataloguesSection() {
     try {
       const res = await fetchPublicCatalogues()
       const list = res.catalogues || []
-      const mapped: CatalogueCardItem[] = list.map((item, idx) => ({
-        id: item.id || `cat-${idx + 1}`,
-        code: `CATALOG 0${idx + 1}`,
-        tag: item.category_name || 'Medical Catalog',
-        title: item.title,
-        description: item.description || 'Technical specifications and product sizing guide.',
-        image: item.cover_image || '/images/catalogue-cover-yellow.png',
-        pdfUrl: item.pdf_url || '/pdf/general-surgical-instruments-catalogue.pdf',
-        accessCode: '12345',
-      }))
-      setCatalogues(mapped)
+      if (list.length > 0) {
+        const mapped: CatalogueCardItem[] = list.map((item, idx) => ({
+          id: item.id || `cat-${idx + 1}`,
+          code: `CATALOG 0${idx + 1}`,
+          tag: item.category_name || 'Medical Catalog',
+          title: item.title,
+          description: item.description || DEFAULT_CARD_ITEMS[idx]?.description || 'Technical specifications and product sizing guide.',
+          image: item.cover_image || DEFAULT_CARD_ITEMS[idx]?.image || '/images/catalogue-cover-yellow.png',
+          pdfUrl: item.pdf_url || '/pdf/general-surgical-instruments-catalogue.pdf',
+          accessCode: '12345',
+        }))
+        setCatalogues(mapped)
+      }
     } catch (e) {
       console.error('Error fetching public catalogues:', e)
     }
