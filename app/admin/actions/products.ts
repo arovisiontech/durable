@@ -7,8 +7,9 @@ import { INITIAL_PRODUCTS_SEED } from '@/src/lib/dataStore'
 
 function revalidateProductPaths(slug?: string) {
   try {
-    revalidatePath('/')
+    revalidatePath('/', 'layout')
     revalidatePath('/products')
+    revalidatePath('/products/[slug]', 'page')
     if (slug) {
       revalidatePath(`/products/${slug}`)
     }
@@ -35,36 +36,39 @@ export async function fetchProductsAction(params?: {
     let supabaseSuccess = false
 
     try {
-      const { data, error } = await supabase.from('products').select('*, categories(name)')
+      const { data, error } = await supabase.from('products').select('*, categories(name, slug)')
       if (!error && data && data.length > 0) {
-        rawProducts = data.map((p) => ({
-          id: p.id,
-          category_id: p.category_id,
-          title: p.title,
-          slug: p.slug,
-          sku: p.sku,
-          short_description: p.short_description,
-          full_description: p.full_description,
-          featured_image: p.featured_image,
-          features: Array.isArray(p.features) ? p.features : [],
-          specifications:
-            typeof p.specifications === 'object' && p.specifications !== null
-              ? (p.specifications as Record<string, string>)
-              : {},
-          catalogue_pdf: p.catalogue_pdf,
-          is_featured: p.is_featured,
-          is_published: p.is_published,
-          seo_title: p.seo_title || null,
-          seo_description: p.seo_description || null,
-          sort_order: p.sort_order,
-          created_at: p.created_at,
-          updated_at: p.updated_at,
-          category_name: (p.categories as { name?: string })?.name || null,
-        }))
+        rawProducts = data.map((p) => {
+          const catData = p.categories as { name?: string; slug?: string } | null
+          return {
+            id: p.id,
+            category_id: p.category_id,
+            title: p.title,
+            slug: p.slug,
+            sku: p.sku,
+            short_description: p.short_description,
+            full_description: p.full_description,
+            featured_image: p.featured_image,
+            features: Array.isArray(p.features) ? p.features : [],
+            specifications:
+              typeof p.specifications === 'object' && p.specifications !== null
+                ? (p.specifications as Record<string, string>)
+                : {},
+            catalogue_pdf: p.catalogue_pdf,
+            is_featured: p.is_featured,
+            is_published: p.is_published,
+            seo_title: p.seo_title || null,
+            seo_description: p.seo_description || null,
+            sort_order: p.sort_order,
+            created_at: p.created_at,
+            updated_at: p.updated_at,
+            category_name: catData?.name || null,
+          }
+        })
         supabaseSuccess = true
       }
-    } catch {
-      // Fallback
+    } catch (e) {
+      console.error('Error fetching products from Supabase:', e)
     }
 
     if (!supabaseSuccess || rawProducts.length === 0) {
@@ -107,7 +111,7 @@ export async function fetchProductsAction(params?: {
     // Sort
     switch (params?.sortBy) {
       case 'oldest':
-        rawProducts.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+        rawProducts.sort((a, b) => new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime())
         break
       case 'title':
         rawProducts.sort((a, b) => a.title.localeCompare(b.title))
@@ -117,7 +121,7 @@ export async function fetchProductsAction(params?: {
         break
       case 'newest':
       default:
-        rawProducts.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        rawProducts.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())
         break
     }
 
@@ -129,6 +133,46 @@ export async function fetchProductsAction(params?: {
 }
 
 export async function fetchProductByIdAction(id: string) {
+  try {
+    const supabase = await createClient()
+    const { data: p, error } = await supabase
+      .from('products')
+      .select('*, categories(name)')
+      .or(`id.eq.${id},slug.eq.${id}`)
+      .maybeSingle()
+
+    if (!error && p) {
+      const catData = p.categories as { name?: string } | null
+      const product: ProductItem = {
+        id: p.id,
+        category_id: p.category_id,
+        title: p.title,
+        slug: p.slug,
+        sku: p.sku,
+        short_description: p.short_description,
+        full_description: p.full_description,
+        featured_image: p.featured_image,
+        features: Array.isArray(p.features) ? p.features : [],
+        specifications:
+          typeof p.specifications === 'object' && p.specifications !== null
+            ? (p.specifications as Record<string, string>)
+            : {},
+        catalogue_pdf: p.catalogue_pdf,
+        is_featured: p.is_featured,
+        is_published: p.is_published,
+        seo_title: p.seo_title || null,
+        seo_description: p.seo_description || null,
+        sort_order: p.sort_order,
+        created_at: p.created_at,
+        updated_at: p.updated_at,
+        category_name: catData?.name || null,
+      }
+      return { product, error: null }
+    }
+  } catch (e) {
+    console.error('Error fetching product by ID:', e)
+  }
+
   const prod = INITIAL_PRODUCTS_SEED.find((p) => p.id === id || p.slug === id)
   if (prod) {
     return { product: prod, error: null }
@@ -146,11 +190,12 @@ export async function createProductAction(formData: ProductFormData) {
       }
     })
 
-    const newProd: ProductItem = {
-      id: `prod-${validated.slug}-${Date.now()}`,
-      category_id: validated.category_id || null,
+    const supabase = await createClient()
+
+    const insertPayload = {
       title: validated.title,
       slug: validated.slug,
+      category_id: validated.category_id || null,
       sku: validated.sku || `SKU-${Date.now()}`,
       short_description: validated.short_description || null,
       full_description: validated.full_description || null,
@@ -163,13 +208,17 @@ export async function createProductAction(formData: ProductFormData) {
       seo_title: validated.seo_title || null,
       seo_description: validated.seo_description || null,
       sort_order: validated.sort_order ?? 0,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      category_name: 'General Surgery',
+    }
+
+    const { data, error } = await supabase.from('products').insert(insertPayload).select().single()
+
+    if (error) {
+      console.error('Supabase product creation error:', error)
+      return { product: null, error: error.message }
     }
 
     revalidateProductPaths(validated.slug)
-    return { product: newProd, error: null }
+    return { product: data as ProductItem, error: null }
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Product creation failed'
     return { product: null, error: message }
@@ -179,6 +228,41 @@ export async function createProductAction(formData: ProductFormData) {
 export async function updateProductAction(id: string, formData: ProductFormData) {
   try {
     const validated = productSchema.parse(formData)
+    const specsObject: Record<string, string> = {}
+    validated.specifications.forEach((s: SpecificationItem) => {
+      if (s.key && s.key.trim() !== '') {
+        specsObject[s.key.trim()] = s.value
+      }
+    })
+
+    const supabase = await createClient()
+
+    const updatePayload = {
+      title: validated.title,
+      slug: validated.slug,
+      category_id: validated.category_id || null,
+      sku: validated.sku || `SKU-${Date.now()}`,
+      short_description: validated.short_description || null,
+      full_description: validated.full_description || null,
+      featured_image: validated.featured_image || '/images/cat-scissors-shears.png',
+      features: validated.features || [],
+      specifications: specsObject,
+      catalogue_pdf: validated.catalogue_pdf || null,
+      is_featured: validated.is_featured,
+      is_published: validated.is_published,
+      seo_title: validated.seo_title || null,
+      seo_description: validated.seo_description || null,
+      sort_order: validated.sort_order ?? 0,
+      updated_at: new Date().toISOString(),
+    }
+
+    const { error } = await supabase.from('products').update(updatePayload).eq('id', id)
+
+    if (error) {
+      console.error('Supabase product update error:', error)
+      return { success: false, error: error.message }
+    }
+
     revalidateProductPaths(validated.slug)
     return { success: true, error: null }
   } catch (err: unknown) {
@@ -188,6 +272,33 @@ export async function updateProductAction(id: string, formData: ProductFormData)
 }
 
 export async function duplicateProductAction(id: string) {
+  try {
+    const supabase = await createClient()
+    const { data: orig, error: fetchErr } = await supabase.from('products').select('*').eq('id', id).single()
+
+    if (!fetchErr && orig) {
+      const randomSuffix = Math.floor(1000 + Math.random() * 9000).toString()
+      const duplicatePayload = {
+        ...orig,
+        id: undefined,
+        title: `${orig.title} (Copy)`,
+        slug: `${orig.slug}-copy-${randomSuffix}`,
+        sku: orig.sku ? `${orig.sku}-COPY-${randomSuffix}` : `SKU-COPY-${randomSuffix}`,
+        is_published: false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      }
+
+      const { data: copyData, error: copyErr } = await supabase.from('products').insert(duplicatePayload).select().single()
+      if (!copyErr && copyData) {
+        revalidateProductPaths(copyData.slug)
+        return { product: copyData as ProductItem, error: null }
+      }
+    }
+  } catch (e) {
+    console.error('Error duplicating product:', e)
+  }
+
   const orig = INITIAL_PRODUCTS_SEED.find((p) => p.id === id) || INITIAL_PRODUCTS_SEED[0]
   const randomSuffix = Math.floor(1000 + Math.random() * 9000).toString()
   const duplicate: ProductItem = {
@@ -208,16 +319,46 @@ export async function duplicateProductAction(id: string) {
 }
 
 export async function toggleProductPublishAction(id: string, isPublished: boolean) {
-  revalidateProductPaths()
-  return { success: true, error: null }
+  try {
+    const supabase = await createClient()
+    const { error } = await supabase.from('products').update({ is_published: isPublished, updated_at: new Date().toISOString() }).eq('id', id)
+    if (error) {
+      return { success: false, error: error.message }
+    }
+    revalidateProductPaths()
+    return { success: true, error: null }
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Publish toggle failed'
+    return { success: false, error: message }
+  }
 }
 
 export async function toggleProductFeaturedAction(id: string, isFeatured: boolean) {
-  revalidateProductPaths()
-  return { success: true, error: null }
+  try {
+    const supabase = await createClient()
+    const { error } = await supabase.from('products').update({ is_featured: isFeatured, updated_at: new Date().toISOString() }).eq('id', id)
+    if (error) {
+      return { success: false, error: error.message }
+    }
+    revalidateProductPaths()
+    return { success: true, error: null }
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Featured toggle failed'
+    return { success: false, error: message }
+  }
 }
 
 export async function deleteProductAction(id: string) {
-  revalidateProductPaths()
-  return { success: true, error: null }
+  try {
+    const supabase = await createClient()
+    const { error } = await supabase.from('products').delete().eq('id', id)
+    if (error) {
+      return { success: false, error: error.message }
+    }
+    revalidateProductPaths()
+    return { success: true, error: null }
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Delete failed'
+    return { success: false, error: message }
+  }
 }

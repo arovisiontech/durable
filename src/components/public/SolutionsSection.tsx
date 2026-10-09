@@ -2,8 +2,17 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { fetchPublicCategories } from '@/app/actions/public'
 
-const DEFAULT_SOLUTIONS = [
+interface CategoryCard {
+  id: string
+  title: string
+  slug: string
+  description: string
+  image_url: string
+}
+
+const DEFAULT_SOLUTIONS: CategoryCard[] = [
   {
     id: '01',
     title: 'General Surgery',
@@ -49,26 +58,23 @@ const DEFAULT_SOLUTIONS = [
 ]
 
 export function SolutionsSection() {
-  const [solutions, setSolutions] = useState(DEFAULT_SOLUTIONS)
+  const [solutions, setSolutions] = useState<CategoryCard[]>(DEFAULT_SOLUTIONS)
 
-  const loadSolutions = () => {
+  const loadSolutions = async () => {
     try {
-      const saved = localStorage.getItem('durable_solutions_data')
-      if (saved) {
-        const parsed = JSON.parse(saved)
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const mapped = parsed.map((item: any, idx: number) => ({
-            id: item.count || String(idx + 1).padStart(2, '0'),
-            title: item.title,
-            slug: item.slug || item.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-            description: item.description,
-            image_url: item.image_url || item.imageIcon || '/images/cat-scissors-shears.png',
-          }))
-          setSolutions(mapped)
-        }
+      const cats = await fetchPublicCategories()
+      if (cats && cats.length > 0) {
+        const mapped: CategoryCard[] = cats.map((item, idx) => ({
+          id: String(idx + 1).padStart(2, '0'),
+          title: item.name,
+          slug: item.slug,
+          description: item.description || 'Precision instruments designed for medical excellence.',
+          image_url: item.image_url || '/images/cat-scissors-shears.png',
+        }))
+        setSolutions(mapped)
       }
     } catch (e) {
-      console.error('LocalStorage solutions read error:', e)
+      console.error('Error fetching solutions categories:', e)
     }
   }
 
@@ -95,11 +101,11 @@ export function SolutionsSection() {
           </p>
         </div>
 
-        {/* 6 Category Cards Grid - Compact Cards with Prominent Large Icons & Bigger Text matching SS 1 Request */}
+        {/* Dynamic Category Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
           {solutions.map((item) => (
             <Link
-              key={item.id}
+              key={item.slug}
               href={`/category/${item.slug}`}
               className="group bg-white rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-xl border border-slate-200/90 hover:border-[#E31B23]/50 transition-all duration-300 flex items-center gap-4 sm:gap-5"
             >
@@ -113,7 +119,7 @@ export function SolutionsSection() {
                 />
               </div>
 
-              {/* Number + Title & Description (Bigger & Bolder Text) */}
+              {/* Number + Title & Description */}
               <div className="space-y-1 min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-mono font-black text-[#E31B23] bg-red-50 px-2 py-0.5 rounded-md border border-red-100 shrink-0">
@@ -134,4 +140,3 @@ export function SolutionsSection() {
     </section>
   )
 }
-

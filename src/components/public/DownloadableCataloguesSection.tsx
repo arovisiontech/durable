@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Lock, Download, Eye, X, ShieldCheck, Mail, PhoneCall, CheckCircle2, AlertCircle } from 'lucide-react'
 import { safeViewPdf, safeDownloadPdf } from '@/src/lib/pdfHelper'
-import { loadPersistentData } from '@/src/lib/persistentStorage'
-import { INITIAL_CATALOGUES_SEED, CatalogueItem } from '@/src/lib/dataStore'
+import { fetchPublicCatalogues } from '@/app/actions/public'
+import { INITIAL_CATALOGUES_SEED } from '@/src/lib/dataStore'
 
 interface CatalogueCardItem {
   id: string
@@ -32,41 +32,30 @@ const DEFAULT_CARD_ITEMS: CatalogueCardItem[] = INITIAL_CATALOGUES_SEED.map((c, 
 export function DownloadableCataloguesSection() {
   const [catalogues, setCatalogues] = useState<CatalogueCardItem[]>(DEFAULT_CARD_ITEMS)
 
-  useEffect(() => {
-    loadPersistentData('durable_catalogues', INITIAL_CATALOGUES_SEED, (storedData: any) => {
-      if (Array.isArray(storedData) && storedData.length > 0) {
-        const mapped: CatalogueCardItem[] = storedData.map((item: any, idx: number) => ({
+  const loadCatalogues = async () => {
+    try {
+      const res = await fetchPublicCatalogues()
+      if (res.catalogues && res.catalogues.length > 0) {
+        const mapped: CatalogueCardItem[] = res.catalogues.map((item, idx) => ({
           id: item.id || `cat-${idx + 1}`,
-          code: item.code || `CATALOG 0${idx + 1}`,
-          tag: item.category_name || item.tag || 'Medical Catalog',
-          title: item.title || 'Medical Catalogue',
+          code: `CATALOG 0${idx + 1}`,
+          tag: item.category_name || 'Medical Catalog',
+          title: item.title,
           description: item.description || 'Technical specifications and product sizing guide.',
-          image: item.cover_image || item.image || '/images/catalogue-cover-yellow.png',
-          pdfUrl: item.pdf_url || item.pdfUrl || '/pdf/general-surgical-instruments-catalogue.pdf',
-          accessCode: item.accessCode || '12345',
+          image: item.cover_image || '/images/catalogue-cover-yellow.png',
+          pdfUrl: item.pdf_url || '/pdf/general-surgical-instruments-catalogue.pdf',
+          accessCode: '12345',
         }))
         setCatalogues(mapped)
       }
-    })
-
-    const handleUpdate = () => {
-      loadPersistentData('durable_catalogues', INITIAL_CATALOGUES_SEED, (storedData: any) => {
-        if (Array.isArray(storedData) && storedData.length > 0) {
-          const mapped: CatalogueCardItem[] = storedData.map((item: any, idx: number) => ({
-            id: item.id || `cat-${idx + 1}`,
-            code: item.code || `CATALOG 0${idx + 1}`,
-            tag: item.category_name || item.tag || 'Medical Catalog',
-            title: item.title || 'Medical Catalogue',
-            description: item.description || 'Technical specifications and product sizing guide.',
-            image: item.cover_image || item.image || '/images/catalogue-cover-yellow.png',
-            pdfUrl: item.pdf_url || item.pdfUrl || '/pdf/general-surgical-instruments-catalogue.pdf',
-            accessCode: item.accessCode || '12345',
-          }))
-          setCatalogues(mapped)
-        }
-      })
+    } catch (e) {
+      console.error('Error fetching public catalogues:', e)
     }
+  }
 
+  useEffect(() => {
+    loadCatalogues()
+    const handleUpdate = () => loadCatalogues()
     window.addEventListener('durable_content_updated', handleUpdate)
     return () => window.removeEventListener('durable_content_updated', handleUpdate)
   }, [])
@@ -122,14 +111,14 @@ export function DownloadableCataloguesSection() {
       <div className="absolute inset-0 opacity-[0.025] pointer-events-none bg-[radial-gradient(#0B1B3D_1.5px,transparent_1.5px)] [background-size:20px_20px]" />
 
       <div className="max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-12">
-        {/* 2-Column Grid of 3D Book Cover Catalogue Cards matching SS 1 & SS 2 */}
+        {/* 2-Column Grid of 3D Book Cover Catalogue Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10">
           {catalogues.map((cat) => (
             <div
               key={cat.id}
               className="group bg-white rounded-3xl p-5 sm:p-7 shadow-md hover:shadow-2xl border border-slate-100 hover:border-red-500/30 transition-all duration-300 grid grid-cols-1 sm:grid-cols-12 gap-6 items-center"
             >
-              {/* Left Column: 3D Yellow Book Cover Artwork matching SS 3 */}
+              {/* Left Column: Cover Artwork */}
               <div className="sm:col-span-5 relative flex items-center justify-center">
                 <div className="relative aspect-[3/4] w-full max-w-[200px] sm:max-w-none rounded-xl overflow-hidden shadow-xl transform group-hover:scale-105 transition-transform duration-500 bg-amber-400">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -163,9 +152,9 @@ export function DownloadableCataloguesSection() {
                 {/* Divider Line */}
                 <div className="w-full h-[1px] bg-slate-200/80 my-2" />
 
-                {/* Action Buttons matching SS 1 */}
+                {/* Action Buttons */}
                 <div className="flex items-center gap-3 pt-1">
-                  {/* View Catalog Red Button (No Password Required!) */}
+                  {/* View Catalog Red Button */}
                   <button
                     onClick={() => handleViewDirectly(cat)}
                     className="inline-flex items-center gap-1.5 bg-[#E31B23] hover:bg-red-700 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-md transition-colors"
@@ -174,7 +163,7 @@ export function DownloadableCataloguesSection() {
                     <span>View Catalog</span>
                   </button>
 
-                  {/* Download PDF Outlined Button (Requires Code: 12345) */}
+                  {/* Download PDF Outlined Button */}
                   <button
                     onClick={() => handleOpenDownloadModal(cat)}
                     className="inline-flex items-center gap-1.5 bg-white hover:bg-slate-50 border border-slate-800 text-slate-800 font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-xs transition-colors"
@@ -188,7 +177,7 @@ export function DownloadableCataloguesSection() {
           ))}
         </div>
 
-        {/* Bottom Centered CTA Button matching SS 2 */}
+        {/* Bottom Centered CTA Button */}
         <div className="text-center pt-4">
           <Link
             href="/products"
@@ -199,7 +188,7 @@ export function DownloadableCataloguesSection() {
         </div>
       </div>
 
-      {/* Access Code Verification Protection Modal (Password Protected Downloads) */}
+      {/* Access Code Verification Protection Modal */}
       {selectedCatalogue && (
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative animate-in fade-in zoom-in duration-200 space-y-6">
@@ -271,7 +260,7 @@ export function DownloadableCataloguesSection() {
               </button>
             </form>
 
-            {/* Owner Contact Information Box matching User Directive */}
+            {/* Owner Contact Information Box */}
             <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-2">
               <p className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">
                 Don&apos;t have an Access Code?

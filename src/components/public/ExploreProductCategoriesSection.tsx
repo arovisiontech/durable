@@ -3,8 +3,18 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Sparkles, ArrowRight } from 'lucide-react'
+import { fetchPublicCategories } from '@/app/actions/public'
 
-const DEFAULT_MAIN_PRODUCT_CATEGORIES = [
+interface CategoryCardItem {
+  id: string
+  number: string
+  title: string
+  description: string
+  sku_count: string
+  slug: string
+}
+
+const DEFAULT_MAIN_PRODUCT_CATEGORIES: CategoryCardItem[] = [
   {
     id: 'pr-1',
     number: '01',
@@ -56,22 +66,25 @@ const DEFAULT_MAIN_PRODUCT_CATEGORIES = [
 ]
 
 export function ExploreProductCategoriesSection() {
-  const [categories, setCategories] = useState(DEFAULT_MAIN_PRODUCT_CATEGORIES)
+  const [categories, setCategories] = useState<CategoryCardItem[]>(DEFAULT_MAIN_PRODUCT_CATEGORIES)
 
-  const loadData = () => {
+  const loadData = async () => {
     try {
-      const savedCards = localStorage.getItem('durable_explore_range_cards')
-      if (savedCards) {
-        const parsed = JSON.parse(savedCards)
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setCategories(parsed)
-          return
-        }
+      const cats = await fetchPublicCategories()
+      if (cats && cats.length > 0) {
+        const mapped: CategoryCardItem[] = cats.map((item, idx) => ({
+          id: item.id,
+          number: String(idx + 1).padStart(2, '0'),
+          title: item.name,
+          description: item.description || 'Quality surgical and medical instruments.',
+          sku_count: `${item.product_count || 5}+ SKUs`,
+          slug: item.slug,
+        }))
+        setCategories(mapped)
       }
     } catch (e) {
-      console.error('LocalStorage ExploreProductCategories read error:', e)
+      console.error('Error fetching explore categories:', e)
     }
-    setCategories(DEFAULT_MAIN_PRODUCT_CATEGORIES)
   }
 
   useEffect(() => {
@@ -95,7 +108,7 @@ export function ExploreProductCategoriesSection() {
       `}</style>
 
       <div className="max-w-[1920px] 3xl:max-w-[2400px] 4xl:max-w-[3200px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-10 sm:space-y-12">
-        {/* Top Centered Header Block (Matching SS 1) */}
+        {/* Top Centered Header Block */}
         <div className="text-center max-w-3xl mx-auto space-y-2.5">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white border border-slate-200 shadow-xs">
             <span className="w-2 h-2 rounded-full bg-[#E31B23] animate-ping" />
@@ -117,11 +130,11 @@ export function ExploreProductCategoriesSection() {
           </p>
         </div>
 
-        {/* 6 Numbered Main Product Category Cards Grid */}
+        {/* Dynamic Product Category Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-7">
-          {categories.slice(0, 6).map((cat, idx) => (
+          {categories.map((cat, idx) => (
             <Link
-              key={cat.id || idx}
+              key={cat.slug || idx}
               href={`/category/${cat.slug}`}
               className="group relative block rounded-2xl"
             >
@@ -141,7 +154,7 @@ export function ExploreProductCategoriesSection() {
                     {/* Number & Accent Bar */}
                     <div>
                       <span className="text-xl sm:text-2xl font-black text-[#0B1B3D] group-hover:text-[#E31B23] transition-colors font-mono">
-                        {cat.number || `0${idx + 1}`}
+                        {cat.number}
                       </span>
                       <div className="w-8 h-[2.5px] bg-[#E31B23] rounded-full mt-1 group-hover:w-12 transition-all duration-300" />
                     </div>
@@ -153,7 +166,7 @@ export function ExploreProductCategoriesSection() {
 
                     {/* Description */}
                     <p className="text-xs text-slate-500 font-medium leading-relaxed line-clamp-3">
-                      {cat.description || 'General surgical tools including scissors, forceps, retractors, scalpel handles, and clamps.'}
+                      {cat.description}
                     </p>
                   </div>
 
@@ -165,7 +178,7 @@ export function ExploreProductCategoriesSection() {
                     </span>
 
                     <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-full">
-                      {cat.sku_count || '5+ SKUs'}
+                      {cat.sku_count}
                     </span>
                   </div>
                 </div>
@@ -188,5 +201,3 @@ export function ExploreProductCategoriesSection() {
     </section>
   )
 }
-
-

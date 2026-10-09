@@ -2,9 +2,12 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { CATEGORIES_DATA } from '@/src/data/categoriesData'
 import { CategoryHeroBanner } from '@/src/components/public/CategoryHeroBanner'
-import { ArrowLeft, ArrowRight, Package, ShieldCheck, FileText, CheckCircle2 } from 'lucide-react'
-
+import { ArrowRight } from 'lucide-react'
 import { SubcategoryPdfSection } from '@/src/components/public/SubcategoryPdfSection'
+import { createPublicClient } from '@/src/lib/supabase/public'
+
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 interface CategoryPageProps {
   params: Promise<{
@@ -12,32 +15,95 @@ interface CategoryPageProps {
   }>
 }
 
-export async function generateStaticParams() {
-  return Object.keys(CATEGORIES_DATA).map((slug) => ({
-    slug,
-  }))
-}
-
 export async function generateMetadata({ params }: CategoryPageProps) {
   const resolvedParams = await params
-  const category = CATEGORIES_DATA[resolvedParams.slug]
-  if (!category) return { title: 'Category Not Found' }
+  const slug = resolvedParams.slug
+
+  let categoryName = slug.replace(/-/g, ' ').toUpperCase()
+  let description = 'High quality surgical, medical, and dental instruments manufactured to ISO 13485 standards.'
+
+  try {
+    const supabase = createPublicClient()
+    const { data: dbCat } = await supabase
+      .from('categories')
+      .select('name, description')
+      .eq('slug', slug)
+      .maybeSingle()
+
+    if (dbCat) {
+      categoryName = dbCat.name
+      if (dbCat.description) description = dbCat.description
+    } else if (CATEGORIES_DATA[slug]) {
+      categoryName = `${CATEGORIES_DATA[slug].title} ${CATEGORIES_DATA[slug].highlight}`
+      description = CATEGORIES_DATA[slug].description
+    }
+  } catch (e) {
+    console.error('Metadata category fetch error:', e)
+  }
 
   return {
-    title: `${category.title} ${category.highlight} | Durable Hospital Supplies`,
-    description: category.description,
+    title: `${categoryName} | Durable Hospital Supplies`,
+    description,
   }
 }
 
 export default async function CategoryDetailPage({ params }: CategoryPageProps) {
   const resolvedParams = await params
-  const category = CATEGORIES_DATA[resolvedParams.slug]
+  const slug = resolvedParams.slug
 
-  if (!category) {
-    notFound()
+  let categoryData = {
+    title: slug.split('-').slice(0, -1).join(' ').toUpperCase() || slug.toUpperCase(),
+    highlight: slug.split('-').slice(-1)[0]?.toUpperCase() || '',
+    badgeText: 'ISO 13485 & CE CERTIFIED',
+    description: 'Precision manufactured surgical and medical instruments designed for maximum performance.',
+    slug,
   }
 
-  const allCategories = [
+  // Check Supabase first
+  try {
+    const supabase = createPublicClient()
+    const { data: dbCat } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('slug', slug)
+      .maybeSingle()
+
+    if (dbCat) {
+      const words = dbCat.name.split(' ')
+      const highlight = words.length > 1 ? words.pop()! : ''
+      const title = words.join(' ') || dbCat.name
+
+      categoryData = {
+        title,
+        highlight,
+        badgeText: 'ISO 13485 & CE CERTIFIED',
+        description: dbCat.description || 'Precision surgical and medical instruments.',
+        slug: dbCat.slug,
+      }
+    } else if (CATEGORIES_DATA[slug]) {
+      categoryData = {
+        title: CATEGORIES_DATA[slug].title,
+        highlight: CATEGORIES_DATA[slug].highlight,
+        badgeText: CATEGORIES_DATA[slug].badgeText,
+        description: CATEGORIES_DATA[slug].description,
+        slug,
+      }
+    } else {
+      // If category exists neither in Supabase nor in hardcoded map, generate dynamic fallback
+      categoryData = {
+        title: slug.replace(/-/g, ' ').toUpperCase(),
+        highlight: 'INSTRUMENTS',
+        badgeText: 'OFFICIAL CATEGORY',
+        description: `Explore full range of ${slug.replace(/-/g, ' ')} surgical instruments.`,
+        slug,
+      }
+    }
+  } catch (err) {
+    console.error('Error fetching category slug from Supabase:', err)
+  }
+
+  // Fetch all active categories for nav pills
+  let allCategoriesList = [
     { slug: 'general-surgery', name: 'General Surgery' },
     { slug: 'dental', name: 'Dental' },
     { slug: 'medical-hollowware', name: 'Medical Hollowware' },
@@ -46,14 +112,29 @@ export default async function CategoryDetailPage({ params }: CategoryPageProps) 
     { slug: 'single-use-instruments', name: 'Single Use Instruments' },
   ]
 
+  try {
+    const supabase = createPublicClient()
+    const { data: rawCats } = await supabase
+      .from('categories')
+      .select('slug, name')
+      .eq('is_published', true)
+      .order('sort_order', { ascending: true })
+
+    if (rawCats && rawCats.length > 0) {
+      allCategoriesList = rawCats.map((c) => ({ slug: c.slug, name: c.name }))
+    }
+  } catch (e) {
+    console.error('Pill categories fetch error:', e)
+  }
+
   return (
     <div className="w-full bg-[#FAFAFA] min-h-screen pb-16 space-y-10">
-      {/* 1. Category Hero Banner with SS 2 Background Image */}
+      {/* 1. Category Hero Banner */}
       <CategoryHeroBanner
-        title={category.title}
-        highlight={category.highlight}
-        badgeText={category.badgeText}
-        description={category.description}
+        title={categoryData.title}
+        highlight={categoryData.highlight}
+        badgeText={categoryData.badgeText}
+        description={categoryData.description}
       />
 
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10 relative z-10">
@@ -61,8 +142,8 @@ export default async function CategoryDetailPage({ params }: CategoryPageProps) 
         {/* 2. Category Navigation Pills Bar */}
         <div className="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-xs flex items-center justify-between gap-4 overflow-x-auto">
           <div className="flex items-center gap-2 min-w-max">
-            {allCategories.map((cat) => {
-              const isActive = cat.slug === category.slug
+            {allCategoriesList.map((cat) => {
+              const isActive = cat.slug === categoryData.slug
               return (
                 <Link
                   key={cat.slug}
@@ -88,10 +169,10 @@ export default async function CategoryDetailPage({ params }: CategoryPageProps) 
           </Link>
         </div>
 
-        {/* 2.5 Subcategories PDF Catalogs Grid Showcase (Matching SS 2) */}
+        {/* 2.5 Subcategories PDF Catalogs Grid Showcase */}
         <SubcategoryPdfSection
-          categorySlug={category.slug}
-          categoryTitle={`${category.title} ${category.highlight}`}
+          categorySlug={categoryData.slug}
+          categoryTitle={`${categoryData.title} ${categoryData.highlight}`}
         />
 
         {/* 3. Bottom OEM & Bulk Procurement Banner */}
@@ -101,7 +182,7 @@ export default async function CategoryDetailPage({ params }: CategoryPageProps) 
               CUSTOM CONTRACT MANUFACTURING
             </span>
             <h3 className="text-xl sm:text-2xl font-black uppercase tracking-tight">
-              Need Custom OEM Sizing for {category.title} {category.highlight}?
+              Need Custom OEM Sizing for {categoryData.title} {categoryData.highlight}?
             </h3>
             <p className="text-xs text-slate-300 max-w-xl font-medium leading-relaxed">
               We specialize in custom jaw serrations, titanium color coatings, laser marking, and customized procedure packaging for healthcare brands worldwide.
