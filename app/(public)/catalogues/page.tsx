@@ -2,11 +2,14 @@ import { CataloguesHeroBanner } from '@/src/components/public/CataloguesHeroBann
 import { CataloguesOverviewSection } from '@/src/components/public/CataloguesOverviewSection'
 import { DownloadableCataloguesSection } from '@/src/components/public/DownloadableCataloguesSection'
 import { InstrumentPillarsSection } from '@/src/components/public/InstrumentPillarsSection'
+import { fetchPublicCatalogues } from '@/app/actions/public'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-export default function PublicCataloguesPage() {
+export default async function PublicCataloguesPage() {
+  const { catalogues } = await fetchPublicCatalogues()
+
   return (
     <div className="w-full bg-[#FAFAFA] min-h-screen space-y-0">
       {/* 1. Dynamic Hero Banner matching SS 2 settings */}
@@ -16,7 +19,7 @@ export default function PublicCataloguesPage() {
       <CataloguesOverviewSection />
 
       {/* 3. Dynamic Downloadable Catalogues Grid Section matching SS 4 settings & cards */}
-      <DownloadableCataloguesSection />
+      <DownloadableCataloguesSection initialCatalogues={catalogues} />
 
       {/* 4. Reusable, Single Use & Sterile Kitting 3-Pillars Grid Section */}
       <InstrumentPillarsSection />

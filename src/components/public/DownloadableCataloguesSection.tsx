@@ -29,8 +29,26 @@ const DEFAULT_CARD_ITEMS: CatalogueCardItem[] = INITIAL_CATALOGUES_SEED.map((c, 
   accessCode: '12345',
 }))
 
-export function DownloadableCataloguesSection() {
-  const [catalogues, setCatalogues] = useState<CatalogueCardItem[]>(DEFAULT_CARD_ITEMS)
+export interface DownloadableCataloguesSectionProps {
+  initialCatalogues?: any[]
+}
+
+export function DownloadableCataloguesSection({ initialCatalogues }: DownloadableCataloguesSectionProps = {}) {
+  const [catalogues, setCatalogues] = useState<CatalogueCardItem[]>(() => {
+    if (initialCatalogues && initialCatalogues.length > 0) {
+      return initialCatalogues.map((item, idx) => ({
+        id: item.id || `cat-${idx + 1}`,
+        code: `CATALOG 0${idx + 1}`,
+        tag: item.category_name || 'Medical Catalog',
+        title: item.title,
+        description: item.description || DEFAULT_CARD_ITEMS[idx]?.description || 'Technical specifications and product sizing guide.',
+        image: item.cover_image || DEFAULT_CARD_ITEMS[idx]?.image || '/images/catalogue-cover-yellow.png',
+        pdfUrl: item.pdf_url || '/pdf/general-surgical-instruments-catalogue.pdf',
+        accessCode: '12345',
+      }))
+    }
+    return DEFAULT_CARD_ITEMS
+  })
 
   const loadCatalogues = async () => {
     try {
