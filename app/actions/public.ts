@@ -300,6 +300,8 @@ export async function fetchPublicProductBySlug(slug: string) {
   }
 }
 
+import { INITIAL_CATALOGUES_SEED } from '@/src/lib/dataStore'
+
 export async function fetchPublicCatalogues(params?: { categorySlug?: string; search?: string }) {
   try {
     const supabase = createPublicClient()
@@ -333,60 +335,7 @@ export async function fetchPublicCatalogues(params?: { categorySlug?: string; se
       console.error('Error fetching public catalogues:', error)
     }
 
-    // Default sample catalogues if none exist in database
-    const fallbackCatalogues: CatalogueItem[] = [
-      {
-        id: 'sample-cat-1',
-        category_id: null,
-        title: 'General Surgical Instruments Master Catalogue 2026',
-        slug: 'general-surgical-instruments-catalogue',
-        description:
-          'Comprehensive technical catalog featuring scalpel handles, surgical scissors, tissue forceps, needle holders, and retractor systems made from German stainless steel.',
-        cover_image: '/images/surgical-hero.png',
-        pdf_url: '/pdf/general-surgical-instruments-catalogue.pdf',
-        is_published: true,
-        sort_order: 1,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        category_name: 'General Surgery',
-      },
-      {
-        id: 'sample-cat-2',
-        category_id: null,
-        title: 'Dental & Maxillofacial Instruments Guide',
-        slug: 'dental-maxillofacial-catalogue',
-        description:
-          'Precision dental instruments including extracting forceps, root elevators, periodontal curettes, orthodontic pliers, and surgical chisels.',
-        cover_image: '/images/surgical-hero.png',
-        pdf_url: '/pdf/dental-maxillofacial-catalogue.pdf',
-        is_published: true,
-        sort_order: 2,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        category_name: 'Dental Care',
-      },
-      {
-        id: 'sample-cat-3',
-        category_id: null,
-        title: 'Orthopedic & Bone Surgery Instruments Catalogue',
-        slug: 'orthopedic-instruments-catalogue',
-        description:
-          'Heavy-duty orthopedic surgical tools including bone rongeurs, osteotomes, bone holding forceps, wire cutters, and orthopedic hammers.',
-        cover_image: '/images/surgical-hero.png',
-        pdf_url: '/pdf/orthopedic-instruments-catalogue.pdf',
-        is_published: true,
-        sort_order: 3,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        category_name: 'Orthopedics',
-      },
-    ]
-
-    if (!rawCatalogues || rawCatalogues.length === 0) {
-      return { catalogues: fallbackCatalogues, count: fallbackCatalogues.length, error: null }
-    }
-
-    const catalogues: CatalogueItem[] = rawCatalogues.map((c) => {
+    const dbList: CatalogueItem[] = (rawCatalogues || []).map((c) => {
       const categoryData = c.categories as { name?: string; slug?: string } | null
       return {
         id: c.id,
@@ -404,10 +353,21 @@ export async function fetchPublicCatalogues(params?: { categorySlug?: string; se
       }
     })
 
-    return { catalogues, count: count || catalogues.length, error: null }
+    const dbSlugs = new Set(dbList.map((c) => c.slug.toLowerCase()))
+    const dbTitles = new Set(dbList.map((c) => c.title.toLowerCase()))
+
+    // Merge missing seed catalogues so all 5 catalogues from SS 2 render
+    const missingSeed = INITIAL_CATALOGUES_SEED.filter(
+      (s) => !dbSlugs.has(s.slug.toLowerCase()) && !dbTitles.has(s.title.toLowerCase())
+    )
+
+    const combined = [...dbList, ...missingSeed]
+    combined.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
+
+    return { catalogues: combined, count: combined.length, error: null }
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Failed to fetch public catalogues'
-    return { catalogues: [], count: 0, error: message }
+    return { catalogues: INITIAL_CATALOGUES_SEED, count: INITIAL_CATALOGUES_SEED.length, error: message }
   }
 }
 

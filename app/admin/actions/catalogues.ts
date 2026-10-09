@@ -36,8 +36,8 @@ export async function fetchCataloguesAction(params?: {
 
     try {
       const { data, error } = await supabase.from('catalogues').select('*, categories(name)')
-      if (!error && data && data.length > 0) {
-        rawCatalogues = data.map((c) => ({
+      if (!error && data) {
+        const dbList = data.map((c) => ({
           id: c.id,
           category_id: c.category_id,
           title: c.title,
@@ -51,6 +51,14 @@ export async function fetchCataloguesAction(params?: {
           updated_at: c.updated_at,
           category_name: (c.categories as { name?: string })?.name || null,
         }))
+
+        const dbSlugs = new Set(dbList.map((c) => c.slug.toLowerCase()))
+        const dbTitles = new Set(dbList.map((c) => c.title.toLowerCase()))
+        const missingSeed = INITIAL_CATALOGUES_SEED.filter(
+          (s) => !dbSlugs.has(s.slug.toLowerCase()) && !dbTitles.has(s.title.toLowerCase())
+        )
+
+        rawCatalogues = [...dbList, ...missingSeed]
         supabaseSuccess = true
       }
     } catch (e) {
