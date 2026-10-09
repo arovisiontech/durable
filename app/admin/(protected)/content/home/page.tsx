@@ -261,6 +261,7 @@ export default function AdminContentHomePage() {
     { id: 'c-5', name: 'CE Registered', logo_url: '/images/icon-oem.png' },
     { id: 'c-6', name: 'FDA Registered', logo_url: '/images/icon-oem.png' },
     { id: 'c-7', name: 'EU-MDR Ready', logo_url: '/images/icon-eumdr.png' },
+    { id: 'c-8', name: 'EMDR Registered', logo_url: '/images/emdr.png' },
   ])
 
   // 10. CUSTOM HOME BLOCKS STATE

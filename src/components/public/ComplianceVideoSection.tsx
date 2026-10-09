@@ -175,8 +175,8 @@ export function ComplianceVideoSection() {
           </div>
         </div>
 
-        {/* Compliance & Quality Logo Row matching SS 2 (7 Logos Distributed Evenly Across Screen) */}
-        <div className="pt-8 sm:pt-10 border-t border-slate-700/60 grid grid-cols-3 sm:grid-cols-7 gap-4 sm:gap-6 lg:gap-8 items-center justify-items-center w-full">
+        {/* Compliance & Quality Logo Row matching SS 1 (8 Logos Distributed Evenly Across Screen) */}
+        <div className="pt-8 sm:pt-10 border-t border-slate-700/60 grid grid-cols-4 sm:grid-cols-8 gap-4 sm:gap-6 lg:gap-8 items-center justify-items-center w-full">
           {/* Logo 1: SCCI Sialkot Chamber */}
           <div className="h-10 sm:h-14 lg:h-16 flex items-center justify-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -244,6 +244,16 @@ export function ComplianceVideoSection() {
               src="/images/icon-eumdr.png"
               alt="EU-MDR Ready"
               className="h-full object-contain"
+            />
+          </div>
+
+          {/* Logo 8: EMDR Registered Logo */}
+          <div className="h-10 sm:h-14 lg:h-16 flex items-center justify-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/emdr.png"
+              alt="EMDR Registered"
+              className="h-full object-contain filter brightness-0 invert"
             />
           </div>
         </div>
