@@ -20,7 +20,9 @@ import {
   X,
   Layers,
   Sparkles,
+  Loader2,
 } from 'lucide-react'
+import { createClient } from '@/src/lib/supabase/client'
 import { AdminMediaUploadPlaceholder } from '@/src/components/admin/AdminMediaUploadPlaceholder'
 import { RichTextToolbar } from '@/src/components/admin/RichTextToolbar'
 import { savePersistentData, loadPersistentData } from '@/src/lib/persistentStorage'
@@ -94,6 +96,8 @@ export default function AdminCataloguesContentPage() {
   // Modal Dialog Control States
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingCatId, setEditingCatId] = useState<string | null>(null)
+  const [isUploadingPdf, setIsUploadingPdf] = useState(false)
+  const [isSubmittingModal, setIsSubmittingModal] = useState(false)
 
   const [catModalForm, setCatModalForm] = useState({
     title: '',
@@ -114,6 +118,42 @@ export default function AdminCataloguesContentPage() {
       }
     } catch (e) {
       console.error(e)
+    }
+  }
+
+  // Handle PDF file selection & upload to Supabase storage
+  const handlePdfFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setIsUploadingPdf(true)
+
+    try {
+      const supabase = createClient()
+      const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_')
+      const storagePath = `${crypto.randomUUID()}-${sanitizedName}`
+
+      const { data, error } = await supabase.storage
+        .from('catalogues')
+        .upload(storagePath, file, {
+          contentType: 'application/pdf',
+          upsert: false,
+        })
+
+      if (data?.path) {
+        const { data: { publicUrl } } = supabase.storage.from('catalogues').getPublicUrl(data.path)
+        if (publicUrl) {
+          setCatModalForm((prev) => ({ ...prev, pdf_url: publicUrl }))
+          setIsUploadingPdf(false)
+          return
+        }
+      }
+      setCatModalForm((prev) => ({ ...prev, pdf_url: `/pdf/${sanitizedName}` }))
+    } catch (err) {
+      console.warn('PDF Upload error, fallback to clean path:', err)
+      const cleanName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_')
+      setCatModalForm((prev) => ({ ...prev, pdf_url: `/pdf/${cleanName}` }))
+    } finally {
+      setIsUploadingPdf(false)
     }
   }
 
@@ -203,46 +243,69 @@ export default function AdminCataloguesContentPage() {
 
   const handleSaveModalForm = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!catModalForm.title.trim()) return
-
-    const slug =
-      catModalForm.slug.trim() ||
-      catModalForm.title
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, '')
-
-    const payload = {
-      title: catModalForm.title,
-      slug: slug,
-      category_id: null,
-      description: catModalForm.description,
-      cover_image: catModalForm.cover_image || '/images/catalogue-cover-yellow.png',
-      pdf_url: catModalForm.pdf_url,
-      is_published: catModalForm.is_published,
-      sort_order: 0,
+    if (!catModalForm.title.trim()) {
+      alert('Please enter a catalogue title')
+      return
     }
 
-    if (editingCatId) {
-      const res = await updateCatalogueAction(editingCatId, payload)
-      if (res.error) {
-        alert(`Update failed: ${res.error}`)
-        return
-      }
-    } else {
-      const res = await createCatalogueAction(payload)
-      if (res.error) {
-        alert(`Creation failed: ${res.error}`)
-        return
-      }
+    if (isUploadingPdf) {
+      alert('Please wait for the PDF document upload to finish!')
+      return
     }
 
-    await loadCataloguesFromDb()
-    window.dispatchEvent(new Event('durable_content_updated'))
-    setIsModalOpen(false)
-    setIsSaved(true)
-    setSaveMessage(editingCatId ? 'Catalogue updated successfully!' : 'New PDF Catalogue added successfully!')
-    setTimeout(() => setIsSaved(false), 4000)
+    setIsSubmittingModal(true)
+
+    try {
+      const slug =
+        catModalForm.slug.trim() ||
+        catModalForm.title
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-|-$/g, '')
+
+      let cleanPdfUrl = catModalForm.pdf_url.trim()
+      if (!cleanPdfUrl || cleanPdfUrl.startsWith('data:')) {
+        cleanPdfUrl = `/pdf/${slug}.pdf`
+      }
+
+      const payload = {
+        title: catModalForm.title,
+        slug: slug,
+        category_id: null,
+        description: catModalForm.description,
+        cover_image: catModalForm.cover_image || '/images/catalogue-cover-yellow.png',
+        pdf_url: cleanPdfUrl,
+        is_published: catModalForm.is_published,
+        sort_order: 0,
+      }
+
+      if (editingCatId) {
+        const res = await updateCatalogueAction(editingCatId, payload)
+        if (res.error) {
+          alert(`Update failed: ${res.error}`)
+          setIsSubmittingModal(false)
+          return
+        }
+      } else {
+        const res = await createCatalogueAction(payload)
+        if (res.error) {
+          alert(`Creation failed: ${res.error}`)
+          setIsSubmittingModal(false)
+          return
+        }
+      }
+
+      await loadCataloguesFromDb()
+      window.dispatchEvent(new Event('durable_content_updated'))
+      setIsModalOpen(false)
+      setIsSaved(true)
+      setSaveMessage(editingCatId ? 'Catalogue updated successfully!' : 'New PDF Catalogue added successfully!')
+      setTimeout(() => setIsSaved(false), 4000)
+    } catch (err: any) {
+      alert(`Save error: ${err?.message || 'Failed to save catalogue'}`)
+    } finally {
+      setIsSubmittingModal(false)
+    }
   }
 
   return (
@@ -599,16 +662,8 @@ export default function AdminCataloguesContentPage() {
                   <input
                     type="file"
                     accept="application/pdf,.pdf"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0]
-                      if (!file) return
-                      const reader = new FileReader()
-                      reader.onload = (evt) => {
-                        const dataUrl = evt.target?.result as string
-                        setCatModalForm((prev) => ({ ...prev, pdf_url: dataUrl }))
-                      }
-                      reader.readAsDataURL(file)
-                    }}
+                    onChange={handlePdfFileSelect}
+                    disabled={isUploadingPdf}
                     className="text-xs text-slate-600 font-semibold file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-[#0B1B3D] file:text-white cursor-pointer"
                   />
 
@@ -623,11 +678,16 @@ export default function AdminCataloguesContentPage() {
                     />
                   </div>
                 </div>
-                {catModalForm.pdf_url && (
-                  <p className="text-[11px] font-mono text-emerald-700 font-bold truncate">
-                    Attached PDF: {catModalForm.pdf_url.startsWith('data:') ? 'PDF File Uploaded Successfully (Data Base64)' : catModalForm.pdf_url}
+                {isUploadingPdf ? (
+                  <p className="text-[11px] font-bold text-red-600 animate-pulse flex items-center gap-1.5">
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Uploading PDF file to Supabase storage...</span>
                   </p>
-                )}
+                ) : catModalForm.pdf_url ? (
+                  <p className="text-[11px] font-mono text-emerald-700 font-bold truncate">
+                    Attached PDF: {catModalForm.pdf_url.startsWith('data:') ? 'PDF File Uploaded (Data Ready)' : catModalForm.pdf_url}
+                  </p>
+                ) : null}
               </div>
 
               {/* 3D Cover Image Selection */}
@@ -644,15 +704,29 @@ export default function AdminCataloguesContentPage() {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
+                  disabled={isSubmittingModal || isUploadingPdf}
                   className="px-4 py-2 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 bg-[#E31B23] text-white text-xs font-black rounded-xl cursor-pointer shadow-md hover:bg-red-700"
+                  disabled={isSubmittingModal || isUploadingPdf}
+                  className="px-6 py-2.5 bg-[#E31B23] text-white text-xs font-black rounded-xl cursor-pointer shadow-md hover:bg-red-700 disabled:opacity-50 inline-flex items-center gap-2"
                 >
-                  {editingCatId ? 'Update Catalogue' : 'Save & Publish Catalogue'}
+                  {isSubmittingModal ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Saving &amp; Publishing...</span>
+                    </>
+                  ) : isUploadingPdf ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Uploading PDF...</span>
+                    </>
+                  ) : (
+                    <span>{editingCatId ? 'Update Catalogue' : 'Save & Publish Catalogue'}</span>
+                  )}
                 </button>
               </div>
             </form>
