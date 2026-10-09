@@ -321,7 +321,7 @@ export async function fetchPublicCatalogues(params?: { categorySlug?: string; se
       console.error('Error fetching public catalogues:', error)
     }
 
-    const dbList: CatalogueItem[] = (rawCatalogues || []).map((c) => {
+    const catalogues: CatalogueItem[] = (rawCatalogues || []).map((c) => {
       const categoryData = c.categories as { name?: string; slug?: string } | null
       return {
         id: c.id,
@@ -339,21 +339,10 @@ export async function fetchPublicCatalogues(params?: { categorySlug?: string; se
       }
     })
 
-    const dbSlugs = new Set(dbList.map((c) => c.slug.toLowerCase()))
-    const dbTitles = new Set(dbList.map((c) => c.title.toLowerCase()))
-
-    // Merge missing seed catalogues so all 5 catalogues from SS 2 render
-    const missingSeed = INITIAL_CATALOGUES_SEED.filter(
-      (s) => !dbSlugs.has(s.slug.toLowerCase()) && !dbTitles.has(s.title.toLowerCase())
-    )
-
-    const combined = [...dbList, ...missingSeed]
-    combined.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
-
-    return { catalogues: combined, count: combined.length, error: null }
+    return { catalogues, count: count || catalogues.length, error: null }
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Failed to fetch public catalogues'
-    return { catalogues: INITIAL_CATALOGUES_SEED, count: INITIAL_CATALOGUES_SEED.length, error: message }
+    return { catalogues: [], count: 0, error: message }
   }
 }
 

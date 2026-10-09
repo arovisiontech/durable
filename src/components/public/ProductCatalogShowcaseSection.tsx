@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Download, ExternalLink, ArrowRight, Sparkles } from 'lucide-react'
-import { getStoredCatalogues, INITIAL_CATALOGUES_SEED } from '@/src/lib/dataStore'
+import { fetchPublicCatalogues } from '@/app/actions/public'
 import { safeDownloadPdf } from '@/src/lib/pdfHelper'
 
 export interface CatalogShowcaseItem {
@@ -19,14 +19,12 @@ export interface CatalogShowcaseItem {
 }
 
 export function ProductCatalogShowcaseSection() {
-  const [catalogues, setCatalogues] = useState(INITIAL_CATALOGUES_SEED)
+  const [catalogues, setCatalogues] = useState<any[]>([])
 
-  const loadData = () => {
+  const loadData = async () => {
     try {
-      const stored = getStoredCatalogues()
-      if (stored && stored.length > 0) {
-        setCatalogues(stored)
-      }
+      const res = await fetchPublicCatalogues()
+      setCatalogues(res.catalogues || [])
     } catch (e) {
       console.error(e)
     }

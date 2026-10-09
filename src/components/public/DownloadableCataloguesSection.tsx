@@ -35,19 +35,18 @@ export function DownloadableCataloguesSection() {
   const loadCatalogues = async () => {
     try {
       const res = await fetchPublicCatalogues()
-      if (res.catalogues && res.catalogues.length > 0) {
-        const mapped: CatalogueCardItem[] = res.catalogues.map((item, idx) => ({
-          id: item.id || `cat-${idx + 1}`,
-          code: `CATALOG 0${idx + 1}`,
-          tag: item.category_name || 'Medical Catalog',
-          title: item.title,
-          description: item.description || 'Technical specifications and product sizing guide.',
-          image: item.cover_image || '/images/catalogue-cover-yellow.png',
-          pdfUrl: item.pdf_url || '/pdf/general-surgical-instruments-catalogue.pdf',
-          accessCode: '12345',
-        }))
-        setCatalogues(mapped)
-      }
+      const list = res.catalogues || []
+      const mapped: CatalogueCardItem[] = list.map((item, idx) => ({
+        id: item.id || `cat-${idx + 1}`,
+        code: `CATALOG 0${idx + 1}`,
+        tag: item.category_name || 'Medical Catalog',
+        title: item.title,
+        description: item.description || 'Technical specifications and product sizing guide.',
+        image: item.cover_image || '/images/catalogue-cover-yellow.png',
+        pdfUrl: item.pdf_url || '/pdf/general-surgical-instruments-catalogue.pdf',
+        accessCode: '12345',
+      }))
+      setCatalogues(mapped)
     } catch (e) {
       console.error('Error fetching public catalogues:', e)
     }

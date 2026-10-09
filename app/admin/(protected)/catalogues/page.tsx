@@ -25,6 +25,12 @@ import { AdminMediaUploadPlaceholder } from '@/src/components/admin/AdminMediaUp
 import { RichTextToolbar } from '@/src/components/admin/RichTextToolbar'
 import { savePersistentData, loadPersistentData } from '@/src/lib/persistentStorage'
 import { INITIAL_CATALOGUES_SEED, CatalogueItem } from '@/src/lib/dataStore'
+import {
+  fetchCataloguesAction,
+  createCatalogueAction,
+  updateCatalogueAction,
+  deleteCatalogueAction,
+} from '@/app/admin/actions/catalogues'
 
 export interface OverviewCard {
   id: number
@@ -83,7 +89,7 @@ export default function AdminCataloguesContentPage() {
   ])
 
   // 3. CATALOGUES CARDS GRID STATE (SS 4)
-  const [cataloguesList, setCataloguesList] = useState<CatalogueItem[]>(INITIAL_CATALOGUES_SEED)
+  const [cataloguesList, setCataloguesList] = useState<CatalogueItem[]>([])
 
   // Modal Dialog Control States
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -100,6 +106,17 @@ export default function AdminCataloguesContentPage() {
     is_published: true,
   })
 
+  const loadCataloguesFromDb = async () => {
+    try {
+      const res = await fetchCataloguesAction()
+      if (res.catalogues) {
+        setCataloguesList(res.catalogues)
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   // SYNC FROM CLOUD / STORAGE ON MOUNT
   useEffect(() => {
     loadPersistentData('durable_catalogues_hero', heroForm, (data) => {
@@ -114,9 +131,9 @@ export default function AdminCataloguesContentPage() {
       if (Array.isArray(data) && data.length > 0) setOverviewCards(data)
     })
 
-    loadPersistentData('durable_catalogues', INITIAL_CATALOGUES_SEED, (data) => {
-      if (Array.isArray(data) && data.length > 0) setCataloguesList(data)
-    })
+    loadCataloguesFromDb()
+    window.addEventListener('durable_content_updated', loadCataloguesFromDb)
+    return () => window.removeEventListener('durable_content_updated', loadCataloguesFromDb)
   }, [])
 
   // SAVE ALL CHANGES TO CLOUD & DUAL STORAGE ENGINE
@@ -125,7 +142,6 @@ export default function AdminCataloguesContentPage() {
       savePersistentData('durable_catalogues_hero', heroForm)
       savePersistentData('durable_catalogues_overview', overviewForm)
       savePersistentData('durable_catalogues_overview_cards', overviewCards)
-      savePersistentData('durable_catalogues', cataloguesList)
 
       setIsSaved(true)
       setSaveMessage(customMsg || 'Catalogues page content updated and published live across all devices!')
@@ -170,61 +186,59 @@ export default function AdminCataloguesContentPage() {
     setIsModalOpen(true)
   }
 
-  const handleDeleteCatalogue = (id: string) => {
+  const handleDeleteCatalogue = async (id: string) => {
     if (confirm('Are you sure you want to delete this catalogue?')) {
-      const updated = cataloguesList.filter((c) => c.id !== id)
-      setCataloguesList(updated)
-      savePersistentData('durable_catalogues', updated)
-      setIsSaved(true)
-      setSaveMessage('Catalogue deleted and updated live!')
-      setTimeout(() => setIsSaved(false), 4000)
+      const res = await deleteCatalogueAction(id)
+      if (res.success) {
+        setCataloguesList((prev) => prev.filter((c) => c.id !== id))
+        window.dispatchEvent(new Event('durable_content_updated'))
+        setIsSaved(true)
+        setSaveMessage('Catalogue deleted and updated live!')
+        setTimeout(() => setIsSaved(false), 4000)
+      } else {
+        alert(res.error || 'Failed to delete catalogue')
+      }
     }
   }
 
-  const handleSaveModalForm = (e: React.FormEvent) => {
+  const handleSaveModalForm = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!catModalForm.title.trim()) return
 
-    let updated: CatalogueItem[] = []
-    if (editingCatId) {
-      updated = cataloguesList.map((c) =>
-        c.id === editingCatId
-          ? {
-              ...c,
-              title: catModalForm.title,
-              slug: catModalForm.slug || catModalForm.title.toLowerCase().replace(/\s+/g, '-'),
-              category_name: catModalForm.category_name,
-              description: catModalForm.description,
-              cover_image: catModalForm.cover_image,
-              pdf_url: catModalForm.pdf_url,
-              is_published: catModalForm.is_published,
-              accessCode: catModalForm.accessCode,
-              updated_at: new Date().toISOString(),
-            }
-          : c
-      )
-    } else {
-      const slug = catModalForm.slug || catModalForm.title.toLowerCase().replace(/\s+/g, '-')
-      const newCat: any = {
-        id: `cat-pdf-${slug}-${Date.now()}`,
-        category_id: 'cat-gen-surg',
-        title: catModalForm.title,
-        slug: slug,
-        description: catModalForm.description,
-        cover_image: catModalForm.cover_image || '/images/catalogue-cover-yellow.png',
-        pdf_url: catModalForm.pdf_url,
-        is_published: catModalForm.is_published,
-        sort_order: cataloguesList.length + 1,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        category_name: catModalForm.category_name,
-        accessCode: catModalForm.accessCode,
-      }
-      updated = [...cataloguesList, newCat]
+    const slug =
+      catModalForm.slug.trim() ||
+      catModalForm.title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '')
+
+    const payload = {
+      title: catModalForm.title,
+      slug: slug,
+      category_id: null,
+      description: catModalForm.description,
+      cover_image: catModalForm.cover_image || '/images/catalogue-cover-yellow.png',
+      pdf_url: catModalForm.pdf_url,
+      is_published: catModalForm.is_published,
+      sort_order: 0,
     }
 
-    setCataloguesList(updated)
-    savePersistentData('durable_catalogues', updated)
+    if (editingCatId) {
+      const res = await updateCatalogueAction(editingCatId, payload)
+      if (res.error) {
+        alert(`Update failed: ${res.error}`)
+        return
+      }
+    } else {
+      const res = await createCatalogueAction(payload)
+      if (res.error) {
+        alert(`Creation failed: ${res.error}`)
+        return
+      }
+    }
+
+    await loadCataloguesFromDb()
+    window.dispatchEvent(new Event('durable_content_updated'))
     setIsModalOpen(false)
     setIsSaved(true)
     setSaveMessage(editingCatId ? 'Catalogue updated successfully!' : 'New PDF Catalogue added successfully!')

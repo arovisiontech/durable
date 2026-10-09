@@ -3,7 +3,8 @@ import { CataloguesOverviewSection } from '@/src/components/public/CataloguesOve
 import { DownloadableCataloguesSection } from '@/src/components/public/DownloadableCataloguesSection'
 import { InstrumentPillarsSection } from '@/src/components/public/InstrumentPillarsSection'
 
-export const revalidate = 60
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 export default function PublicCataloguesPage() {
   return (

@@ -218,47 +218,12 @@ export function CatalogueFormModal({
           toast.error(`Update failed: ${res.error}`)
           return
         }
-        // Also update local storage cache for instant client reactivity
-        const existing = getStoredCatalogues()
-        const updated = existing.map((c) =>
-          c.id === catalogueToEdit.id
-            ? {
-                ...c,
-                title: data.title,
-                slug: data.slug,
-                category_id: data.category_id || c.category_id,
-                description: data.description || c.description,
-                cover_image: data.cover_image || c.cover_image,
-                pdf_url: data.pdf_url,
-                is_published: data.is_published,
-                sort_order: data.sort_order ?? c.sort_order,
-                updated_at: new Date().toISOString(),
-              }
-            : c
-        )
-        saveStoredCatalogues(updated as any)
       } else {
         const res = await createCatalogueAction(data, newlyUploadedStoragePath)
         if (res.error) {
           toast.error(`Creation failed: ${res.error}`)
           return
         }
-        const existing = getStoredCatalogues()
-        const newCat: StoredCatalogueItem = res.catalogue || {
-          id: `cat-pdf-${data.slug}-${Date.now()}`,
-          category_id: data.category_id || null,
-          title: data.title,
-          slug: data.slug,
-          description: data.description || null,
-          cover_image: data.cover_image || '/images/blog-instruments-tray.png',
-          pdf_url: data.pdf_url,
-          is_published: data.is_published,
-          sort_order: data.sort_order ?? existing.length + 1,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          category_name: 'General Surgery',
-        }
-        saveStoredCatalogues([...existing, newCat] as any)
       }
 
       window.dispatchEvent(new Event('durable_content_updated'))

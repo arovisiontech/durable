@@ -53,9 +53,6 @@ export function CatalogueManager() {
 
   const loadCatalogues = useCallback(async () => {
     setIsLoading(true)
-    const stored = getStoredCatalogues()
-    let list: CatalogueItem[] = stored as any
-
     const res = await fetchCataloguesAction({
       search: debouncedSearch,
       categoryId,
@@ -63,12 +60,9 @@ export function CatalogueManager() {
       sortBy,
     })
 
-    if (res.catalogues && res.catalogues.length > 0) {
-      list = res.catalogues as any
-    }
-
-    setCatalogues(list)
-    setTotalCount(list.length)
+    const list = res.catalogues || []
+    setCatalogues(list as any)
+    setTotalCount(res.count || list.length)
     setIsLoading(false)
   }, [debouncedSearch, categoryId, status, sortBy])
 
@@ -80,12 +74,14 @@ export function CatalogueManager() {
   }, [loadCatalogues])
 
   const handleToggleStatus = async (id: string, currentStatus: boolean) => {
-    await toggleCatalogueStatusAction(id, currentStatus)
-    const updated = catalogues.map((c) => (c.id === id ? { ...c, is_published: currentStatus } : c))
-    saveStoredCatalogues(updated as any)
-    setCatalogues(updated)
-    window.dispatchEvent(new Event('durable_content_updated'))
-    toast.success(currentStatus ? 'Catalogue published' : 'Catalogue set to draft')
+    const res = await toggleCatalogueStatusAction(id, currentStatus)
+    if (res.success) {
+      loadCatalogues()
+      window.dispatchEvent(new Event('durable_content_updated'))
+      toast.success(currentStatus ? 'Catalogue published' : 'Catalogue set to draft')
+    } else {
+      toast.error(res.error || 'Failed to update status')
+    }
   }
 
   return (

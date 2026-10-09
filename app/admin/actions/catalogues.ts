@@ -32,12 +32,11 @@ export async function fetchCataloguesAction(params?: {
     const supabase = await createClient()
 
     let rawCatalogues: CatalogueItem[] = []
-    let supabaseSuccess = false
 
     try {
       const { data, error } = await supabase.from('catalogues').select('*, categories(name)')
       if (!error && data) {
-        const dbList = data.map((c) => ({
+        rawCatalogues = data.map((c) => ({
           id: c.id,
           category_id: c.category_id,
           title: c.title,
@@ -51,22 +50,9 @@ export async function fetchCataloguesAction(params?: {
           updated_at: c.updated_at,
           category_name: (c.categories as { name?: string })?.name || null,
         }))
-
-        const dbSlugs = new Set(dbList.map((c) => c.slug.toLowerCase()))
-        const dbTitles = new Set(dbList.map((c) => c.title.toLowerCase()))
-        const missingSeed = INITIAL_CATALOGUES_SEED.filter(
-          (s) => !dbSlugs.has(s.slug.toLowerCase()) && !dbTitles.has(s.title.toLowerCase())
-        )
-
-        rawCatalogues = [...dbList, ...missingSeed]
-        supabaseSuccess = true
       }
     } catch (e) {
       console.error('Error fetching catalogues from Supabase:', e)
-    }
-
-    if (!supabaseSuccess || rawCatalogues.length === 0) {
-      rawCatalogues = [...INITIAL_CATALOGUES_SEED]
     }
 
     // Apply Search
@@ -109,7 +95,7 @@ export async function fetchCataloguesAction(params?: {
     return { catalogues: rawCatalogues, count: rawCatalogues.length, error: null }
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Failed to fetch catalogues'
-    return { catalogues: INITIAL_CATALOGUES_SEED, count: INITIAL_CATALOGUES_SEED.length, error: message }
+    return { catalogues: [], count: 0, error: message }
   }
 }
 
