@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { fetchPublicCategories } from '@/app/actions/public'
+import { loadPersistentData } from '@/src/lib/persistentStorage'
 
 interface CategoryCard {
   id: string
@@ -25,7 +26,7 @@ const DEFAULT_SOLUTIONS: CategoryCard[] = [
     title: 'Dental Instruments',
     slug: 'dental',
     description: 'Precision dental scalpels, probes, forceps, and restorative tools.',
-    image_url: '/images/cat-retractors.png',
+    image_url: '/images/icon-dental.png',
   },
   {
     id: '03',
@@ -36,24 +37,24 @@ const DEFAULT_SOLUTIONS: CategoryCard[] = [
   },
   {
     id: '04',
-    title: 'Ophthalmic',
+    title: 'ophthalmic',
     slug: 'ophthalmic',
     description: 'Bone holding forceps, rongeurs, bone chisels, and implant tools.',
     image_url: '/images/cat-scissors-shears.png',
   },
   {
     id: '05',
-    title: 'Hospital Furniture',
+    title: 'hospital furniture',
     slug: 'hospital-furniture',
     description: 'Functional Solutions For Hospitals',
-    image_url: '/images/cat-retractors.png',
+    image_url: '/images/icon-hospital-furniture.png',
   },
   {
     id: '06',
     title: 'Single Use Instruments',
     slug: 'single-use-instruments',
     description: 'Reliable Single-Use Solutions',
-    image_url: '/images/cat-handles-blades.png',
+    image_url: '/images/icon-single-use-instruments.png',
   },
   {
     id: '07',
@@ -82,17 +83,35 @@ export function SolutionsSection() {
   const [solutions, setSolutions] = useState<CategoryCard[]>(DEFAULT_SOLUTIONS)
 
   const loadSolutions = async () => {
+    // 1. First priority: load authoritative solutions cards edited in Admin Content (#sec-solutions)
+    loadPersistentData('durable_solutions_data', DEFAULT_SOLUTIONS, (data: any) => {
+      if (Array.isArray(data) && data.length > 0) {
+        const mapped: CategoryCard[] = data.map((item, idx) => ({
+          id: item.count || String(idx + 1).padStart(2, '0'),
+          title: item.title,
+          slug: item.slug || item.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+          description: item.description || DEFAULT_SOLUTIONS[idx]?.description || 'Precision instruments designed for medical excellence.',
+          image_url: item.image_url || DEFAULT_SOLUTIONS[idx]?.image_url || '/images/cat-scissors-shears.png',
+        }))
+        setSolutions(mapped)
+      }
+    })
+
+    // 2. Fallback / supplementary categories from database
     try {
       const cats = await fetchPublicCategories()
       if (cats && cats.length > 0) {
-        const mapped: CategoryCard[] = cats.map((item, idx) => ({
-          id: String(idx + 1).padStart(2, '0'),
-          title: item.name,
-          slug: item.slug,
-          description: item.description || 'Precision instruments designed for medical excellence.',
-          image_url: item.image_url || '/images/cat-scissors-shears.png',
-        }))
-        setSolutions(mapped)
+        // If no custom solutions override is loaded, use database categories
+        setSolutions((prev) => {
+          if (prev && prev.length >= 9) return prev
+          return cats.map((item, idx) => ({
+            id: String(idx + 1).padStart(2, '0'),
+            title: item.name,
+            slug: item.slug,
+            description: item.description || DEFAULT_SOLUTIONS[idx]?.description || 'Precision instruments designed for medical excellence.',
+            image_url: item.image_url || DEFAULT_SOLUTIONS[idx]?.image_url || '/images/cat-scissors-shears.png',
+          }))
+        })
       }
     } catch (e) {
       console.error('Error fetching solutions categories:', e)

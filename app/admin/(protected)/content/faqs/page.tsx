@@ -18,6 +18,7 @@ import {
   Tag,
   FileText,
 } from 'lucide-react'
+import { savePersistentData, loadPersistentData } from '@/src/lib/persistentStorage'
 
 // Default Data Constants
 const DEFAULT_HERO = {
@@ -145,31 +146,25 @@ export default function AdminContentFaqsPage() {
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [saveSuccess, setSaveSuccess] = useState(false)
 
-  // Load from localStorage on mount
+  // Load persistent data from cloud & local cache on mount
   useEffect(() => {
-    try {
-      const savedHero = localStorage.getItem('durable_faq_hero_data')
-      if (savedHero) setHeroData(JSON.parse(savedHero))
-
-      const savedFaqs = localStorage.getItem('durable_faqs_list')
-      if (savedFaqs) setFaqsList(JSON.parse(savedFaqs))
-
-      const savedSupport = localStorage.getItem('durable_faq_support_data')
-      if (savedSupport) setSupportData(JSON.parse(savedSupport))
-    } catch (e) {
-      console.error('Error reading FAQ content from localStorage:', e)
-    }
+    loadPersistentData('durable_faq_hero_data', DEFAULT_HERO, (data) => {
+      if (data && typeof data === 'object') setHeroData((prev) => ({ ...prev, ...data }))
+    })
+    loadPersistentData('durable_faqs_list', DEFAULT_FAQS, (data) => {
+      if (Array.isArray(data) && data.length > 0) setFaqsList(data)
+    })
+    loadPersistentData('durable_faq_support_data', DEFAULT_SUPPORT, (data) => {
+      if (data && typeof data === 'object') setSupportData((prev) => ({ ...prev, ...data }))
+    })
   }, [])
 
-  // Save changes handler
+  // Save changes handler (cross-device cloud persistence)
   const handleSaveAll = () => {
     try {
-      localStorage.setItem('durable_faq_hero_data', JSON.stringify(heroData))
-      localStorage.setItem('durable_faqs_list', JSON.stringify(faqsList))
-      localStorage.setItem('durable_faq_support_data', JSON.stringify(supportData))
-
-      // Trigger custom window event so open website tabs update live
-      window.dispatchEvent(new Event('durable_content_updated'))
+      savePersistentData('durable_faq_hero_data', heroData)
+      savePersistentData('durable_faqs_list', faqsList)
+      savePersistentData('durable_faq_support_data', supportData)
 
       setSaveSuccess(true)
       setTimeout(() => setSaveSuccess(false), 4000)

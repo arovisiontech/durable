@@ -8,6 +8,8 @@ import { PublicFooter } from '@/src/components/public/PublicFooter'
 import { PublicSiteSettings, PublicNavigationItem } from '@/src/types/public'
 import { CategoryItem } from '@/src/types/category'
 
+import { AdminAutoSync } from '@/src/components/admin/AdminAutoSync'
+
 export default async function PublicLayout({
   children,
 }: {
@@ -33,6 +35,7 @@ export default async function PublicLayout({
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 font-sans selection:bg-red-500 selection:text-white">
+      <AdminAutoSync />
       <PublicHeader settings={settings} navigation={navigation} categories={categories} />
       <main className="flex-1 w-full">{children}</main>
       <PublicFooter settings={settings} categories={categories} />

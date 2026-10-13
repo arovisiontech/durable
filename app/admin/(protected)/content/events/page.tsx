@@ -18,6 +18,7 @@ import {
   Tag,
   FileText,
 } from 'lucide-react'
+import { savePersistentData, loadPersistentData } from '@/src/lib/persistentStorage'
 
 // Default Data Constants
 const DEFAULT_RECENT_HERO = {
@@ -160,39 +161,33 @@ export default function AdminEventsContentPage() {
 
   const [saveSuccess, setSaveSuccess] = useState(false)
 
-  // Load from localStorage on mount
+  // Load persistent data from cloud & local cache on mount
   useEffect(() => {
-    try {
-      const savedRH = localStorage.getItem('durable_recent_events_hero')
-      if (savedRH) setRecentHero(JSON.parse(savedRH))
-
-      const savedRL = localStorage.getItem('durable_recent_events_list')
-      if (savedRL) setRecentList(JSON.parse(savedRL))
-
-      const savedUH = localStorage.getItem('durable_upcoming_events_hero')
-      if (savedUH) setUpcomingHero(JSON.parse(savedUH))
-
-      const savedUL = localStorage.getItem('durable_upcoming_events_list')
-      if (savedUL) setUpcomingList(JSON.parse(savedUL))
-
-      const savedOH = localStorage.getItem('durable_events_overview_hero')
-      if (savedOH) setOverviewHero(JSON.parse(savedOH))
-    } catch (e) {
-      console.error('Error reading events content from localStorage:', e)
-    }
+    loadPersistentData('durable_recent_events_hero', DEFAULT_RECENT_HERO, (data) => {
+      if (data && typeof data === 'object') setRecentHero((prev) => ({ ...prev, ...data }))
+    })
+    loadPersistentData('durable_recent_events_list', DEFAULT_RECENT_EVENTS, (data) => {
+      if (Array.isArray(data) && data.length > 0) setRecentList(data)
+    })
+    loadPersistentData('durable_upcoming_events_hero', DEFAULT_UPCOMING_HERO, (data) => {
+      if (data && typeof data === 'object') setUpcomingHero((prev) => ({ ...prev, ...data }))
+    })
+    loadPersistentData('durable_upcoming_events_list', DEFAULT_UPCOMING_EVENTS, (data) => {
+      if (Array.isArray(data) && data.length > 0) setUpcomingList(data)
+    })
+    loadPersistentData('durable_events_overview_hero', DEFAULT_OVERVIEW_HERO, (data) => {
+      if (data && typeof data === 'object') setOverviewHero((prev) => ({ ...prev, ...data }))
+    })
   }, [])
 
-  // Save changes handler
+  // Save changes handler (cross-device cloud persistence)
   const handleSaveAll = () => {
     try {
-      localStorage.setItem('durable_recent_events_hero', JSON.stringify(recentHero))
-      localStorage.setItem('durable_recent_events_list', JSON.stringify(recentList))
-      localStorage.setItem('durable_upcoming_events_hero', JSON.stringify(upcomingHero))
-      localStorage.setItem('durable_upcoming_events_list', JSON.stringify(upcomingList))
-      localStorage.setItem('durable_events_overview_hero', JSON.stringify(overviewHero))
-
-      // Trigger custom window event so open tabs update immediately
-      window.dispatchEvent(new Event('durable_content_updated'))
+      savePersistentData('durable_recent_events_hero', recentHero)
+      savePersistentData('durable_recent_events_list', recentList)
+      savePersistentData('durable_upcoming_events_hero', upcomingHero)
+      savePersistentData('durable_upcoming_events_list', upcomingList)
+      savePersistentData('durable_events_overview_hero', overviewHero)
 
       setSaveSuccess(true)
       setTimeout(() => setSaveSuccess(false), 4000)

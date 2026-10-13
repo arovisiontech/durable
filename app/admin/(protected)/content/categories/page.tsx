@@ -14,6 +14,7 @@ import {
   Search,
   ShieldCheck,
 } from 'lucide-react'
+import { savePersistentData, loadPersistentData } from '@/src/lib/persistentStorage'
 
 const DEFAULT_HERO = {
   title: 'ALL PRODUCT CATEGORIES &',
@@ -101,27 +102,21 @@ export default function AdminCategoriesContentPage() {
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [saveSuccess, setSaveSuccess] = useState(false)
 
-  // Load from localStorage on mount
+  // Load persistent data from cloud & local cache on mount
   useEffect(() => {
-    try {
-      const savedHero = localStorage.getItem('durable_categories_hero')
-      if (savedHero) setHeroData(JSON.parse(savedHero))
-
-      const savedProds = localStorage.getItem('durable_categories_products')
-      if (savedProds) setProductsList(JSON.parse(savedProds))
-    } catch (e) {
-      console.error('Error reading categories content from localStorage:', e)
-    }
+    loadPersistentData('durable_categories_hero', DEFAULT_HERO, (data) => {
+      if (data && typeof data === 'object') setHeroData((prev) => ({ ...prev, ...data }))
+    })
+    loadPersistentData('durable_categories_products', DEFAULT_PRODUCTS, (data) => {
+      if (Array.isArray(data) && data.length > 0) setProductsList(data)
+    })
   }, [])
 
-  // Save changes handler
+  // Save changes handler (cross-device cloud persistence)
   const handleSaveAll = () => {
     try {
-      localStorage.setItem('durable_categories_hero', JSON.stringify(heroData))
-      localStorage.setItem('durable_categories_products', JSON.stringify(productsList))
-
-      // Trigger custom window event so open website tabs update live
-      window.dispatchEvent(new Event('durable_content_updated'))
+      savePersistentData('durable_categories_hero', heroData)
+      savePersistentData('durable_categories_products', productsList)
 
       setSaveSuccess(true)
       setTimeout(() => setSaveSuccess(false), 4000)

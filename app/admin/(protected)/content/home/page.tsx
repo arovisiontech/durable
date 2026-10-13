@@ -152,15 +152,74 @@ export default function AdminContentHomePage() {
     { id: 'stat-4', number: '50+', label: 'Export Countries' },
   ])
 
-  // 4. SOLUTIONS GRID CARDS STATE (6 Categories)
-  const [solutionsData, setSolutionsData] = useState<AdminSolutionCard[]>([
-    { id: 'sol-1', title: 'General Surgery', image_url: '/images/cat-scissors-shears.png', count: '01', description: 'Precision Instruments For All Surgical Discipline' },
-    { id: 'sol-2', title: 'Dental', image_url: '/images/cat-retractors.png', count: '02', description: 'Complete Dental Solutions For Every Specialty' },
-    { id: 'sol-3', title: 'Medical Hollowware', image_url: '/images/cat-handles-blades.png', count: '03', description: 'Instrument Storage & Sterilization Solutions' },
-    { id: 'sol-4', title: 'Ophthalmic', image_url: '/images/cat-scissors-shears.png', count: '04', description: 'Complete Ophthalmic Instrument Range' },
-    { id: 'sol-5', title: 'Hospital Furniture', image_url: '/images/cat-retractors.png', count: '05', description: 'Functional Solutions For Hospitals' },
-    { id: 'sol-6', title: 'Single Use Instruments', image_url: '/images/cat-handles-blades.png', count: '06', description: 'Reliable Single-Use Solutions' },
-  ])
+  // 4. SOLUTIONS GRID CARDS STATE (All 9 Categories matching live site)
+  const DEFAULT_SOLUTIONS_9: AdminSolutionCard[] = [
+    {
+      id: 'sol-1',
+      title: 'General Surgery',
+      image_url: '/images/cat-scissors-shears.png',
+      count: '01',
+      description: 'High-precision surgical scissors, forceps, scalpels, and retractors.',
+    },
+    {
+      id: 'sol-2',
+      title: 'Dental Instruments',
+      image_url: '/images/icon-dental.png',
+      count: '02',
+      description: 'Precision dental scalpels, probes, forceps, and restorative tools.',
+    },
+    {
+      id: 'sol-3',
+      title: 'Medical Hollowware',
+      image_url: '/images/cat-handles-blades.png',
+      count: '03',
+      description: 'Otoscopes, ophthalmoscopes, reflex hammers, and diagnostic sets.',
+    },
+    {
+      id: 'sol-4',
+      title: 'ophthalmic',
+      image_url: '/images/cat-scissors-shears.png',
+      count: '04',
+      description: 'Bone holding forceps, rongeurs, bone chisels, and implant tools.',
+    },
+    {
+      id: 'sol-5',
+      title: 'hospital furniture',
+      image_url: '/images/icon-hospital-furniture.png',
+      count: '05',
+      description: 'Functional Solutions For Hospitals',
+    },
+    {
+      id: 'sol-6',
+      title: 'Single Use Instruments',
+      image_url: '/images/icon-single-use-instruments.png',
+      count: '06',
+      description: 'Reliable Single-Use Solutions',
+    },
+    {
+      id: 'sol-7',
+      title: 'Veterinary Instruments',
+      image_url: '/images/cat-scissors-shears.png',
+      count: '07',
+      description: 'Efficiency in veterinary procedures and animal healthcare.',
+    },
+    {
+      id: 'sol-8',
+      title: 'Plastic Surgery',
+      image_url: '/images/cat-retractors.png',
+      count: '08',
+      description: 'Reliable performance in delicate plastic and reconstructive procedures.',
+    },
+    {
+      id: 'sol-9',
+      title: 'Special Surgical Instruments',
+      image_url: '/images/cat-handles-blades.png',
+      count: '09',
+      description: 'Specialized, precision-engineered instruments designed for demanding surgical procedures, offering excellent control, accuracy.',
+    },
+  ]
+
+  const [solutionsData, setSolutionsData] = useState<AdminSolutionCard[]>(DEFAULT_SOLUTIONS_9)
 
   // 5. QUALITY YOU CAN TRUST SECTION STATE (4 Cards)
   const [qualityTrustData, setQualityTrustData] = useState({
@@ -302,8 +361,18 @@ export default function AdminContentHomePage() {
     loadPersistentData('durable_stats_data', statsData, (data) => {
       if (Array.isArray(data) && data.length > 0) setStatsData(data)
     })
-    loadPersistentData('durable_solutions_data', solutionsData, (data) => {
-      if (Array.isArray(data) && data.length > 0) setSolutionsData(data)
+    loadPersistentData('durable_solutions_data', DEFAULT_SOLUTIONS_9, (data) => {
+      if (Array.isArray(data) && data.length > 0) {
+        if (data.length < 9) {
+          const existingTitles = new Set(data.map((d: any) => (d.title || '').toLowerCase().trim()))
+          const missing = DEFAULT_SOLUTIONS_9.filter(
+            (d) => !existingTitles.has(d.title.toLowerCase().trim())
+          )
+          setSolutionsData([...data, ...missing])
+        } else {
+          setSolutionsData(data)
+        }
+      }
     })
     loadPersistentData('durable_quality_trust_data', qualityTrustData, (data) => {
       if (data && typeof data === 'object') setQualityTrustData((prev) => ({ ...prev, ...data }))
@@ -685,7 +754,7 @@ export default function AdminContentHomePage() {
           </div>
         </div>
 
-        {/* SECTION 4: SOLUTIONS GRID (6 Categories) */}
+        {/* SECTION 4: SOLUTIONS GRID */}
         <div id="sec-solutions" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-100">
             <div className="flex items-center gap-3">
@@ -694,14 +763,19 @@ export default function AdminContentHomePage() {
               </div>
               <div>
                 <h2 className="text-lg font-black text-[#0B1B3D]">4. Comprehensive Surgical & Medical Instrument Solutions</h2>
-                <p className="text-xs text-slate-500">Manage all 6 product category solution cards (General Surgery, Dental, etc.).</p>
+                <p className="text-xs text-slate-500">Manage all {solutionsData.length} product category solution cards (General Surgery, Dental Instruments, etc.).</p>
               </div>
             </div>
 
             <button
               onClick={() => {
                 setEditingItemId(null)
-                setSolutionForm({ title: 'New Category', image_url: '/images/cat-scissors-shears.png', count: '07', description: 'Category description' })
+                setSolutionForm({
+                  title: 'New Category',
+                  image_url: '/images/cat-scissors-shears.png',
+                  count: String(solutionsData.length + 1).padStart(2, '0'),
+                  description: 'Category description',
+                })
                 setActiveModal('solution')
               }}
               className="px-4 py-2 text-xs font-bold text-white bg-[#0B1B3D] hover:bg-slate-800 rounded-xl transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"

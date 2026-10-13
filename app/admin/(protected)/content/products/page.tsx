@@ -19,6 +19,7 @@ import {
   Image as ImageIcon,
 } from 'lucide-react'
 import { AdminMediaUploadPlaceholder } from '@/src/components/admin/AdminMediaUploadPlaceholder'
+import { savePersistentData, loadPersistentData } from '@/src/lib/persistentStorage'
 
 export interface SubCategoryPill {
   id: string
@@ -125,77 +126,51 @@ export default function AdminContentProductsPage() {
   const [dentalFieldModalForm, setDentalFieldModalForm] = useState({ number: '01', title: '', description: '', slug: 'extraction-oral-surgery' })
   const [customModalForm, setCustomModalForm] = useState({ title: '', subheading: '', description: '', image_url: '' })
 
-  // SYNC FROM LOCALSTORAGE ON MOUNT
+  // LOAD ALL FROM CLOUD & LOCAL CACHE ON MOUNT
   useEffect(() => {
-    try {
-      const savedHero = localStorage.getItem('durable_products_hero_data')
-      if (savedHero) {
-        const parsed = JSON.parse(savedHero)
-        if (parsed && typeof parsed === 'object') setHeroForm((prev) => ({ ...prev, ...parsed }))
-      }
-
-      const savedSubcats = localStorage.getItem('durable_subcategories_bar')
-      if (savedSubcats) {
-        const parsed = JSON.parse(savedSubcats)
-        if (Array.isArray(parsed) && parsed.length > 0) setSubcatPills(parsed)
-      }
-
-      const savedExploreHeader = localStorage.getItem('durable_explore_range_data')
-      if (savedExploreHeader) {
-        const parsed = JSON.parse(savedExploreHeader)
-        if (parsed && typeof parsed === 'object') setExploreRangeForm((prev) => ({ ...prev, ...parsed }))
-      }
-
-      const savedExploreCards = localStorage.getItem('durable_explore_range_cards')
-      if (savedExploreCards) {
-        const parsed = JSON.parse(savedExploreCards)
-        if (Array.isArray(parsed) && parsed.length > 0) setExploreCards(parsed)
-      }
-
-      const savedBanner = localStorage.getItem('durable_dental_clinic_banner')
-      if (savedBanner) setDentalBannerUrl(savedBanner)
-
-      const savedDentalHeader = localStorage.getItem('durable_dental_fields_data')
-      if (savedDentalHeader) {
-        const parsed = JSON.parse(savedDentalHeader)
-        if (parsed && typeof parsed === 'object') setDentalFieldsHeader((prev) => ({ ...prev, ...parsed }))
-      }
-
-      const savedDentalCards = localStorage.getItem('durable_dental_fields_cards')
-      if (savedDentalCards) {
-        const parsed = JSON.parse(savedDentalCards)
-        if (Array.isArray(parsed) && parsed.length > 0) setDentalFieldCards(parsed)
-      }
-
-      const savedCustom = localStorage.getItem('durable_custom_products_blocks')
-      if (savedCustom) {
-        const parsed = JSON.parse(savedCustom)
-        if (Array.isArray(parsed)) setCustomBlocks(parsed)
-      }
-    } catch (e) {
-      console.error('LocalStorage Products mount read error:', e)
-    }
+    loadPersistentData('durable_products_hero_data', heroForm, (data) => {
+      if (data && typeof data === 'object') setHeroForm((prev) => ({ ...prev, ...data }))
+    })
+    loadPersistentData('durable_subcategories_bar', subcatPills, (data) => {
+      if (Array.isArray(data) && data.length > 0) setSubcatPills(data)
+    })
+    loadPersistentData('durable_explore_range_data', exploreRangeForm, (data) => {
+      if (data && typeof data === 'object') setExploreRangeForm((prev) => ({ ...prev, ...data }))
+    })
+    loadPersistentData('durable_explore_range_cards', exploreCards, (data) => {
+      if (Array.isArray(data) && data.length > 0) setExploreCards(data)
+    })
+    loadPersistentData('durable_dental_clinic_banner', dentalBannerUrl, (data) => {
+      if (typeof data === 'string' && data) setDentalBannerUrl(data)
+    })
+    loadPersistentData('durable_dental_fields_data', dentalFieldsHeader, (data) => {
+      if (data && typeof data === 'object') setDentalFieldsHeader((prev) => ({ ...prev, ...data }))
+    })
+    loadPersistentData('durable_dental_fields_cards', dentalFieldCards, (data) => {
+      if (Array.isArray(data) && data.length > 0) setDentalFieldCards(data)
+    })
+    loadPersistentData('durable_custom_products_blocks', customBlocks, (data) => {
+      if (Array.isArray(data)) setCustomBlocks(data)
+    })
   }, [])
 
-  // SAVE ALL TO LOCALSTORAGE & EMIT EVENT
+  // SAVE ALL TO CLOUD & STORAGE (CROSS-DEVICE PERSISTENCE)
   const saveAllToStorage = () => {
     try {
-      localStorage.setItem('durable_products_hero_data', JSON.stringify(heroForm))
-      localStorage.setItem('durable_subcategories_bar', JSON.stringify(subcatPills))
-      localStorage.setItem('durable_explore_range_data', JSON.stringify(exploreRangeForm))
-      localStorage.setItem('durable_explore_range_cards', JSON.stringify(exploreCards))
-      localStorage.setItem('durable_dental_clinic_banner', dentalBannerUrl)
-      localStorage.setItem('durable_dental_fields_data', JSON.stringify(dentalFieldsHeader))
-      localStorage.setItem('durable_dental_fields_cards', JSON.stringify(dentalFieldCards))
-      localStorage.setItem('durable_custom_products_blocks', JSON.stringify(customBlocks))
-
-      window.dispatchEvent(new Event('durable_content_updated'))
+      savePersistentData('durable_products_hero_data', heroForm)
+      savePersistentData('durable_subcategories_bar', subcatPills)
+      savePersistentData('durable_explore_range_data', exploreRangeForm)
+      savePersistentData('durable_explore_range_cards', exploreCards)
+      savePersistentData('durable_dental_clinic_banner', dentalBannerUrl)
+      savePersistentData('durable_dental_fields_data', dentalFieldsHeader)
+      savePersistentData('durable_dental_fields_cards', dentalFieldCards)
+      savePersistentData('durable_custom_products_blocks', customBlocks)
 
       setIsSaved(true)
       setSaveMessage('Products Page content updated and published live!')
       setTimeout(() => setIsSaved(false), 4000)
     } catch (e) {
-      console.error('LocalStorage write error:', e)
+      console.error('Storage write error:', e)
     }
   }
 

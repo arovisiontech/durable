@@ -15,6 +15,7 @@ import {
   ExternalLink,
 } from 'lucide-react'
 import { BLOGS_DATA, BlogItem } from '@/src/data/blogsData'
+import { savePersistentData, loadPersistentData } from '@/src/lib/persistentStorage'
 
 const DEFAULT_HERO = {
   categoryBadge: 'OUR BLOG & INSIGHTS',
@@ -39,31 +40,25 @@ export default function AdminBlogContentPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [saveSuccess, setSaveSuccess] = useState(false)
 
-  // Load from localStorage on mount
+  // Load persistent data from cloud & local cache on mount
   useEffect(() => {
-    try {
-      const savedHero = localStorage.getItem('durable_blog_hero_data')
-      if (savedHero) setHeroData(JSON.parse(savedHero))
-
-      const savedHeader = localStorage.getItem('durable_blog_section_header')
-      if (savedHeader) setHeaderData(JSON.parse(savedHeader))
-
-      const savedBlogs = localStorage.getItem('durable_blogs_list')
-      if (savedBlogs) setBlogsList(JSON.parse(savedBlogs))
-    } catch (e) {
-      console.error('Error reading blog content from localStorage:', e)
-    }
+    loadPersistentData('durable_blog_hero_data', DEFAULT_HERO, (data) => {
+      if (data && typeof data === 'object') setHeroData((prev) => ({ ...prev, ...data }))
+    })
+    loadPersistentData('durable_blog_section_header', DEFAULT_HEADER, (data) => {
+      if (data && typeof data === 'object') setHeaderData((prev) => ({ ...prev, ...data }))
+    })
+    loadPersistentData('durable_blogs_list', BLOGS_DATA, (data) => {
+      if (Array.isArray(data) && data.length > 0) setBlogsList(data)
+    })
   }, [])
 
-  // Save changes handler
+  // Save changes handler (cross-device cloud persistence)
   const handleSaveAll = () => {
     try {
-      localStorage.setItem('durable_blog_hero_data', JSON.stringify(heroData))
-      localStorage.setItem('durable_blog_section_header', JSON.stringify(headerData))
-      localStorage.setItem('durable_blogs_list', JSON.stringify(blogsList))
-
-      // Trigger custom window event so open website tabs update live
-      window.dispatchEvent(new Event('durable_content_updated'))
+      savePersistentData('durable_blog_hero_data', heroData)
+      savePersistentData('durable_blog_section_header', headerData)
+      savePersistentData('durable_blogs_list', blogsList)
 
       setSaveSuccess(true)
       setTimeout(() => setSaveSuccess(false), 4000)

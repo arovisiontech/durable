@@ -8,6 +8,33 @@ const globalServerStore = new Map<string, any>()
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const key = searchParams.get('key')
+  const fetchAll = searchParams.get('all') === 'true'
+
+  // Handle fetch all keys across cloud
+  if (fetchAll) {
+    try {
+      const supabase = createPublicClient()
+      const { data, error } = await supabase
+        .from('page_sections')
+        .select('heading, content')
+        .like('heading', 'durable_%')
+
+      if (!error && data) {
+        const allMap: Record<string, any> = {}
+        data.forEach((row) => {
+          if (row.heading && row.content) {
+            const parsed = row.content.data !== undefined ? row.content.data : row.content
+            allMap[row.heading] = parsed
+            globalServerStore.set(row.heading, parsed)
+          }
+        })
+        return NextResponse.json({ success: true, data: allMap, count: Object.keys(allMap).length })
+      }
+    } catch (err) {
+      console.warn('[Sync API GET ALL] Supabase query notice:', err)
+    }
+    return NextResponse.json({ success: false, data: {} })
+  }
 
   if (!key) {
     return NextResponse.json({ error: 'Missing key parameter' }, { status: 400 })

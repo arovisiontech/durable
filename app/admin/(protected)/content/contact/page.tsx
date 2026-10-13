@@ -21,6 +21,7 @@ import {
   HelpCircle,
   FileText,
 } from 'lucide-react'
+import { savePersistentData, loadPersistentData } from '@/src/lib/persistentStorage'
 
 // Default Data Constants
 const DEFAULT_HERO = {
@@ -92,35 +93,29 @@ export default function AdminContactContentPage() {
   const [newOptionText, setNewOptionText] = useState('')
   const [saveSuccess, setSaveSuccess] = useState(false)
 
-  // Load from localStorage on mount
+  // Load persistent data from cloud & local cache on mount
   useEffect(() => {
-    try {
-      const savedHero = localStorage.getItem('durable_contact_hero_data')
-      if (savedHero) setHeroData(JSON.parse(savedHero))
-
-      const savedForm = localStorage.getItem('durable_contact_form_data')
-      if (savedForm) setFormSettings(JSON.parse(savedForm))
-
-      const savedInfo = localStorage.getItem('durable_contact_info_data')
-      if (savedInfo) setInfoData(JSON.parse(savedInfo))
-
-      const savedWhy = localStorage.getItem('durable_contact_why_data')
-      if (savedWhy) setWhyFeatures(JSON.parse(savedWhy))
-    } catch (e) {
-      console.error('Error reading contact content from localStorage:', e)
-    }
+    loadPersistentData('durable_contact_hero_data', DEFAULT_HERO, (data) => {
+      if (data && typeof data === 'object') setHeroData((prev) => ({ ...prev, ...data }))
+    })
+    loadPersistentData('durable_contact_form_data', DEFAULT_FORM_SETTINGS, (data) => {
+      if (data && typeof data === 'object') setFormSettings((prev) => ({ ...prev, ...data }))
+    })
+    loadPersistentData('durable_contact_info_data', DEFAULT_INFO, (data) => {
+      if (data && typeof data === 'object') setInfoData((prev) => ({ ...prev, ...data }))
+    })
+    loadPersistentData('durable_contact_why_data', DEFAULT_WHY_FEATURES, (data) => {
+      if (data && typeof data === 'object') setWhyFeatures((prev) => ({ ...prev, ...data }))
+    })
   }, [])
 
-  // Save changes handler
+  // Save changes handler (cross-device cloud persistence)
   const handleSaveAll = () => {
     try {
-      localStorage.setItem('durable_contact_hero_data', JSON.stringify(heroData))
-      localStorage.setItem('durable_contact_form_data', JSON.stringify(formSettings))
-      localStorage.setItem('durable_contact_info_data', JSON.stringify(infoData))
-      localStorage.setItem('durable_contact_why_data', JSON.stringify(whyFeatures))
-
-      // Trigger custom window event so open website tabs update live
-      window.dispatchEvent(new Event('durable_content_updated'))
+      savePersistentData('durable_contact_hero_data', heroData)
+      savePersistentData('durable_contact_form_data', formSettings)
+      savePersistentData('durable_contact_info_data', infoData)
+      savePersistentData('durable_contact_why_data', whyFeatures)
 
       setSaveSuccess(true)
       setTimeout(() => setSaveSuccess(false), 4000)

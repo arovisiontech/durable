@@ -24,6 +24,7 @@ import {
   Globe,
 } from 'lucide-react'
 import { AdminMediaUploadPlaceholder } from '@/src/components/admin/AdminMediaUploadPlaceholder'
+import { savePersistentData, loadPersistentData } from '@/src/lib/persistentStorage'
 import {
   StrengthCard,
   CustomBlock,
@@ -184,12 +185,10 @@ export default function AdminContentStrengthsPage() {
     image_url: '',
   })
 
-  // Sync data from LocalStorage on Mount
+  // Sync data from cloud & local cache on mount
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('durable_strengths_data')
-      if (saved) {
-        const parsed = JSON.parse(saved)
+    loadPersistentData('durable_strengths_data', null, (parsed: any) => {
+      if (parsed && typeof parsed === 'object') {
         if (parsed.hero) setHeroForm((prev) => ({ ...prev, ...parsed.hero }))
         if (typeof parsed.introText === 'string') setIntroText(parsed.introText)
         if (parsed.feature) setFeatureForm((prev) => ({ ...prev, ...parsed.feature }))
@@ -204,12 +203,10 @@ export default function AdminContentStrengthsPage() {
         if (parsed.faqsBanner) setFaqsBannerForm((prev) => ({ ...prev, ...parsed.faqsBanner }))
         if (Array.isArray(parsed.customBlocks)) setCustomBlocks(parsed.customBlocks)
       }
-    } catch (e) {
-      console.error(e)
-    }
+    })
   }, [])
 
-  // Save changes to localStorage & trigger live update event
+  // Save changes to cloud & storage (cross-device persistence)
   const handleSaveAll = (e?: React.FormEvent) => {
     if (e) e.preventDefault()
     try {
@@ -227,8 +224,7 @@ export default function AdminContentStrengthsPage() {
         faqsBanner: faqsBannerForm,
         customBlocks,
       }
-      localStorage.setItem('durable_strengths_data', JSON.stringify(payload))
-      window.dispatchEvent(new Event('durable_content_updated'))
+      savePersistentData('durable_strengths_data', payload)
       
       setIsSaved(true)
       setSaveMessage('Strengths Page content updated and published live!')

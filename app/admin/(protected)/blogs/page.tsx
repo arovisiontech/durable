@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { BLOGS_DATA, BlogItem } from '@/src/data/blogsData'
 import { AdminMediaUploadPlaceholder } from '@/src/components/admin/AdminMediaUploadPlaceholder'
+import { savePersistentData, loadPersistentData } from '@/src/lib/persistentStorage'
 
 export interface BlogPost extends BlogItem {}
 
@@ -36,33 +37,23 @@ export default function AdminBlogsPage() {
     image: '/images/blog-instruments-tray.png',
   })
 
-  // Load from localStorage on mount
+  // Load persistent data from cloud & local cache on mount
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('durable_blogs_list')
-      if (saved) {
-        const parsed = JSON.parse(saved)
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setBlogs(parsed)
-          return
-        }
+    loadPersistentData('durable_blogs_list', BLOGS_DATA, (data) => {
+      if (Array.isArray(data) && data.length > 0) {
+        setBlogs(data)
       }
-      setBlogs(BLOGS_DATA)
-    } catch (e) {
-      console.error('Error reading durable_blogs_list from localStorage:', e)
-      setBlogs(BLOGS_DATA)
-    }
+    })
   }, [])
 
   const saveToStorage = (updatedBlogs: BlogPost[], msg?: string) => {
     try {
-      localStorage.setItem('durable_blogs_list', JSON.stringify(updatedBlogs))
-      window.dispatchEvent(new Event('durable_content_updated'))
+      savePersistentData('durable_blogs_list', updatedBlogs)
       setToastMessage(msg || 'Blog articles list saved and published live!')
       setIsSaved(true)
       setTimeout(() => setIsSaved(false), 4000)
     } catch (e) {
-      console.error('Error saving durable_blogs_list to localStorage:', e)
+      console.error('Error saving durable_blogs_list:', e)
     }
   }
 

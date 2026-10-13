@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { loadPersistentData } from '@/src/lib/persistentStorage'
 
 interface ProductsHeroBannerProps {
   categoryTitle?: string
@@ -52,25 +53,17 @@ export function ProductsHeroBanner({
   const [subCategories, setSubCategories] = useState(DEFAULT_SUBCATS)
 
   const loadData = () => {
-    try {
-      const savedHero = localStorage.getItem('durable_products_hero_data')
-      if (savedHero) {
-        const parsed = JSON.parse(savedHero)
-        if (parsed && typeof parsed === 'object') {
-          setHeroData((prev) => ({ ...prev, ...parsed }))
-        }
+    loadPersistentData('durable_products_hero_data', DEFAULT_HERO, (data) => {
+      if (data && typeof data === 'object') {
+        setHeroData((prev) => ({ ...prev, ...data }))
       }
+    })
 
-      const savedSubcats = localStorage.getItem('durable_subcategories_bar')
-      if (savedSubcats) {
-        const parsed = JSON.parse(savedSubcats)
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setSubCategories(parsed)
-        }
+    loadPersistentData('durable_subcategories_bar', DEFAULT_SUBCATS, (data) => {
+      if (Array.isArray(data) && data.length > 0) {
+        setSubCategories(data)
       }
-    } catch (e) {
-      console.error('LocalStorage ProductsHero read error:', e)
-    }
+    })
   }
 
   useEffect(() => {

@@ -1,13 +1,50 @@
 'use client'
 
 import { useEffect } from 'react'
+import { setItemIDB } from '@/src/lib/persistentStorage'
 
 export function AdminAutoSync() {
   useEffect(() => {
     if (typeof window === 'undefined') return
 
-    const syncAllLocalDataToCloud = async () => {
+    let isSyncing = false
+
+    const syncTwoWay = async () => {
+      if (isSyncing) return
+      isSyncing = true
+
       try {
+        // 1. PULL CLOUD DATA: Download all client-uploaded data from Supabase Cloud
+        try {
+          const res = await fetch('/api/sync?all=true')
+          const json = await res.json()
+          if (json && json.success && json.data) {
+            let updatedCount = 0
+            for (const [k, val] of Object.entries(json.data)) {
+              if (val !== null && val !== undefined) {
+                try {
+                  const existingLocal = localStorage.getItem(k)
+                  const newString = JSON.stringify(val)
+                  if (!existingLocal || existingLocal !== newString) {
+                    localStorage.setItem(k, newString)
+                    setItemIDB(k, val).catch(() => {})
+                    updatedCount++
+                  }
+                } catch (storeErr) {
+                  setItemIDB(k, val).catch(() => {})
+                }
+              }
+            }
+            if (updatedCount > 0) {
+              console.log(`[AdminAutoSync] Synchronized ${updatedCount} cloud keys to local browser cache!`)
+              window.dispatchEvent(new Event('durable_content_updated'))
+            }
+          }
+        } catch (pullErr) {
+          console.warn('[AdminAutoSync] Error pulling cloud data:', pullErr)
+        }
+
+        // 2. PUSH LOCAL DATA: Upload any locally created keys to Supabase Cloud
         const keysToSync: string[] = []
         for (let i = 0; i < localStorage.length; i++) {
           const key = localStorage.key(i)
@@ -15,10 +52,6 @@ export function AdminAutoSync() {
             keysToSync.push(key)
           }
         }
-
-        if (keysToSync.length === 0) return
-
-        console.log(`[AdminAutoSync] Found ${keysToSync.length} client keys in LocalStorage to push to Cloud...`)
 
         for (const key of keysToSync) {
           try {
@@ -32,22 +65,22 @@ export function AdminAutoSync() {
               body: JSON.stringify({ key, value }),
             })
           } catch (itemErr) {
-            console.warn(`[AdminAutoSync] Error syncing key "${key}":`, itemErr)
+            // Silently continue
           }
         }
-
-        console.log('[AdminAutoSync] Cross-device cloud sync completed successfully!')
       } catch (err) {
-        console.error('[AdminAutoSync] Auto-sync notice:', err)
+        console.error('[AdminAutoSync] Sync notice:', err)
+      } finally {
+        isSyncing = false
       }
     }
 
-    // Run auto-sync on mount
-    syncAllLocalDataToCloud()
+    // Run on initial mount
+    syncTwoWay()
 
-    // Also listen for any local updates and sync immediately
+    // Listen for update events (e.g. user saved a form)
     const handleUpdate = () => {
-      syncAllLocalDataToCloud()
+      syncTwoWay()
     }
 
     window.addEventListener('durable_content_updated', handleUpdate)
