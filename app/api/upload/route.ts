@@ -23,6 +23,7 @@ export async function POST(request: Request) {
       .replace(/^-|-$/g, '')
 
     const sanitizedFilename = `${Date.now()}-${baseName}${ext}`
+    const isPdf = file.type === 'application/pdf' || ext.toLowerCase() === '.pdf'
 
     // 1. Try uploading to Supabase Storage if accessible
     try {
@@ -33,7 +34,6 @@ export async function POST(request: Request) {
         supabase = createPublicClient()
       }
 
-      const isPdf = file.type === 'application/pdf' || ext.toLowerCase() === '.pdf'
       const bucketName = isPdf ? 'catalogues' : 'website-media'
       const storagePath = `uploads/${new Date().toISOString().slice(0, 7)}/${sanitizedFilename}`
 
@@ -76,25 +76,37 @@ export async function POST(request: Request) {
       console.warn('[Upload API] Supabase storage upload notice:', sbErr)
     }
 
-    // 2. Reliable Local File System Storage Fallback
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads')
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true })
-    }
-
+    // 2. Local File System Storage Fallback (if writable) or Data URL fallback (Vercel serverless)
     const arrayBuffer = await file.arrayBuffer()
     const buffer = Buffer.from(arrayBuffer)
-    const filePath = path.join(uploadDir, sanitizedFilename)
 
-    fs.writeFileSync(filePath, buffer)
-    const publicUrl = `/uploads/${sanitizedFilename}`
+    try {
+      const uploadDir = path.join(process.cwd(), 'public', 'uploads')
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true })
+      }
 
-    return NextResponse.json({
-      success: true,
-      url: publicUrl,
-      filename: rawName,
-      storage: 'local',
-    })
+      const filePath = path.join(uploadDir, sanitizedFilename)
+      fs.writeFileSync(filePath, buffer)
+      const publicUrl = `/uploads/${sanitizedFilename}`
+
+      return NextResponse.json({
+        success: true,
+        url: publicUrl,
+        filename: rawName,
+        storage: 'local',
+      })
+    } catch (fsErr) {
+      console.warn('[Upload API] Filesystem is read-only (e.g. Vercel Lambda). Returning clean data URL fallback.')
+      const mimeType = file.type || (isPdf ? 'application/pdf' : 'image/jpeg')
+      const dataUrl = `data:${mimeType};base64,${buffer.toString('base64')}`
+      return NextResponse.json({
+        success: true,
+        url: dataUrl,
+        filename: rawName,
+        storage: 'data_url',
+      })
+    }
   } catch (err: any) {
     console.error('[Upload API] Upload error:', err)
     return NextResponse.json({ error: err.message || 'File upload failed' }, { status: 500 })

@@ -59,8 +59,8 @@ export function SubcategoryManager() {
 
   const loadData = useCallback(() => {
     setIsLoading(true)
-    const all = getStoredSubcategoryPdfs()
-    setSubcategories(all)
+    const local = getStoredSubcategoryPdfs()
+    setSubcategories(local)
     setIsLoading(false)
 
     if (typeof window !== 'undefined') {
@@ -84,17 +84,24 @@ export function SubcategoryManager() {
 
   useEffect(() => {
     loadData()
-    const handleUpdate = () => loadData()
-    window.addEventListener('durable_content_updated', handleUpdate)
-    return () => window.removeEventListener('durable_content_updated', handleUpdate)
   }, [loadData])
 
   const saveToStorage = (updatedList: SubcategoryPdfItem[], msg?: string) => {
-    saveStoredSubcategoryPdfs(updatedList)
+    // 1. Immediately update component state
     setSubcategories(updatedList)
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(new Event('durable_content_updated'))
-    }
+
+    // 2. Save to local storage & IndexedDB
+    saveStoredSubcategoryPdfs(updatedList)
+
+    // 3. Directly update Supabase cloud storage via /api/sync
+    fetch('/api/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key: 'durable_subcategories_pdf', value: updatedList }),
+    }).catch((err) => {
+      console.warn('[SubcategoryManager] Sync notice:', err)
+    })
+
     setSaveMessage(msg || 'Subcategories PDF catalogs updated live!')
     setIsSaved(true)
     setTimeout(() => setIsSaved(false), 4000)

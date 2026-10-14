@@ -102,20 +102,8 @@ export function savePersistentData<T>(key: string, value: T): void {
       `[persistentStorage] LocalStorage quota exceeded for key "${key}". Preserving in IndexedDB.`,
       e
     )
-    // If LocalStorage quota exceeded due to large base64 image or PDF, clear light key or trim
-    try {
-      // Clean up orphaned cache keys if necessary
-      const lightValue = JSON.stringify(value, (k, v) => {
-        if (typeof v === 'string' && v.startsWith('data:') && v.length > 50000) {
-          // Truncate long base64 in localstorage preview, IndexedDB retains 100% full quality!
-          return v.slice(0, 500) + '...[IDB_FULL_BLOB]'
-        }
-        return v
-      })
-      localStorage.setItem(key, lightValue)
-    } catch (innerErr) {
-      // Ignored: IndexedDB holds the authoritative full data!
-    }
+    // If LocalStorage quota exceeded, IndexedDB and Supabase hold the full authoritative data safely
+    console.info(`[persistentStorage] Preserved authoritative data for "${key}" in IndexedDB.`)
   }
 
   // 3. Sync to Cloud API globally across all devices & browsers automatically

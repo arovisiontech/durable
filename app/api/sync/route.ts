@@ -22,28 +22,28 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Missing key parameter' }, { status: 400 })
   }
 
-  // 1. Check persistent server file store
-  const storedVal = getServerData(key, null)
-  if (storedVal !== null && storedVal !== undefined) {
-    return NextResponse.json({ success: true, data: storedVal, source: 'server_store' })
-  }
-
-  // 2. Try fetching from Supabase page_sections if not found
+  // 1. Check Supabase page_sections first for the latest live synchronized cloud data!
   try {
     const supabase = createPublicClient()
     const { data, error } = await supabase
       .from('page_sections')
-      .select('content')
+      .select('content, updated_at')
       .eq('heading', key)
-      .maybeSingle()
+      .order('updated_at', { ascending: false })
+      .limit(1)
 
-    if (!error && data && data.content) {
-      const parsedValue = data.content.data !== undefined ? data.content.data : data.content
-      setServerData(key, parsedValue)
+    if (!error && data && data.length > 0 && data[0]?.content) {
+      const parsedValue = data[0].content.data !== undefined ? data[0].content.data : data[0].content
       return NextResponse.json({ success: true, data: parsedValue, source: 'supabase' })
     }
   } catch (err) {
     console.warn(`[Sync API GET] Supabase query notice for "${key}":`, err)
+  }
+
+  // 2. Fallback to persistent server file store
+  const storedVal = getServerData(key, null)
+  if (storedVal !== null && storedVal !== undefined) {
+    return NextResponse.json({ success: true, data: storedVal, source: 'server_store' })
   }
 
   return NextResponse.json({ success: false, data: null })
@@ -58,53 +58,29 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Key and value required' }, { status: 400 })
     }
 
-    // 1. Save to persistent server store (atomic JSON file write)
-    setServerData(key, value)
-
-    // 2. Best-effort Supabase background update
+    // 1. Direct cloud update to Supabase page_sections (persists permanently on Vercel)
     try {
-      let supabase: any
-      try {
-        supabase = await createServerClient()
-      } catch (e) {
-        supabase = createPublicClient()
-      }
-
-      const { data: existing } = await supabase
+      const supabase = createPublicClient()
+      const { error: sbUpdateErr } = await supabase
         .from('page_sections')
-        .select('id')
+        .update({
+          content: { data: value },
+          updated_at: new Date().toISOString(),
+        })
         .eq('heading', key)
-        .maybeSingle()
 
-      if (existing && existing.id) {
-        await supabase
-          .from('page_sections')
-          .update({
-            content: { data: value },
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', existing.id)
-      } else {
-        const { data: homePage } = await supabase
-          .from('pages')
-          .select('id')
-          .eq('slug', 'home')
-          .maybeSingle()
-
-        const targetPageId = homePage?.id
-
-        if (targetPageId) {
-          await supabase.from('page_sections').insert({
-            page_id: targetPageId,
-            section_type: 'custom_sync',
-            heading: key,
-            content: { data: value },
-            is_visible: true,
-          })
-        }
+      if (sbUpdateErr) {
+        console.warn(`[Sync API POST] Supabase update notice for "${key}":`, sbUpdateErr)
       }
     } catch (dbErr) {
       console.warn(`[Sync API POST] Supabase write notice for "${key}":`, dbErr)
+    }
+
+    // 2. Also save to server store if writable
+    try {
+      setServerData(key, value)
+    } catch (fsErr) {
+      // Read-only on serverless Vercel is expected
     }
 
     return NextResponse.json({

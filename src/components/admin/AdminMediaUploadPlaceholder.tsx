@@ -78,15 +78,54 @@ export function AdminMediaUploadPlaceholder({
 
     const file = files[0]
     setIsUploading(true)
-    setProgress(30)
+    setProgress(20)
     setUploadError(null)
 
+    const isPdf =
+      effectiveType === 'pdf' ||
+      file.type === 'application/pdf' ||
+      file.name.toLowerCase().endsWith('.pdf')
+    const bucketName = isPdf ? 'catalogues' : 'website-media'
+    const sanitizedName = sanitizeFilename(file.name)
+    const datePrefix = new Date().toISOString().slice(0, 7)
+    const filePath = `uploads/${datePrefix}/${Date.now()}-${sanitizedName}`
+
     try {
-      // Upload via /api/upload (Supabase storage with local filesystem fallback)
+      // 1. Direct upload using authenticated browser Supabase client
+      const supabase = createClient()
+      setProgress(40)
+
+      const { data: uploadData, error: uploadErr } = await supabase.storage
+        .from(bucketName)
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: true,
+          contentType: file.type || (isPdf ? 'application/pdf' : 'image/jpeg'),
+        })
+
+      if (!uploadErr && uploadData?.path) {
+        const { data: pubData } = supabase.storage
+          .from(bucketName)
+          .getPublicUrl(uploadData.path)
+
+        if (pubData?.publicUrl) {
+          setProgress(100)
+          onChange(pubData.publicUrl)
+          setIsUploading(false)
+          if (fileInputRef.current) fileInputRef.current.value = ''
+          return
+        }
+      }
+
+      if (uploadErr) {
+        console.warn('[AdminMediaUploadPlaceholder] Direct Supabase storage notice:', uploadErr)
+      }
+
+      // 2. Fallback to /api/upload endpoint
+      setProgress(60)
       const formData = new FormData()
       formData.append('file', file)
 
-      setProgress(60)
       const res = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
@@ -103,7 +142,7 @@ export function AdminMediaUploadPlaceholder({
 
       throw new Error(data.error || 'Upload failed')
     } catch (uploadErr: any) {
-      console.warn('[AdminMediaUploadPlaceholder] Upload fallback:', uploadErr)
+      console.warn('[AdminMediaUploadPlaceholder] FileReader fallback:', uploadErr)
       try {
         const reader = new FileReader()
         reader.onload = () => {
@@ -114,7 +153,7 @@ export function AdminMediaUploadPlaceholder({
           if (fileInputRef.current) fileInputRef.current.value = ''
         }
         reader.onerror = () => {
-          setUploadError('Failed to read file')
+          setUploadError('Failed to read file from disk')
           setIsUploading(false)
         }
         reader.readAsDataURL(file)

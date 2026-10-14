@@ -40,6 +40,21 @@ export function SubcategoryPdfSection({ categorySlug, categoryTitle }: Subcatego
           setSubcategories(idbFiltered)
         }
       })
+
+      fetch('/api/sync?key=durable_subcategories_pdf')
+        .then((res) => res.json())
+        .then((result) => {
+          if (result?.data && Array.isArray(result.data) && result.data.length > 0) {
+            const serverFiltered = result.data.filter(
+              (item: SubcategoryPdfItem) =>
+                item.categorySlug.toLowerCase().trim() === categorySlug.toLowerCase().trim()
+            )
+            if (serverFiltered.length > 0) {
+              setSubcategories(serverFiltered)
+            }
+          }
+        })
+        .catch(() => {})
     }
   }
 

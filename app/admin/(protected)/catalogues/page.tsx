@@ -121,13 +121,37 @@ export default function AdminCataloguesContentPage() {
     }
   }
 
-  // Handle PDF file selection & upload via persistent upload endpoint
+  // Handle PDF file selection & upload via direct Supabase storage and fallback endpoint
   const handlePdfFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
     setIsUploadingPdf(true)
 
     try {
+      // 1. Direct upload to Supabase 'catalogues' storage bucket in browser
+      const supabase = createClient()
+      const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_')
+      const storagePath = `uploads/${new Date().toISOString().slice(0, 7)}/${Date.now()}-${sanitizedName}`
+
+      const { data: uploadData, error: uploadErr } = await supabase.storage
+        .from('catalogues')
+        .upload(storagePath, file, {
+          contentType: 'application/pdf',
+          upsert: true,
+        })
+
+      if (!uploadErr && uploadData?.path) {
+        const {
+          data: { publicUrl },
+        } = supabase.storage.from('catalogues').getPublicUrl(uploadData.path)
+        if (publicUrl) {
+          setCatModalForm((prev) => ({ ...prev, pdf_url: publicUrl }))
+          setIsUploadingPdf(false)
+          return
+        }
+      }
+
+      // 2. Fallback to /api/upload
       const formData = new FormData()
       formData.append('file', file)
 
@@ -144,7 +168,7 @@ export default function AdminCataloguesContentPage() {
       }
       throw new Error(data?.error || 'Upload failed')
     } catch (err: any) {
-      console.warn('PDF Upload error:', err)
+      console.warn('PDF Upload notice:', err)
       const cleanName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_')
       setCatModalForm((prev) => ({ ...prev, pdf_url: `/uploads/${cleanName}` }))
     } finally {
