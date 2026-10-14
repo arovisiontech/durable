@@ -2,10 +2,9 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { CATEGORIES_DATA } from '@/src/data/categoriesData'
 import { CategoryHeroBanner } from '@/src/components/public/CategoryHeroBanner'
-import { ArrowRight, Package } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { SubcategoryPdfSection } from '@/src/components/public/SubcategoryPdfSection'
-import { fetchPublicCategories, fetchPublicProducts } from '@/app/actions/public'
-import { ProductPublicCard } from '@/src/components/public/ProductPublicCard'
+import { fetchPublicCategories } from '@/app/actions/public'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -82,13 +81,7 @@ export default async function CategoryDetailPage({ params }: CategoryPageProps) 
     }
   }
 
-  // 2. Fetch live products for this category from persistent server store
-  const { products: categoryProducts } = await fetchPublicProducts({
-    categorySlug: slug,
-    limit: 100,
-  })
-
-  // 3. Navigation pills from active categories
+  // 2. Navigation pills from active categories
   const allCategoriesList =
     allCategories.length > 0
       ? allCategories.map((c) => ({ slug: c.slug, name: c.name }))
@@ -113,7 +106,7 @@ export default async function CategoryDetailPage({ params }: CategoryPageProps) 
 
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10 relative z-10">
         {/* 2. Category Navigation Pills Bar */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-xs flex items-center justify-between gap-4 overflow-x-auto">
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-xs flex items-center justify-between gap-4 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <div className="flex items-center gap-2 min-w-max">
             {allCategoriesList.map((cat) => {
               const isActive = cat.slug === categoryData.slug
@@ -141,31 +134,6 @@ export default async function CategoryDetailPage({ params }: CategoryPageProps) 
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
-
-        {/* 2.2 Live Products Grid Showcase */}
-        {categoryProducts && categoryProducts.length > 0 && (
-          <div className="space-y-6 pt-2">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-3 border-b border-slate-200">
-              <div>
-                <span className="text-[11px] font-extrabold text-[#E31B23] tracking-widest uppercase">
-                  ACTIVE PRODUCT LINE
-                </span>
-                <h2 className="text-xl sm:text-2xl font-black text-[#0B1B3D] tracking-tight">
-                  {categoryData.title} {categoryData.highlight} Instruments
-                </h2>
-              </div>
-              <p className="text-xs text-slate-500 font-medium">
-                Showing {categoryProducts.length} manufactured items
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {categoryProducts.map((prod) => (
-                <ProductPublicCard key={prod.id} product={prod} />
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* 2.5 Subcategories PDF Catalogs Grid Showcase */}
         <SubcategoryPdfSection
