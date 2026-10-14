@@ -69,6 +69,16 @@ export function SubcategoryManager() {
           setSubcategories(idbData)
         }
       })
+
+      fetch('/api/sync?key=durable_subcategories_pdf')
+        .then((res) => res.json())
+        .then((result) => {
+          if (result?.data && Array.isArray(result.data) && result.data.length > 0) {
+            setSubcategories(result.data)
+            saveStoredSubcategoryPdfs(result.data)
+          }
+        })
+        .catch(() => {})
     }
   }, [])
 
@@ -82,6 +92,9 @@ export function SubcategoryManager() {
   const saveToStorage = (updatedList: SubcategoryPdfItem[], msg?: string) => {
     saveStoredSubcategoryPdfs(updatedList)
     setSubcategories(updatedList)
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('durable_content_updated'))
+    }
     setSaveMessage(msg || 'Subcategories PDF catalogs updated live!')
     setIsSaved(true)
     setTimeout(() => setIsSaved(false), 4000)
@@ -184,7 +197,7 @@ export function SubcategoryManager() {
   }
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto pb-16 px-4 sm:px-6">
+    <div className="space-y-8 w-full pb-16">
       {/* Top Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-200">
         <div className="space-y-1">

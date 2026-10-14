@@ -57,7 +57,19 @@ export function ProductManager() {
 
   const loadProducts = useCallback(async () => {
     setIsLoading(true)
-    let list: ProductItem[] = getStoredProducts()
+    let list: ProductItem[] = []
+
+    try {
+      const res = await fetchProductsAction()
+      if (res.products && Array.isArray(res.products) && res.products.length > 0) {
+        list = res.products
+        saveStoredProducts(list)
+      } else {
+        list = getStoredProducts()
+      }
+    } catch {
+      list = getStoredProducts()
+    }
 
     // Filter by search
     if (debouncedSearch && debouncedSearch.trim() !== '') {
@@ -126,7 +138,8 @@ export function ProductManager() {
     toast.dismiss(toastId)
 
     if (res.product) {
-      const updated = [...products, res.product]
+      const existing = getStoredProducts()
+      const updated = [...existing, res.product]
       saveStoredProducts(updated as any)
       toast.success(`Duplicated "${product.title}" as draft`)
       loadProducts()
@@ -136,6 +149,7 @@ export function ProductManager() {
   }
 
   const handleTogglePublish = async (id: string, currentStatus: boolean) => {
+    await toggleProductPublishAction(id, currentStatus)
     const updated = products.map((p) => (p.id === id ? { ...p, is_published: currentStatus } : p))
     saveStoredProducts(updated as any)
     setProducts(updated)
@@ -143,6 +157,7 @@ export function ProductManager() {
   }
 
   const handleToggleFeatured = async (id: string, currentFeatured: boolean) => {
+    await toggleProductFeaturedAction(id, currentFeatured)
     const updated = products.map((p) => (p.id === id ? { ...p, is_featured: currentFeatured } : p))
     saveStoredProducts(updated as any)
     setProducts(updated)

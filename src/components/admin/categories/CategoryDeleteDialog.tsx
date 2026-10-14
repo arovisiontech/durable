@@ -5,6 +5,7 @@ import { AlertTriangle, Trash2, X, Loader2, Lock } from 'lucide-react'
 import { toast } from 'sonner'
 import { CategoryItem, CategoryDeleteCheckResult } from '@/src/types/category'
 import { checkCategoryDeleteSafetyAction, deleteCategoryAction } from '@/app/admin/actions/categories'
+import { getStoredCategories, saveStoredCategories } from '@/src/lib/dataStore'
 
 interface CategoryDeleteDialogProps {
   category: CategoryItem | null
@@ -47,6 +48,10 @@ export function CategoryDeleteDialog({
     setIsDeleting(false)
 
     if (res.success) {
+      const stored = getStoredCategories()
+      const updated = stored.filter((c) => c.id !== category.id && c.slug !== category.slug)
+      saveStoredCategories(updated)
+
       toast.success(`Deleted category "${category.name}"`)
       onSuccess()
       onClose()

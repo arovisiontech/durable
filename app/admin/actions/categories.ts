@@ -2,8 +2,14 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/src/lib/supabase/server'
+import { createPublicClient } from '@/src/lib/supabase/public'
 import { CategoryItem, CategoryFormData, CategoryDeleteCheckResult, categorySchema } from '@/src/types/category'
-import { INITIAL_CATEGORIES_SEED, INITIAL_PRODUCTS_SEED } from '@/src/lib/dataStore'
+import {
+  getServerCategories,
+  upsertServerCategory,
+  deleteServerCategory,
+  getServerProducts,
+} from '@/src/lib/serverDataStore'
 
 function revalidateCategoryPaths(slug?: string) {
   try {
@@ -28,33 +34,7 @@ export async function fetchCategoriesAction(params?: {
   sortBy?: 'order' | 'name' | 'newest'
 }) {
   try {
-    const supabase = await createClient()
-
-    let rawCategories: any[] = []
-    let supabaseSuccess = false
-
-    try {
-      const { data, error } = await supabase
-        .from('categories')
-        .select('*')
-        .order('sort_order', { ascending: true })
-
-      if (!error && data) {
-        const dbSlugs = new Set(data.map((c) => c.slug.toLowerCase()))
-        const dbNames = new Set(data.map((c) => c.name.toLowerCase()))
-        const missingSeed = INITIAL_CATEGORIES_SEED.filter(
-          (s) => !dbSlugs.has(s.slug.toLowerCase()) && !dbNames.has(s.name.toLowerCase())
-        )
-        rawCategories = [...data, ...missingSeed]
-        supabaseSuccess = true
-      }
-    } catch (e) {
-      console.error('Error fetching categories from Supabase:', e)
-    }
-
-    if (!supabaseSuccess || rawCategories.length === 0) {
-      rawCategories = [...INITIAL_CATEGORIES_SEED]
-    }
+    let rawCategories: CategoryItem[] = getServerCategories()
 
     // Apply Search Filter
     if (params?.search && params.search.trim() !== '') {
@@ -84,7 +64,9 @@ export async function fetchCategoriesAction(params?: {
         rawCategories.sort((a, b) => a.name.localeCompare(b.name))
         break
       case 'newest':
-        rawCategories.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())
+        rawCategories.sort(
+          (a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
+        )
         break
       case 'order':
       default:
@@ -122,38 +104,55 @@ export async function fetchCategoriesAction(params?: {
     return { categories, error: null }
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Failed to fetch categories'
-    return { categories: INITIAL_CATEGORIES_SEED, error: message }
+    const fallback = getServerCategories()
+    return { categories: fallback, error: message }
   }
 }
 
 export async function createCategoryAction(formData: CategoryFormData) {
   try {
     const validated = categorySchema.parse(formData)
-    const supabase = await createClient()
-
-    const insertPayload = {
+    const newCategory: CategoryItem = {
+      id: `cat-${validated.slug}-${Date.now()}`,
+      parent_id: validated.parent_id || null,
       name: validated.name,
       slug: validated.slug,
-      parent_id: validated.parent_id || null,
       description: validated.description || null,
       image_url: validated.image_url || null,
       sort_order: validated.sort_order ?? 0,
       is_published: validated.is_published,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      product_count: 0,
+      level: 0,
     }
 
-    const { data, error } = await supabase
-      .from('categories')
-      .insert(insertPayload)
-      .select()
-      .single()
+    // 1. Permanently persist to server file store
+    upsertServerCategory(newCategory)
 
-    if (error) {
-      console.error('Supabase category creation error:', error)
-      return { category: null, error: error.message }
+    // 2. Best-effort Supabase sync
+    try {
+      let supabase: any
+      try {
+        supabase = await createClient()
+      } catch {
+        supabase = createPublicClient()
+      }
+      await supabase.from('categories').insert({
+        name: validated.name,
+        slug: validated.slug,
+        parent_id: validated.parent_id || null,
+        description: validated.description || null,
+        image_url: validated.image_url || null,
+        sort_order: validated.sort_order ?? 0,
+        is_published: validated.is_published,
+      })
+    } catch (e) {
+      console.warn('[createCategoryAction] Supabase notice:', e)
     }
 
     revalidateCategoryPaths(validated.slug)
-    return { category: data as CategoryItem, error: null }
+    return { category: newCategory, error: null }
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Creation failed'
     return { category: null, error: message }
@@ -163,31 +162,53 @@ export async function createCategoryAction(formData: CategoryFormData) {
 export async function updateCategoryAction(id: string, formData: CategoryFormData) {
   try {
     const validated = categorySchema.parse(formData)
-    const supabase = await createClient()
+    const existing = getServerCategories().find((c) => c.id === id || c.slug === id)
 
-    const updatePayload = {
+    const updatedCategory: CategoryItem = {
+      id: existing ? existing.id : id,
+      parent_id: validated.parent_id || null,
       name: validated.name,
       slug: validated.slug,
-      parent_id: validated.parent_id || null,
       description: validated.description || null,
       image_url: validated.image_url || null,
       sort_order: validated.sort_order ?? 0,
       is_published: validated.is_published,
+      created_at: existing ? existing.created_at : new Date().toISOString(),
       updated_at: new Date().toISOString(),
+      product_count: existing?.product_count || 0,
+      level: 0,
     }
 
-    const { error } = await supabase
-      .from('categories')
-      .update(updatePayload)
-      .eq('id', id)
+    // 1. Permanently persist to server file store
+    upsertServerCategory(updatedCategory)
 
-    if (error) {
-      console.error('Supabase category update error:', error)
-      return { success: false, error: error.message }
+    // 2. Best-effort Supabase sync
+    try {
+      let supabase: any
+      try {
+        supabase = await createClient()
+      } catch {
+        supabase = createPublicClient()
+      }
+      await supabase
+        .from('categories')
+        .update({
+          name: validated.name,
+          slug: validated.slug,
+          parent_id: validated.parent_id || null,
+          description: validated.description || null,
+          image_url: validated.image_url || null,
+          sort_order: validated.sort_order ?? 0,
+          is_published: validated.is_published,
+          updated_at: new Date().toISOString(),
+        })
+        .or(`id.eq.${id},slug.eq.${id}`)
+    } catch (e) {
+      console.warn('[updateCategoryAction] Supabase notice:', e)
     }
 
     revalidateCategoryPaths(validated.slug)
-    return { success: true, error: null }
+    return { success: true, category: updatedCategory, error: null }
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Update failed'
     return { success: false, error: message }
@@ -196,21 +217,30 @@ export async function updateCategoryAction(id: string, formData: CategoryFormDat
 
 export async function toggleCategoryStatusAction(id: string, isPublished: boolean) {
   try {
-    const supabase = await createClient()
-    const { error } = await supabase
-      .from('categories')
-      .update({
-        is_published: isPublished,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', id)
-
-    if (error) {
-      console.error('Supabase category toggle error:', error)
-      return { success: false, error: error.message }
+    const existing = getServerCategories().find((c) => c.id === id || c.slug === id)
+    if (existing) {
+      existing.is_published = isPublished
+      existing.updated_at = new Date().toISOString()
+      upsertServerCategory(existing)
     }
 
-    revalidateCategoryPaths()
+    try {
+      let supabase: any
+      try {
+        supabase = await createClient()
+      } catch {
+        supabase = createPublicClient()
+      }
+      await supabase
+        .from('categories')
+        .update({
+          is_published: isPublished,
+          updated_at: new Date().toISOString(),
+        })
+        .or(`id.eq.${id},slug.eq.${id}`)
+    } catch {}
+
+    revalidateCategoryPaths(existing?.slug)
     return { success: true, error: null }
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Status toggle failed'
@@ -222,21 +252,36 @@ export async function checkCategoryDeleteSafetyAction(id: string): Promise<{
   result: CategoryDeleteCheckResult
   error: string | null
 }> {
+  const products = getServerProducts()
+  const prodCount = products.filter((p) => p.category_id === id).length
+  const categories = getServerCategories()
+  const childCount = categories.filter((c) => c.parent_id === id).length
+
   return {
-    result: { canDelete: true, productCount: 0, childCategoryCount: 0 },
+    result: {
+      canDelete: true,
+      productCount: prodCount,
+      childCategoryCount: childCount,
+    },
     error: null,
   }
 }
 
 export async function deleteCategoryAction(id: string) {
   try {
-    const supabase = await createClient()
-    const { error } = await supabase.from('categories').delete().eq('id', id)
+    // 1. Delete from persistent server file store
+    deleteServerCategory(id)
 
-    if (error) {
-      console.error('Supabase category delete error:', error)
-      return { success: false, error: error.message }
-    }
+    // 2. Best-effort Supabase sync
+    try {
+      let supabase: any
+      try {
+        supabase = await createClient()
+      } catch {
+        supabase = createPublicClient()
+      }
+      await supabase.from('categories').delete().or(`id.eq.${id},slug.eq.${id}`)
+    } catch {}
 
     revalidateCategoryPaths()
     return { success: true, error: null }

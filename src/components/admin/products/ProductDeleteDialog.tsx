@@ -5,6 +5,7 @@ import { AlertTriangle, Trash2, X, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { ProductItem } from '@/src/types/product'
 import { deleteProductAction } from '@/app/admin/actions/products'
+import { getStoredProducts, saveStoredProducts } from '@/src/lib/dataStore'
 
 interface ProductDeleteDialogProps {
   product: ProductItem | null
@@ -27,6 +28,11 @@ export function ProductDeleteDialog({
     setIsDeleting(false)
 
     if (res.success) {
+      // Also remove from local dual-storage store
+      const stored = getStoredProducts()
+      const updated = stored.filter((p) => p.id !== product.id && p.slug !== product.slug)
+      saveStoredProducts(updated)
+
       toast.success(`Deleted product "${product.title}"`)
       onSuccess()
       onClose()

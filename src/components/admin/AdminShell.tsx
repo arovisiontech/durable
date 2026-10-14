@@ -42,8 +42,8 @@ export function AdminShell({ children, email, fullName, role }: AdminShellProps)
           onOpenMobile={() => setIsMobileOpen(true)}
         />
 
-        {/* Content Body Area */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto overflow-x-hidden">
+        {/* Content Body Area - Responsive from Mobile up to 64-Inch 4K TV Displays */}
+        <main className="flex-1 p-3 sm:p-6 lg:p-8 w-full max-w-7xl 2xl:max-w-[1680px] [@media(min-width:1920px)]:max-w-[1880px] [@media(min-width:2560px)]:max-w-[2500px] [@media(min-width:3400px)]:max-w-[3300px] mx-auto overflow-x-hidden">
           {children}
         </main>
       </div>

@@ -10,6 +10,7 @@ import { createCategoryAction, updateCategoryAction } from '@/app/admin/actions/
 import { CategorySelect } from '@/src/components/admin/CategorySelect'
 import { MediaPicker } from '@/src/components/admin/MediaPicker'
 import { AdminMediaUploadPlaceholder } from '@/src/components/admin/AdminMediaUploadPlaceholder'
+import { getStoredCategories, saveStoredCategories } from '@/src/lib/dataStore'
 
 interface CategoryFormModalProps {
   isOpen: boolean
@@ -114,6 +115,18 @@ export function CategoryFormModal({
     if (res.error) {
       toast.error(res.error)
     } else {
+      const existing = getStoredCategories()
+      if (isEditing && categoryToEdit) {
+        const updated = existing.map((c) =>
+          c.id === categoryToEdit.id
+            ? { ...c, ...data, updated_at: new Date().toISOString() }
+            : c
+        )
+        saveStoredCategories(updated as any)
+      } else if (res.category) {
+        saveStoredCategories([...existing, res.category] as any)
+      }
+
       toast.success(
         isEditing ? 'Category updated successfully' : 'Category created successfully'
       )

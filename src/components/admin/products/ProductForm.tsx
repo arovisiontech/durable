@@ -209,74 +209,92 @@ export function ProductForm({ productToEdit }: ProductFormProps) {
   }
 
   const onSubmit = async (data: ProductFormData) => {
-    const existing = getStoredProducts()
-    const specsMap: Record<string, string> = {}
-    if (data.specifications && Array.isArray(data.specifications)) {
-      data.specifications.forEach((s) => {
-        if (s.key && s.key.trim()) {
-          specsMap[s.key.trim()] = s.value
-        }
-      })
-    }
-
-    if (isEditing && productToEdit) {
-      const updated = existing.map((p) =>
-        p.id === productToEdit.id
-          ? {
-              ...p,
-              title: data.title,
-              slug: data.slug,
-              sku: data.sku || p.sku,
-              category_id: data.category_id || p.category_id,
-              short_description: data.short_description || p.short_description,
-              full_description: data.full_description || p.full_description,
-              featured_image: data.featured_image || p.featured_image,
-              gallery_images: data.gallery_images || p.gallery_images || [],
-              features: data.features || p.features,
-              specifications: specsMap,
-              catalogue_pdf: data.catalogue_pdf || p.catalogue_pdf,
-              is_featured: data.is_featured,
-              is_published: data.is_published,
-              seo_title: data.seo_title,
-              seo_description: data.seo_description,
-              updated_at: new Date().toISOString(),
-            }
-          : p
-      )
-      saveStoredProducts(updated as any)
-    } else {
-      const newProduct: ProductItem = {
-        id: `prod-${data.slug}-${Date.now()}`,
-        category_id: data.category_id || null,
-        title: data.title,
-        slug: data.slug,
-        sku: data.sku || `SKU-${Date.now()}`,
-        short_description: data.short_description || null,
-        full_description: data.full_description || null,
-        featured_image: data.featured_image || '/images/cat-scissors-shears.png',
-        gallery_images: data.gallery_images || [],
-        features: data.features || [],
-        specifications: specsMap,
-        catalogue_pdf: data.catalogue_pdf || null,
-        is_featured: data.is_featured,
-        is_published: data.is_published,
-        seo_title: data.seo_title || null,
-        seo_description: data.seo_description || null,
-        sort_order: data.sort_order ?? existing.length + 1,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        category_name: 'General Surgery',
+    try {
+      let res
+      if (isEditing && productToEdit) {
+        res = await updateProductAction(productToEdit.id, data)
+      } else {
+        res = await createProductAction(data)
       }
-      saveStoredProducts([...existing, newProduct] as any)
-    }
 
-    toast.success(isEditing ? 'Product updated successfully' : 'Product created successfully')
-    router.push('/admin/products')
-    router.refresh()
+      if (res?.error) {
+        toast.error(`Save notice: ${res.error}`)
+      }
+
+      // Also sync to local dual-storage engine
+      const existing = getStoredProducts()
+      const specsMap: Record<string, string> = {}
+      if (data.specifications && Array.isArray(data.specifications)) {
+        data.specifications.forEach((s) => {
+          if (s.key && s.key.trim()) {
+            specsMap[s.key.trim()] = s.value
+          }
+        })
+      }
+
+      if (isEditing && productToEdit) {
+        const updated = existing.map((p) =>
+          p.id === productToEdit.id
+            ? {
+                ...p,
+                title: data.title,
+                slug: data.slug,
+                sku: data.sku || p.sku,
+                category_id: data.category_id || p.category_id,
+                short_description: data.short_description || p.short_description,
+                full_description: data.full_description || p.full_description,
+                featured_image: data.featured_image || p.featured_image,
+                gallery_images: data.gallery_images || p.gallery_images || [],
+                features: data.features || p.features,
+                specifications: specsMap,
+                catalogue_pdf: data.catalogue_pdf || p.catalogue_pdf,
+                is_featured: data.is_featured,
+                is_published: data.is_published,
+                seo_title: data.seo_title,
+                seo_description: data.seo_description,
+                updated_at: new Date().toISOString(),
+              }
+            : p
+        )
+        saveStoredProducts(updated as any)
+      } else {
+        const newProduct: ProductItem = {
+          id: res?.product?.id || `prod-${data.slug}-${Date.now()}`,
+          category_id: data.category_id || null,
+          title: data.title,
+          slug: data.slug,
+          sku: data.sku || `SKU-${Date.now()}`,
+          short_description: data.short_description || null,
+          full_description: data.full_description || null,
+          featured_image: data.featured_image || '/images/cat-scissors-shears.png',
+          gallery_images: data.gallery_images || [],
+          features: data.features || [],
+          specifications: specsMap,
+          catalogue_pdf: data.catalogue_pdf || null,
+          is_featured: data.is_featured,
+          is_published: data.is_published,
+          seo_title: data.seo_title || null,
+          seo_description: data.seo_description || null,
+          sort_order: data.sort_order ?? existing.length + 1,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          category_name:
+            categories.find((c) => c.id === data.category_id || c.slug === data.category_id)?.name ||
+            'General Surgery',
+        }
+        saveStoredProducts([...existing, newProduct] as any)
+      }
+
+      toast.success(isEditing ? 'Product updated successfully' : 'Product created successfully')
+      router.push('/admin/products')
+      router.refresh()
+    } catch (err: any) {
+      toast.error(`Error saving product: ${err?.message || 'Please check all fields'}`)
+    }
   }
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto pb-16">
+    <div className="space-y-6 w-full max-w-6xl 2xl:max-w-[1500px] [@media(min-width:1920px)]:max-w-[1800px] mx-auto pb-16">
       {/* Top Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div className="flex items-center gap-3">

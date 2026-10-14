@@ -1,0 +1,1448 @@
+{
+  "durable_categories": [
+    {
+      "id": "cat-gen-surg",
+      "parent_id": null,
+      "name": "General Surgery",
+      "slug": "general-surgery",
+      "description": "Precision Instruments For All Surgical Discipline",
+      "image_url": "/images/cat-scissors-shears.png",
+      "sort_order": 1,
+      "is_published": true,
+      "created_at": "2026-10-14T19:10:28.943Z",
+      "updated_at": "2026-10-14T19:10:28.945Z",
+      "product_count": 6,
+      "level": 0
+    },
+    {
+      "id": "cat-dental",
+      "parent_id": null,
+      "name": "Dental",
+      "slug": "dental",
+      "description": "Complete Dental Solutions For Every Specialty",
+      "image_url": "/images/icon-dental.png",
+      "sort_order": 2,
+      "is_published": true,
+      "created_at": "2026-10-14T19:10:28.945Z",
+      "updated_at": "2026-10-14T19:10:28.945Z",
+      "product_count": 4,
+      "level": 0
+    },
+    {
+      "id": "cat-hollowware",
+      "parent_id": null,
+      "name": "Medical Hollowware",
+      "slug": "medical-hollowware",
+      "description": "Instrument Storage & Sterilization Solutions",
+      "image_url": "/images/cat-handles-blades.png",
+      "sort_order": 3,
+      "is_published": true,
+      "created_at": "2026-10-14T19:10:28.945Z",
+      "updated_at": "2026-10-14T19:10:28.945Z",
+      "product_count": 2,
+      "level": 0
+    },
+    {
+      "id": "cat-ophthalmic",
+      "parent_id": null,
+      "name": "Ophthalmic",
+      "slug": "ophthalmic",
+      "description": "Complete Ophthalmic Instrument Range",
+      "image_url": "/images/cat-scissors-shears.png",
+      "sort_order": 4,
+      "is_published": true,
+      "created_at": "2026-10-14T19:10:28.945Z",
+      "updated_at": "2026-10-14T19:10:28.945Z",
+      "product_count": 1,
+      "level": 0
+    },
+    {
+      "id": "cat-furniture",
+      "parent_id": null,
+      "name": "Hospital Furniture",
+      "slug": "hospital-furniture",
+      "description": "Functional Solutions For Hospitals",
+      "image_url": "/images/icon-hospital-furniture.png",
+      "sort_order": 5,
+      "is_published": true,
+      "created_at": "2026-10-14T19:10:28.945Z",
+      "updated_at": "2026-10-14T19:10:28.945Z",
+      "product_count": 1,
+      "level": 0
+    },
+    {
+      "id": "cat-single-use",
+      "parent_id": null,
+      "name": "Single Use Instruments",
+      "slug": "single-use-instruments",
+      "description": "Reliable Single-Use Solutions",
+      "image_url": "/images/icon-single-use-instruments.png",
+      "sort_order": 6,
+      "is_published": true,
+      "created_at": "2026-10-14T19:10:28.945Z",
+      "updated_at": "2026-10-14T19:10:28.945Z",
+      "product_count": 1,
+      "level": 0
+    },
+    {
+      "id": "cat-veterinary",
+      "parent_id": null,
+      "name": "Veterinary-Instruments",
+      "slug": "veterinary-instruments",
+      "description": "Efficiency in veterinary procedures and animal healthcare.",
+      "image_url": "/images/cat-scissors-shears.png",
+      "sort_order": 7,
+      "is_published": true,
+      "created_at": "2026-10-14T19:10:28.945Z",
+      "updated_at": "2026-10-14T19:10:28.945Z",
+      "product_count": 2,
+      "level": 0
+    },
+    {
+      "id": "cat-plastic-surgery",
+      "parent_id": null,
+      "name": "Plastic Surgery",
+      "slug": "plastic-surgery",
+      "description": "Reliable performance in delicate plastic and reconstructive procedures.",
+      "image_url": "/images/cat-retractors.png",
+      "sort_order": 8,
+      "is_published": true,
+      "created_at": "2026-10-14T19:10:28.945Z",
+      "updated_at": "2026-10-14T19:10:28.945Z",
+      "product_count": 2,
+      "level": 0
+    },
+    {
+      "id": "cat-special-surgical",
+      "parent_id": null,
+      "name": "Special Surgical Instruments",
+      "slug": "special-surgical-instruments",
+      "description": "Specialized, precision-engineered instruments designed for demanding surgical procedures, offering excellent control, accuracy.",
+      "image_url": "/images/cat-handles-blades.png",
+      "sort_order": 9,
+      "is_published": true,
+      "created_at": "2026-10-14T19:10:28.945Z",
+      "updated_at": "2026-10-14T19:10:28.945Z",
+      "product_count": 2,
+      "level": 0
+    }
+  ],
+  "durable_products": [
+    {
+      "id": "surg-1",
+      "category_id": "cat-general-surgery",
+      "title": "Iris Precision Surgical Scissors",
+      "slug": "surg-1-iris-precision-surgical-scissors",
+      "sku": "SURG-SC-101",
+      "short_description": "Delicate curved surgical scissors crafted from Japanese stainless steel for fine tissue dissection.",
+      "full_description": "Delicate curved surgical scissors crafted from Japanese stainless steel for fine tissue dissection. Manufactured to precision standards using German and Japanese stainless steel. Certified ISO 13485 & CE compliant.",
+      "featured_image": "/images/cat-scissors-shears.png",
+      "features": [
+        "Crafted from Japanese AISI 420 Stainless Steel",
+        "ISO 13485:2016 and CE Compliant",
+        "Precision Heat Treated & Nitric Passivated",
+        "Autoclavable at 134°C / 273°F"
+      ],
+      "specifications": {
+        "Spec 1": "Japanese AISI 420 Steel",
+        "Spec 2": "11.5cm Curved Micro-Blades"
+      },
+      "catalogue_pdf": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "is_featured": true,
+      "is_published": true,
+      "seo_title": "Iris Precision Surgical Scissors - Durable Hospital Supplies",
+      "seo_description": "Delicate curved surgical scissors crafted from Japanese stainless steel for fine tissue dissection.",
+      "sort_order": 1,
+      "created_at": "2026-10-14T19:10:28.946Z",
+      "updated_at": "2026-10-14T19:10:28.946Z",
+      "category_name": "General Surgery",
+      "gallery_images": [
+        {
+          "id": "img-1-surg-1",
+          "product_id": "surg-1",
+          "image_url": "/images/cat-scissors-shears.png",
+          "alt_text": "Iris Precision Surgical Scissors",
+          "sort_order": 1
+        }
+      ]
+    },
+    {
+      "id": "surg-2",
+      "category_id": "cat-general-surgery",
+      "title": "Mayo Dissecting Straight Scissors",
+      "slug": "surg-2-mayo-dissecting-straight-scissors",
+      "sku": "SURG-SC-102",
+      "short_description": "Heavy-duty Mayo dissecting scissors featuring beveled cutting edges for dense tissue cutting.",
+      "full_description": "Heavy-duty Mayo dissecting scissors featuring beveled cutting edges for dense tissue cutting. Manufactured to precision standards using German and Japanese stainless steel. Certified ISO 13485 & CE compliant.",
+      "featured_image": "/images/blog-instruments-tray.png",
+      "features": [
+        "Crafted from Japanese AISI 420 Stainless Steel",
+        "ISO 13485:2016 and CE Compliant",
+        "Precision Heat Treated & Nitric Passivated",
+        "Autoclavable at 134°C / 273°F"
+      ],
+      "specifications": {
+        "Spec 1": "Gold-Handle Tungsten Carbide",
+        "Spec 2": "14cm Straight"
+      },
+      "catalogue_pdf": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "is_featured": false,
+      "is_published": true,
+      "seo_title": "Mayo Dissecting Straight Scissors - Durable Hospital Supplies",
+      "seo_description": "Heavy-duty Mayo dissecting scissors featuring beveled cutting edges for dense tissue cutting.",
+      "sort_order": 2,
+      "created_at": "2026-10-14T19:10:28.946Z",
+      "updated_at": "2026-10-14T19:10:28.946Z",
+      "category_name": "General Surgery",
+      "gallery_images": [
+        {
+          "id": "img-1-surg-2",
+          "product_id": "surg-2",
+          "image_url": "/images/blog-instruments-tray.png",
+          "alt_text": "Mayo Dissecting Straight Scissors",
+          "sort_order": 1
+        }
+      ]
+    },
+    {
+      "id": "surg-3",
+      "category_id": "cat-general-surgery",
+      "title": "Kelly Hemostatic Forceps Curved",
+      "slug": "surg-3-kelly-hemostatic-forceps-curved",
+      "sku": "SURG-FC-201",
+      "short_description": "Precision hemostatic locking forceps with serrated jaws for occluding blood vessels.",
+      "full_description": "Precision hemostatic locking forceps with serrated jaws for occluding blood vessels. Manufactured to precision standards using German and Japanese stainless steel. Certified ISO 13485 & CE compliant.",
+      "featured_image": "/images/cat-forceps-clamps.png",
+      "features": [
+        "Crafted from Japanese AISI 420 Stainless Steel",
+        "ISO 13485:2016 and CE Compliant",
+        "Precision Heat Treated & Nitric Passivated",
+        "Autoclavable at 134°C / 273°F"
+      ],
+      "specifications": {
+        "Spec 1": "Interlocking Ratchet",
+        "Spec 2": "Transverse Serrations",
+        "Spec 3": "14cm"
+      },
+      "catalogue_pdf": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "is_featured": true,
+      "is_published": true,
+      "seo_title": "Kelly Hemostatic Forceps Curved - Durable Hospital Supplies",
+      "seo_description": "Precision hemostatic locking forceps with serrated jaws for occluding blood vessels.",
+      "sort_order": 3,
+      "created_at": "2026-10-14T19:10:28.946Z",
+      "updated_at": "2026-10-14T19:10:28.946Z",
+      "category_name": "General Surgery",
+      "gallery_images": [
+        {
+          "id": "img-1-surg-3",
+          "product_id": "surg-3",
+          "image_url": "/images/cat-forceps-clamps.png",
+          "alt_text": "Kelly Hemostatic Forceps Curved",
+          "sort_order": 1
+        }
+      ]
+    },
+    {
+      "id": "surg-4",
+      "category_id": "cat-general-surgery",
+      "title": "Adson Tissue Forceps 1x2 Teeth",
+      "slug": "surg-4-adson-tissue-forceps-1x2-teeth",
+      "sku": "SURG-FC-202",
+      "short_description": "Micro-tooth tissue grasping forceps designed for delicate skin closure and tissue handling.",
+      "full_description": "Micro-tooth tissue grasping forceps designed for delicate skin closure and tissue handling. Manufactured to precision standards using German and Japanese stainless steel. Certified ISO 13485 & CE compliant.",
+      "featured_image": "/images/about-surgical-instruments.png",
+      "features": [
+        "Crafted from Japanese AISI 420 Stainless Steel",
+        "ISO 13485:2016 and CE Compliant",
+        "Precision Heat Treated & Nitric Passivated",
+        "Autoclavable at 134°C / 273°F"
+      ],
+      "specifications": {
+        "Spec 1": "Fine 1x2 Teeth",
+        "Spec 2": "Anti-Slip Wide Thumb Grip",
+        "Spec 3": "12cm"
+      },
+      "catalogue_pdf": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "is_featured": false,
+      "is_published": true,
+      "seo_title": "Adson Tissue Forceps 1x2 Teeth - Durable Hospital Supplies",
+      "seo_description": "Micro-tooth tissue grasping forceps designed for delicate skin closure and tissue handling.",
+      "sort_order": 4,
+      "created_at": "2026-10-14T19:10:28.946Z",
+      "updated_at": "2026-10-14T19:10:28.946Z",
+      "category_name": "General Surgery",
+      "gallery_images": [
+        {
+          "id": "img-1-surg-4",
+          "product_id": "surg-4",
+          "image_url": "/images/about-surgical-instruments.png",
+          "alt_text": "Adson Tissue Forceps 1x2 Teeth",
+          "sort_order": 1
+        }
+      ]
+    },
+    {
+      "id": "surg-5",
+      "category_id": "cat-general-surgery",
+      "title": "Weitlaner Self-Retaining Retractor",
+      "slug": "surg-5-weitlaner-self-retaining-retractor",
+      "sku": "SURG-RT-301",
+      "short_description": "Self-retaining surgical retractor with finger rings and ratchet lock mechanism.",
+      "full_description": "Self-retaining surgical retractor with finger rings and ratchet lock mechanism. Manufactured to precision standards using German and Japanese stainless steel. Certified ISO 13485 & CE compliant.",
+      "featured_image": "/images/cat-retractors.png",
+      "features": [
+        "Crafted from Japanese AISI 420 Stainless Steel",
+        "ISO 13485:2016 and CE Compliant",
+        "Precision Heat Treated & Nitric Passivated",
+        "Autoclavable at 134°C / 273°F"
+      ],
+      "specifications": {
+        "Spec 1": "3x4 Blunt Prongs",
+        "Spec 2": "Ratchet Lock System",
+        "Spec 3": "16.5cm"
+      },
+      "catalogue_pdf": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "is_featured": true,
+      "is_published": true,
+      "seo_title": "Weitlaner Self-Retaining Retractor - Durable Hospital Supplies",
+      "seo_description": "Self-retaining surgical retractor with finger rings and ratchet lock mechanism.",
+      "sort_order": 5,
+      "created_at": "2026-10-14T19:10:28.946Z",
+      "updated_at": "2026-10-14T19:10:28.946Z",
+      "category_name": "General Surgery",
+      "gallery_images": [
+        {
+          "id": "img-1-surg-5",
+          "product_id": "surg-5",
+          "image_url": "/images/cat-retractors.png",
+          "alt_text": "Weitlaner Self-Retaining Retractor",
+          "sort_order": 1
+        }
+      ]
+    },
+    {
+      "id": "surg-6",
+      "category_id": "cat-general-surgery",
+      "title": "Scalpel Handle No. 3 Standard",
+      "slug": "surg-6-scalpel-handle-no-3-standard",
+      "sku": "SURG-HD-003",
+      "short_description": "Standard surgical scalpel handle compatible with micro-blades #10 through #15.",
+      "full_description": "Standard surgical scalpel handle compatible with micro-blades #10 through #15. Manufactured to precision standards using German and Japanese stainless steel. Certified ISO 13485 & CE compliant.",
+      "featured_image": "/images/cat-handles-blades.png",
+      "features": [
+        "Crafted from Japanese AISI 420 Stainless Steel",
+        "ISO 13485:2016 and CE Compliant",
+        "Precision Heat Treated & Nitric Passivated",
+        "Autoclavable at 134°C / 273°F"
+      ],
+      "specifications": {
+        "Spec 1": "Graduated Millimeter Scale",
+        "Spec 2": "Fits Blades #10-#15"
+      },
+      "catalogue_pdf": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "is_featured": false,
+      "is_published": true,
+      "seo_title": "Scalpel Handle No. 3 Standard - Durable Hospital Supplies",
+      "seo_description": "Standard surgical scalpel handle compatible with micro-blades #10 through #15.",
+      "sort_order": 6,
+      "created_at": "2026-10-14T19:10:28.946Z",
+      "updated_at": "2026-10-14T19:10:28.946Z",
+      "category_name": "General Surgery",
+      "gallery_images": [
+        {
+          "id": "img-1-surg-6",
+          "product_id": "surg-6",
+          "image_url": "/images/cat-handles-blades.png",
+          "alt_text": "Scalpel Handle No. 3 Standard",
+          "sort_order": 1
+        }
+      ]
+    },
+    {
+      "id": "dent-1",
+      "category_id": "cat-dental",
+      "title": "Pro Explorer & Periodontal Probe #23/CP12",
+      "slug": "dent-1-pro-explorer-periodontal-probe-23-cp12",
+      "sku": "DENT-PR-101",
+      "short_description": "Double-ended dental diagnostic explorer and color-coded periodontal depth probe.",
+      "full_description": "Double-ended dental diagnostic explorer and color-coded periodontal depth probe. Manufactured to precision standards using German and Japanese stainless steel. Certified ISO 13485 & CE compliant.",
+      "featured_image": "/images/icon-dental.png",
+      "features": [
+        "Crafted from Japanese AISI 420 Stainless Steel",
+        "ISO 13485:2016 and CE Compliant",
+        "Precision Heat Treated & Nitric Passivated",
+        "Autoclavable at 134°C / 273°F"
+      ],
+      "specifications": {
+        "Spec 1": "Hollow Anti-Slip Handle",
+        "Spec 2": "3-6-9-12mm Markings"
+      },
+      "catalogue_pdf": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "is_featured": true,
+      "is_published": true,
+      "seo_title": "Pro Explorer & Periodontal Probe #23/CP12 - Durable Hospital Supplies",
+      "seo_description": "Double-ended dental diagnostic explorer and color-coded periodontal depth probe.",
+      "sort_order": 11,
+      "created_at": "2026-10-14T19:10:28.946Z",
+      "updated_at": "2026-10-14T19:10:28.946Z",
+      "category_name": "Dental",
+      "gallery_images": [
+        {
+          "id": "img-1-dent-1",
+          "product_id": "dent-1",
+          "image_url": "/images/icon-dental.png",
+          "alt_text": "Pro Explorer & Periodontal Probe #23/CP12",
+          "sort_order": 1
+        }
+      ]
+    },
+    {
+      "id": "dent-2",
+      "category_id": "cat-dental",
+      "title": "Universal Dental Extraction Forceps #150",
+      "slug": "dent-2-universal-dental-extraction-forceps-150",
+      "sku": "DENT-FC-201",
+      "short_description": "Upper universal tooth extraction forceps with knurled non-slip handle grip.",
+      "full_description": "Upper universal tooth extraction forceps with knurled non-slip handle grip. Manufactured to precision standards using German and Japanese stainless steel. Certified ISO 13485 & CE compliant.",
+      "featured_image": "/images/dental-clinic-banner.png",
+      "features": [
+        "Crafted from Japanese AISI 420 Stainless Steel",
+        "ISO 13485:2016 and CE Compliant",
+        "Precision Heat Treated & Nitric Passivated",
+        "Autoclavable at 134°C / 273°F"
+      ],
+      "specifications": {
+        "Spec 1": "Anatomical Beak Contour",
+        "Spec 2": "Satin Finish Stainless Steel"
+      },
+      "catalogue_pdf": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "is_featured": false,
+      "is_published": true,
+      "seo_title": "Universal Dental Extraction Forceps #150 - Durable Hospital Supplies",
+      "seo_description": "Upper universal tooth extraction forceps with knurled non-slip handle grip.",
+      "sort_order": 12,
+      "created_at": "2026-10-14T19:10:28.947Z",
+      "updated_at": "2026-10-14T19:10:28.947Z",
+      "category_name": "Dental",
+      "gallery_images": [
+        {
+          "id": "img-1-dent-2",
+          "product_id": "dent-2",
+          "image_url": "/images/dental-clinic-banner.png",
+          "alt_text": "Universal Dental Extraction Forceps #150",
+          "sort_order": 1
+        }
+      ]
+    },
+    {
+      "id": "dent-3",
+      "category_id": "cat-dental",
+      "title": "Gracey Periodontal Curette Set 1/2 to 13/14",
+      "slug": "dent-3-gracey-periodontal-curette-set-1-2-to-13-14",
+      "sku": "DENT-CR-301",
+      "short_description": "Area-specific Gracey curettes for subgingival scaling and root planing.",
+      "full_description": "Area-specific Gracey curettes for subgingival scaling and root planing. Manufactured to precision standards using German and Japanese stainless steel. Certified ISO 13485 & CE compliant.",
+      "featured_image": "/images/dental-clinic-banner.png",
+      "features": [
+        "Crafted from Japanese AISI 420 Stainless Steel",
+        "ISO 13485:2016 and CE Compliant",
+        "Precision Heat Treated & Nitric Passivated",
+        "Autoclavable at 134°C / 273°F"
+      ],
+      "specifications": {
+        "Spec 1": "Double-Ended Stainless Steel",
+        "Spec 2": "Color-Coded Handles"
+      },
+      "catalogue_pdf": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "is_featured": true,
+      "is_published": true,
+      "seo_title": "Gracey Periodontal Curette Set 1/2 to 13/14 - Durable Hospital Supplies",
+      "seo_description": "Area-specific Gracey curettes for subgingival scaling and root planing.",
+      "sort_order": 13,
+      "created_at": "2026-10-14T19:10:28.947Z",
+      "updated_at": "2026-10-14T19:10:28.947Z",
+      "category_name": "Dental",
+      "gallery_images": [
+        {
+          "id": "img-1-dent-3",
+          "product_id": "dent-3",
+          "image_url": "/images/dental-clinic-banner.png",
+          "alt_text": "Gracey Periodontal Curette Set 1/2 to 13/14",
+          "sort_order": 1
+        }
+      ]
+    },
+    {
+      "id": "dent-4",
+      "category_id": "cat-dental",
+      "title": "Dental Composite Filling Carver",
+      "slug": "dent-4-dental-composite-filling-carver",
+      "sku": "DENT-CV-401",
+      "short_description": "Titanium-nitride coated composite modeling and anterior tooth carving instrument.",
+      "full_description": "Titanium-nitride coated composite modeling and anterior tooth carving instrument. Manufactured to precision standards using German and Japanese stainless steel. Certified ISO 13485 & CE compliant.",
+      "featured_image": "/images/icon-dental.png",
+      "features": [
+        "Crafted from Japanese AISI 420 Stainless Steel",
+        "ISO 13485:2016 and CE Compliant",
+        "Precision Heat Treated & Nitric Passivated",
+        "Autoclavable at 134°C / 273°F"
+      ],
+      "specifications": {
+        "Spec 1": "Non-Stick Blue Titanium Coated Working Tips"
+      },
+      "catalogue_pdf": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "is_featured": false,
+      "is_published": true,
+      "seo_title": "Dental Composite Filling Carver - Durable Hospital Supplies",
+      "seo_description": "Titanium-nitride coated composite modeling and anterior tooth carving instrument.",
+      "sort_order": 14,
+      "created_at": "2026-10-14T19:10:28.947Z",
+      "updated_at": "2026-10-14T19:10:28.947Z",
+      "category_name": "Dental",
+      "gallery_images": [
+        {
+          "id": "img-1-dent-4",
+          "product_id": "dent-4",
+          "image_url": "/images/icon-dental.png",
+          "alt_text": "Dental Composite Filling Carver",
+          "sort_order": 1
+        }
+      ]
+    },
+    {
+      "id": "eos-1",
+      "category_id": "cat-extraction-oral-surgery",
+      "title": "English Pattern Extracting Forceps #51A",
+      "slug": "eos-1-english-pattern-extracting-forceps-51a",
+      "sku": "DENT-EOS-101",
+      "short_description": "Upper roots extracting forceps featuring narrow anatomical beaks.",
+      "full_description": "Upper roots extracting forceps featuring narrow anatomical beaks. Manufactured to precision standards using German and Japanese stainless steel. Certified ISO 13485 & CE compliant.",
+      "featured_image": "/images/dental-clinic-banner.png",
+      "features": [
+        "Crafted from Japanese AISI 420 Stainless Steel",
+        "ISO 13485:2016 and CE Compliant",
+        "Precision Heat Treated & Nitric Passivated",
+        "Autoclavable at 134°C / 273°F"
+      ],
+      "specifications": {
+        "Spec 1": "Japanese AISI 420 Stainless Steel",
+        "Spec 2": "Anatomical Beaks"
+      },
+      "catalogue_pdf": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "is_featured": true,
+      "is_published": true,
+      "seo_title": "English Pattern Extracting Forceps #51A - Durable Hospital Supplies",
+      "seo_description": "Upper roots extracting forceps featuring narrow anatomical beaks.",
+      "sort_order": 21,
+      "created_at": "2026-10-14T19:10:28.947Z",
+      "updated_at": "2026-10-14T19:10:28.947Z",
+      "category_name": "Extraction & Oral Surgery",
+      "gallery_images": [
+        {
+          "id": "img-1-eos-1",
+          "product_id": "eos-1",
+          "image_url": "/images/dental-clinic-banner.png",
+          "alt_text": "English Pattern Extracting Forceps #51A",
+          "sort_order": 1
+        }
+      ]
+    },
+    {
+      "id": "eos-2",
+      "category_id": "cat-extraction-oral-surgery",
+      "title": "Straight Root Elevator Bein #3",
+      "slug": "eos-2-straight-root-elevator-bein-3",
+      "sku": "DENT-EOS-102",
+      "short_description": "3mm straight blade root elevator with ergonomic hollow hexagonal handle.",
+      "full_description": "3mm straight blade root elevator with ergonomic hollow hexagonal handle. Manufactured to precision standards using German and Japanese stainless steel. Certified ISO 13485 & CE compliant.",
+      "featured_image": "/images/dental-clinic-banner.png",
+      "features": [
+        "Crafted from Japanese AISI 420 Stainless Steel",
+        "ISO 13485:2016 and CE Compliant",
+        "Precision Heat Treated & Nitric Passivated",
+        "Autoclavable at 134°C / 273°F"
+      ],
+      "specifications": {
+        "Spec 1": "3mm Blade",
+        "Spec 2": "Hexagonal Hollow Handle",
+        "Spec 3": "14.5cm"
+      },
+      "catalogue_pdf": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "is_featured": false,
+      "is_published": true,
+      "seo_title": "Straight Root Elevator Bein #3 - Durable Hospital Supplies",
+      "seo_description": "3mm straight blade root elevator with ergonomic hollow hexagonal handle.",
+      "sort_order": 22,
+      "created_at": "2026-10-14T19:10:28.947Z",
+      "updated_at": "2026-10-14T19:10:28.947Z",
+      "category_name": "Extraction & Oral Surgery",
+      "gallery_images": [
+        {
+          "id": "img-1-eos-2",
+          "product_id": "eos-2",
+          "image_url": "/images/dental-clinic-banner.png",
+          "alt_text": "Straight Root Elevator Bein #3",
+          "sort_order": 1
+        }
+      ]
+    },
+    {
+      "id": "eos-3",
+      "category_id": "cat-extraction-oral-surgery",
+      "title": "Dental Luxating Elevator Curved 4mm",
+      "slug": "eos-3-dental-luxating-elevator-curved-4mm",
+      "sku": "DENT-EOS-103",
+      "short_description": "Sharpened curved blade luxator for periodontal ligament cutting prior to extraction.",
+      "full_description": "Sharpened curved blade luxator for periodontal ligament cutting prior to extraction. Manufactured to precision standards using German and Japanese stainless steel. Certified ISO 13485 & CE compliant.",
+      "featured_image": "/images/dental-clinic-banner.png",
+      "features": [
+        "Crafted from Japanese AISI 420 Stainless Steel",
+        "ISO 13485:2016 and CE Compliant",
+        "Precision Heat Treated & Nitric Passivated",
+        "Autoclavable at 134°C / 273°F"
+      ],
+      "specifications": {
+        "Spec 1": "Micro-Sharpened Tip",
+        "Spec 2": "Color-Coded Handle"
+      },
+      "catalogue_pdf": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "is_featured": true,
+      "is_published": true,
+      "seo_title": "Dental Luxating Elevator Curved 4mm - Durable Hospital Supplies",
+      "seo_description": "Sharpened curved blade luxator for periodontal ligament cutting prior to extraction.",
+      "sort_order": 23,
+      "created_at": "2026-10-14T19:10:28.947Z",
+      "updated_at": "2026-10-14T19:10:28.947Z",
+      "category_name": "Extraction & Oral Surgery",
+      "gallery_images": [
+        {
+          "id": "img-1-eos-3",
+          "product_id": "eos-3",
+          "image_url": "/images/dental-clinic-banner.png",
+          "alt_text": "Dental Luxating Elevator Curved 4mm",
+          "sort_order": 1
+        }
+      ]
+    },
+    {
+      "id": "dbs-1",
+      "category_id": "cat-dental-bone-surgery",
+      "title": "Partsch Bone Chisel 4mm",
+      "slug": "dbs-1-partsch-bone-chisel-4mm",
+      "sku": "DENT-DBS-201",
+      "short_description": "Precision bone cutting chisel engineered for crestal sinus lifting and bone block harvesting.",
+      "full_description": "Precision bone cutting chisel engineered for crestal sinus lifting and bone block harvesting. Manufactured to precision standards using German and Japanese stainless steel. Certified ISO 13485 & CE compliant.",
+      "featured_image": "/images/blog-instruments-tray.png",
+      "features": [
+        "Crafted from Japanese AISI 420 Stainless Steel",
+        "ISO 13485:2016 and CE Compliant",
+        "Precision Heat Treated & Nitric Passivated",
+        "Autoclavable at 134°C / 273°F"
+      ],
+      "specifications": {
+        "Spec 1": "Millimeter Depth Markings",
+        "Spec 2": "German Stainless Steel"
+      },
+      "catalogue_pdf": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "is_featured": true,
+      "is_published": true,
+      "seo_title": "Partsch Bone Chisel 4mm - Durable Hospital Supplies",
+      "seo_description": "Precision bone cutting chisel engineered for crestal sinus lifting and bone block harvesting.",
+      "sort_order": 31,
+      "created_at": "2026-10-14T19:10:28.947Z",
+      "updated_at": "2026-10-14T19:10:28.947Z",
+      "category_name": "Dental Bone Surgery",
+      "gallery_images": [
+        {
+          "id": "img-1-dbs-1",
+          "product_id": "dbs-1",
+          "image_url": "/images/blog-instruments-tray.png",
+          "alt_text": "Partsch Bone Chisel 4mm",
+          "sort_order": 1
+        }
+      ]
+    },
+    {
+      "id": "dbs-2",
+      "category_id": "cat-dental-bone-surgery",
+      "title": "Beyer Dental Bone Rongeur Curved",
+      "slug": "dbs-2-beyer-dental-bone-rongeur-curved",
+      "sku": "DENT-DBS-202",
+      "short_description": "Double-spring action bone rongeur for trimming sharp alveolar bone ridges.",
+      "full_description": "Double-spring action bone rongeur for trimming sharp alveolar bone ridges. Manufactured to precision standards using German and Japanese stainless steel. Certified ISO 13485 & CE compliant.",
+      "featured_image": "/images/blog-instruments-tray.png",
+      "features": [
+        "Crafted from Japanese AISI 420 Stainless Steel",
+        "ISO 13485:2016 and CE Compliant",
+        "Precision Heat Treated & Nitric Passivated",
+        "Autoclavable at 134°C / 273°F"
+      ],
+      "specifications": {
+        "Spec 1": "Double-Spring Mechanism",
+        "Spec 2": "18cm Curved Jaws"
+      },
+      "catalogue_pdf": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "is_featured": false,
+      "is_published": true,
+      "seo_title": "Beyer Dental Bone Rongeur Curved - Durable Hospital Supplies",
+      "seo_description": "Double-spring action bone rongeur for trimming sharp alveolar bone ridges.",
+      "sort_order": 32,
+      "created_at": "2026-10-14T19:10:28.947Z",
+      "updated_at": "2026-10-14T19:10:28.947Z",
+      "category_name": "Dental Bone Surgery",
+      "gallery_images": [
+        {
+          "id": "img-1-dbs-2",
+          "product_id": "dbs-2",
+          "image_url": "/images/blog-instruments-tray.png",
+          "alt_text": "Beyer Dental Bone Rongeur Curved",
+          "sort_order": 1
+        }
+      ]
+    },
+    {
+      "id": "prc-1",
+      "category_id": "cat-periodontics-cleaning",
+      "title": "Sickle Scaler H6/H7 Hygienist Model",
+      "slug": "prc-1-sickle-scaler-h6-h7-hygienist-model",
+      "sku": "DENT-PRC-301",
+      "short_description": "Anterior sickle scaler with contra-angle design for supragingival calculus removal.",
+      "full_description": "Anterior sickle scaler with contra-angle design for supragingival calculus removal. Manufactured to precision standards using German and Japanese stainless steel. Certified ISO 13485 & CE compliant.",
+      "featured_image": "/images/icon-dental.png",
+      "features": [
+        "Crafted from Japanese AISI 420 Stainless Steel",
+        "ISO 13485:2016 and CE Compliant",
+        "Precision Heat Treated & Nitric Passivated",
+        "Autoclavable at 134°C / 273°F"
+      ],
+      "specifications": {
+        "Spec 1": "Dual-End Sickle Tip",
+        "Spec 2": "Light Weight Anti-Slip Handle"
+      },
+      "catalogue_pdf": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "is_featured": true,
+      "is_published": true,
+      "seo_title": "Sickle Scaler H6/H7 Hygienist Model - Durable Hospital Supplies",
+      "seo_description": "Anterior sickle scaler with contra-angle design for supragingival calculus removal.",
+      "sort_order": 41,
+      "created_at": "2026-10-14T19:10:28.947Z",
+      "updated_at": "2026-10-14T19:10:28.947Z",
+      "category_name": "Periodontics & Cleaning",
+      "gallery_images": [
+        {
+          "id": "img-1-prc-1",
+          "product_id": "prc-1",
+          "image_url": "/images/icon-dental.png",
+          "alt_text": "Sickle Scaler H6/H7 Hygienist Model",
+          "sort_order": 1
+        }
+      ]
+    },
+    {
+      "id": "prc-2",
+      "category_id": "cat-periodontics-cleaning",
+      "title": "Goldman-Fox Periodontal Scaler #21",
+      "slug": "prc-2-goldman-fox-periodontal-scaler-21",
+      "sku": "DENT-PRC-302",
+      "short_description": "Universal subgingival calculus scaler featuring modified blade angles.",
+      "full_description": "Universal subgingival calculus scaler featuring modified blade angles. Manufactured to precision standards using German and Japanese stainless steel. Certified ISO 13485 & CE compliant.",
+      "featured_image": "/images/icon-dental.png",
+      "features": [
+        "Crafted from Japanese AISI 420 Stainless Steel",
+        "ISO 13485:2016 and CE Compliant",
+        "Precision Heat Treated & Nitric Passivated",
+        "Autoclavable at 134°C / 273°F"
+      ],
+      "specifications": {
+        "Spec 1": "AISI 420 High Carbon Steel",
+        "Spec 2": "15cm"
+      },
+      "catalogue_pdf": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "is_featured": false,
+      "is_published": true,
+      "seo_title": "Goldman-Fox Periodontal Scaler #21 - Durable Hospital Supplies",
+      "seo_description": "Universal subgingival calculus scaler featuring modified blade angles.",
+      "sort_order": 42,
+      "created_at": "2026-10-14T19:10:28.947Z",
+      "updated_at": "2026-10-14T19:10:28.947Z",
+      "category_name": "Periodontics & Cleaning",
+      "gallery_images": [
+        {
+          "id": "img-1-prc-2",
+          "product_id": "prc-2",
+          "image_url": "/images/icon-dental.png",
+          "alt_text": "Goldman-Fox Periodontal Scaler #21",
+          "sort_order": 1
+        }
+      ]
+    },
+    {
+      "id": "endo-1",
+      "category_id": "cat-endodontics",
+      "title": "Endodontic Root Canal Spreader #D11T",
+      "slug": "endo-1-endodontic-root-canal-spreader-d11t",
+      "sku": "DENT-ENDO-401",
+      "short_description": "Pointed Nickel-Titanium spreader for lateral condensation of gutta-percha points.",
+      "full_description": "Pointed Nickel-Titanium spreader for lateral condensation of gutta-percha points. Manufactured to precision standards using German and Japanese stainless steel. Certified ISO 13485 & CE compliant.",
+      "featured_image": "/images/surgical-tray-durable.png",
+      "features": [
+        "Crafted from Japanese AISI 420 Stainless Steel",
+        "ISO 13485:2016 and CE Compliant",
+        "Precision Heat Treated & Nitric Passivated",
+        "Autoclavable at 134°C / 273°F"
+      ],
+      "specifications": {
+        "Spec 1": "Flexible NiTi Tip",
+        "Spec 2": "Color-Coded Ring Handle"
+      },
+      "catalogue_pdf": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "is_featured": true,
+      "is_published": true,
+      "seo_title": "Endodontic Root Canal Spreader #D11T - Durable Hospital Supplies",
+      "seo_description": "Pointed Nickel-Titanium spreader for lateral condensation of gutta-percha points.",
+      "sort_order": 51,
+      "created_at": "2026-10-14T19:10:28.947Z",
+      "updated_at": "2026-10-14T19:10:28.947Z",
+      "category_name": "Endodontics",
+      "gallery_images": [
+        {
+          "id": "img-1-endo-1",
+          "product_id": "endo-1",
+          "image_url": "/images/surgical-tray-durable.png",
+          "alt_text": "Endodontic Root Canal Spreader #D11T",
+          "sort_order": 1
+        }
+      ]
+    },
+    {
+      "id": "endo-2",
+      "category_id": "cat-endodontics",
+      "title": "Ehricke's Perforated Dental Impression Tray",
+      "slug": "endo-2-ehricke-s-perforated-dental-impression-tray",
+      "sku": "DENT-ENDO-402",
+      "short_description": "Rigid stainless steel impression tray with keyhole perforations for retention.",
+      "full_description": "Rigid stainless steel impression tray with keyhole perforations for retention. Manufactured to precision standards using German and Japanese stainless steel. Certified ISO 13485 & CE compliant.",
+      "featured_image": "/images/surgical-tray-durable.png",
+      "features": [
+        "Crafted from Japanese AISI 420 Stainless Steel",
+        "ISO 13485:2016 and CE Compliant",
+        "Precision Heat Treated & Nitric Passivated",
+        "Autoclavable at 134°C / 273°F"
+      ],
+      "specifications": {
+        "Spec 1": "Autoclavable 304 Steel",
+        "Spec 2": "Size Large Upper"
+      },
+      "catalogue_pdf": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "is_featured": false,
+      "is_published": true,
+      "seo_title": "Ehricke's Perforated Dental Impression Tray - Durable Hospital Supplies",
+      "seo_description": "Rigid stainless steel impression tray with keyhole perforations for retention.",
+      "sort_order": 52,
+      "created_at": "2026-10-14T19:10:28.947Z",
+      "updated_at": "2026-10-14T19:10:28.947Z",
+      "category_name": "Endodontics",
+      "gallery_images": [
+        {
+          "id": "img-1-endo-2",
+          "product_id": "endo-2",
+          "image_url": "/images/surgical-tray-durable.png",
+          "alt_text": "Ehricke's Perforated Dental Impression Tray",
+          "sort_order": 1
+        }
+      ]
+    },
+    {
+      "id": "diag-1",
+      "category_id": "cat-diagnostic",
+      "title": "College Cotton Plier Locking 15cm",
+      "slug": "diag-1-college-cotton-plier-locking-15cm",
+      "sku": "DENT-DIAG-501",
+      "short_description": "Serrated locking dental tweezers for gripping cotton rolls and small posts.",
+      "full_description": "Serrated locking dental tweezers for gripping cotton rolls and small posts. Manufactured to precision standards using German and Japanese stainless steel. Certified ISO 13485 & CE compliant.",
+      "featured_image": "/images/blog-instruments-tray.png",
+      "features": [
+        "Crafted from Japanese AISI 420 Stainless Steel",
+        "ISO 13485:2016 and CE Compliant",
+        "Precision Heat Treated & Nitric Passivated",
+        "Autoclavable at 134°C / 273°F"
+      ],
+      "specifications": {
+        "Spec 1": "Positive Catch Lock",
+        "Spec 2": "Angled Serrated Tips"
+      },
+      "catalogue_pdf": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "is_featured": true,
+      "is_published": true,
+      "seo_title": "College Cotton Plier Locking 15cm - Durable Hospital Supplies",
+      "seo_description": "Serrated locking dental tweezers for gripping cotton rolls and small posts.",
+      "sort_order": 61,
+      "created_at": "2026-10-14T19:10:28.947Z",
+      "updated_at": "2026-10-14T19:10:28.947Z",
+      "category_name": "Diagnostic",
+      "gallery_images": [
+        {
+          "id": "img-1-diag-1",
+          "product_id": "diag-1",
+          "image_url": "/images/blog-instruments-tray.png",
+          "alt_text": "College Cotton Plier Locking 15cm",
+          "sort_order": 1
+        }
+      ]
+    },
+    {
+      "id": "diag-2",
+      "category_id": "cat-diagnostic",
+      "title": "Intraoral Glass Mirror Front Surface",
+      "slug": "diag-2-intraoral-glass-mirror-front-surface",
+      "sku": "DENT-DIAG-502",
+      "short_description": "High reflectivity dental mirror with ergonomic stainless steel handle.",
+      "full_description": "High reflectivity dental mirror with ergonomic stainless steel handle. Manufactured to precision standards using German and Japanese stainless steel. Certified ISO 13485 & CE compliant.",
+      "featured_image": "/images/blog-instruments-tray.png",
+      "features": [
+        "Crafted from Japanese AISI 420 Stainless Steel",
+        "ISO 13485:2016 and CE Compliant",
+        "Precision Heat Treated & Nitric Passivated",
+        "Autoclavable at 134°C / 273°F"
+      ],
+      "specifications": {
+        "Spec 1": "Rhodium Coated Glass",
+        "Spec 2": "Standard Thread #4"
+      },
+      "catalogue_pdf": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "is_featured": false,
+      "is_published": true,
+      "seo_title": "Intraoral Glass Mirror Front Surface - Durable Hospital Supplies",
+      "seo_description": "High reflectivity dental mirror with ergonomic stainless steel handle.",
+      "sort_order": 62,
+      "created_at": "2026-10-14T19:10:28.947Z",
+      "updated_at": "2026-10-14T19:10:28.947Z",
+      "category_name": "Diagnostic",
+      "gallery_images": [
+        {
+          "id": "img-1-diag-2",
+          "product_id": "diag-2",
+          "image_url": "/images/blog-instruments-tray.png",
+          "alt_text": "Intraoral Glass Mirror Front Surface",
+          "sort_order": 1
+        }
+      ]
+    },
+    {
+      "id": "dsd-1",
+      "category_id": "cat-discipline-specific-dental",
+      "title": "Castroviejo Dental Micro Needle Holder TC",
+      "slug": "dsd-1-castroviejo-dental-micro-needle-holder-tc",
+      "sku": "DENT-DSD-601",
+      "short_description": "Spring-action micro needle holder with gold-plated Tungsten Carbide inserts for 5-0 to 7-0 sutures.",
+      "full_description": "Spring-action micro needle holder with gold-plated Tungsten Carbide inserts for 5-0 to 7-0 sutures. Manufactured to precision standards using German and Japanese stainless steel. Certified ISO 13485 & CE compliant.",
+      "featured_image": "/images/process-hand-filing.png",
+      "features": [
+        "Crafted from Japanese AISI 420 Stainless Steel",
+        "ISO 13485:2016 and CE Compliant",
+        "Precision Heat Treated & Nitric Passivated",
+        "Autoclavable at 134°C / 273°F"
+      ],
+      "specifications": {
+        "Spec 1": "Tungsten Carbide Jaws",
+        "Spec 2": "Straight Lock 14cm"
+      },
+      "catalogue_pdf": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "is_featured": true,
+      "is_published": true,
+      "seo_title": "Castroviejo Dental Micro Needle Holder TC - Durable Hospital Supplies",
+      "seo_description": "Spring-action micro needle holder with gold-plated Tungsten Carbide inserts for 5-0 to 7-0 sutures.",
+      "sort_order": 71,
+      "created_at": "2026-10-14T19:10:28.948Z",
+      "updated_at": "2026-10-14T19:10:28.948Z",
+      "category_name": "Discipline Specific Instruments",
+      "gallery_images": [
+        {
+          "id": "img-1-dsd-1",
+          "product_id": "dsd-1",
+          "image_url": "/images/process-hand-filing.png",
+          "alt_text": "Castroviejo Dental Micro Needle Holder TC",
+          "sort_order": 1
+        }
+      ]
+    },
+    {
+      "id": "dsd-2",
+      "category_id": "cat-discipline-specific-dental",
+      "title": "Goldman-Fox Dental Gum Scissors Curved",
+      "slug": "dsd-2-goldman-fox-dental-gum-scissors-curved",
+      "sku": "DENT-DSD-602",
+      "short_description": "Fine serrated curved gum scissors for gingivectomy and delicate soft tissue trimming.",
+      "full_description": "Fine serrated curved gum scissors for gingivectomy and delicate soft tissue trimming. Manufactured to precision standards using German and Japanese stainless steel. Certified ISO 13485 & CE compliant.",
+      "featured_image": "/images/process-hand-filing.png",
+      "features": [
+        "Crafted from Japanese AISI 420 Stainless Steel",
+        "ISO 13485:2016 and CE Compliant",
+        "Precision Heat Treated & Nitric Passivated",
+        "Autoclavable at 134°C / 273°F"
+      ],
+      "specifications": {
+        "Spec 1": "One Serrated Edge",
+        "Spec 2": "Curved Tip 13cm"
+      },
+      "catalogue_pdf": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "is_featured": false,
+      "is_published": true,
+      "seo_title": "Goldman-Fox Dental Gum Scissors Curved - Durable Hospital Supplies",
+      "seo_description": "Fine serrated curved gum scissors for gingivectomy and delicate soft tissue trimming.",
+      "sort_order": 72,
+      "created_at": "2026-10-14T19:10:28.948Z",
+      "updated_at": "2026-10-14T19:10:28.948Z",
+      "category_name": "Discipline Specific Instruments",
+      "gallery_images": [
+        {
+          "id": "img-1-dsd-2",
+          "product_id": "dsd-2",
+          "image_url": "/images/process-hand-filing.png",
+          "alt_text": "Goldman-Fox Dental Gum Scissors Curved",
+          "sort_order": 1
+        }
+      ]
+    },
+    {
+      "id": "orth-1",
+      "category_id": "cat-orthopedic-instruments",
+      "title": "Lambotte Osteotome Straight 15mm",
+      "slug": "orth-1-lambotte-osteotome-straight-15mm",
+      "sku": "ORTH-OST-101",
+      "short_description": "Flat blade orthopedic osteotome engineered for joint reconstruction and bone transection.",
+      "full_description": "Flat blade orthopedic osteotome engineered for joint reconstruction and bone transection. Manufactured to precision standards using German and Japanese stainless steel. Certified ISO 13485 & CE compliant.",
+      "featured_image": "/images/blog-instruments-tray.png",
+      "features": [
+        "Crafted from Japanese AISI 420 Stainless Steel",
+        "ISO 13485:2016 and CE Compliant",
+        "Precision Heat Treated & Nitric Passivated",
+        "Autoclavable at 134°C / 273°F"
+      ],
+      "specifications": {
+        "Spec 1": "AISI 420 High Carbon Steel",
+        "Spec 2": "15mm Blade",
+        "Spec 3": "24cm"
+      },
+      "catalogue_pdf": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "is_featured": true,
+      "is_published": true,
+      "seo_title": "Lambotte Osteotome Straight 15mm - Durable Hospital Supplies",
+      "seo_description": "Flat blade orthopedic osteotome engineered for joint reconstruction and bone transection.",
+      "sort_order": 81,
+      "created_at": "2026-10-14T19:10:28.948Z",
+      "updated_at": "2026-10-14T19:10:28.948Z",
+      "category_name": "Bone & Orthopedic Instruments",
+      "gallery_images": [
+        {
+          "id": "img-1-orth-1",
+          "product_id": "orth-1",
+          "image_url": "/images/blog-instruments-tray.png",
+          "alt_text": "Lambotte Osteotome Straight 15mm",
+          "sort_order": 1
+        }
+      ]
+    },
+    {
+      "id": "orth-2",
+      "category_id": "cat-orthopedic-instruments",
+      "title": "Stille-Luer Bone Rongeur Curved",
+      "slug": "orth-2-stille-luer-bone-rongeur-curved",
+      "sku": "ORTH-RNG-201",
+      "short_description": "Double-action heavy duty rongeur for gouging bone tissue in joint replacements.",
+      "full_description": "Double-action heavy duty rongeur for gouging bone tissue in joint replacements. Manufactured to precision standards using German and Japanese stainless steel. Certified ISO 13485 & CE compliant.",
+      "featured_image": "/images/blog-instruments-tray.png",
+      "features": [
+        "Crafted from Japanese AISI 420 Stainless Steel",
+        "ISO 13485:2016 and CE Compliant",
+        "Precision Heat Treated & Nitric Passivated",
+        "Autoclavable at 134°C / 273°F"
+      ],
+      "specifications": {
+        "Spec 1": "Double-Action Joint",
+        "Spec 2": "22cm Curved Jaws"
+      },
+      "catalogue_pdf": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "is_featured": false,
+      "is_published": true,
+      "seo_title": "Stille-Luer Bone Rongeur Curved - Durable Hospital Supplies",
+      "seo_description": "Double-action heavy duty rongeur for gouging bone tissue in joint replacements.",
+      "sort_order": 82,
+      "created_at": "2026-10-14T19:10:28.948Z",
+      "updated_at": "2026-10-14T19:10:28.948Z",
+      "category_name": "Bone & Orthopedic Instruments",
+      "gallery_images": [
+        {
+          "id": "img-1-orth-2",
+          "product_id": "orth-2",
+          "image_url": "/images/blog-instruments-tray.png",
+          "alt_text": "Stille-Luer Bone Rongeur Curved",
+          "sort_order": 1
+        }
+      ]
+    },
+    {
+      "id": "hol-1",
+      "category_id": "cat-medical-hollowware",
+      "title": "Stainless Steel Kidney Basin 250ml",
+      "slug": "hol-1-stainless-steel-kidney-basin-250ml",
+      "sku": "HOL-KB-101",
+      "short_description": "Seamless stainless steel kidney-shaped basin for holding surgical dressings and liquids.",
+      "full_description": "Seamless stainless steel kidney-shaped basin for holding surgical dressings and liquids. Manufactured to precision standards using German and Japanese stainless steel. Certified ISO 13485 & CE compliant.",
+      "featured_image": "/images/surgical-tray-durable.png",
+      "features": [
+        "Crafted from Japanese AISI 420 Stainless Steel",
+        "ISO 13485:2016 and CE Compliant",
+        "Precision Heat Treated & Nitric Passivated",
+        "Autoclavable at 134°C / 273°F"
+      ],
+      "specifications": {
+        "Spec 1": "Seamless 304 Stainless Steel",
+        "Spec 2": "250ml Capacity"
+      },
+      "catalogue_pdf": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "is_featured": true,
+      "is_published": true,
+      "seo_title": "Stainless Steel Kidney Basin 250ml - Durable Hospital Supplies",
+      "seo_description": "Seamless stainless steel kidney-shaped basin for holding surgical dressings and liquids.",
+      "sort_order": 91,
+      "created_at": "2026-10-14T19:10:28.948Z",
+      "updated_at": "2026-10-14T19:10:28.948Z",
+      "category_name": "Medical Hollowware",
+      "gallery_images": [
+        {
+          "id": "img-1-hol-1",
+          "product_id": "hol-1",
+          "image_url": "/images/surgical-tray-durable.png",
+          "alt_text": "Stainless Steel Kidney Basin 250ml",
+          "sort_order": 1
+        }
+      ]
+    },
+    {
+      "id": "hol-2",
+      "category_id": "cat-medical-hollowware",
+      "title": "Sterilization Instrument Tray with Lid",
+      "slug": "hol-2-sterilization-instrument-tray-with-lid",
+      "sku": "HOL-TR-201",
+      "short_description": "Perforated instrument sterilization tray equipped with secure latch handles.",
+      "full_description": "Perforated instrument sterilization tray equipped with secure latch handles. Manufactured to precision standards using German and Japanese stainless steel. Certified ISO 13485 & CE compliant.",
+      "featured_image": "/images/surgical-tray-durable.png",
+      "features": [
+        "Crafted from Japanese AISI 420 Stainless Steel",
+        "ISO 13485:2016 and CE Compliant",
+        "Precision Heat Treated & Nitric Passivated",
+        "Autoclavable at 134°C / 273°F"
+      ],
+      "specifications": {
+        "Spec 1": "Perforated Mesh Base",
+        "Spec 2": "Latch Locking Lid",
+        "Spec 3": "30x20x5cm"
+      },
+      "catalogue_pdf": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "is_featured": false,
+      "is_published": true,
+      "seo_title": "Sterilization Instrument Tray with Lid - Durable Hospital Supplies",
+      "seo_description": "Perforated instrument sterilization tray equipped with secure latch handles.",
+      "sort_order": 92,
+      "created_at": "2026-10-14T19:10:28.948Z",
+      "updated_at": "2026-10-14T19:10:28.948Z",
+      "category_name": "Medical Hollowware",
+      "gallery_images": [
+        {
+          "id": "img-1-hol-2",
+          "product_id": "hol-2",
+          "image_url": "/images/surgical-tray-durable.png",
+          "alt_text": "Sterilization Instrument Tray with Lid",
+          "sort_order": 1
+        }
+      ]
+    },
+    {
+      "id": "oph-1",
+      "category_id": "cat-ophthalmic",
+      "title": "Castroviejo Micro Dissecting Forceps",
+      "slug": "oph-1-castroviejo-micro-dissecting-forceps",
+      "sku": "OPH-FC-101",
+      "short_description": "Ultra-fine ophthalmic micro forceps with 0.12mm teeth and tying platform.",
+      "full_description": "Ultra-fine ophthalmic micro forceps with 0.12mm teeth and tying platform. Manufactured to precision standards using German and Japanese stainless steel. Certified ISO 13485 & CE compliant.",
+      "featured_image": "/images/blog-instruments-tray.png",
+      "features": [
+        "Crafted from Japanese AISI 420 Stainless Steel",
+        "ISO 13485:2016 and CE Compliant",
+        "Precision Heat Treated & Nitric Passivated",
+        "Autoclavable at 134°C / 273°F"
+      ],
+      "specifications": {
+        "Spec 1": "0.12mm Micro Teeth",
+        "Spec 2": "Tying Platform",
+        "Spec 3": "Titanium Alloy"
+      },
+      "catalogue_pdf": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "is_featured": true,
+      "is_published": true,
+      "seo_title": "Castroviejo Micro Dissecting Forceps - Durable Hospital Supplies",
+      "seo_description": "Ultra-fine ophthalmic micro forceps with 0.12mm teeth and tying platform.",
+      "sort_order": 101,
+      "created_at": "2026-10-14T19:10:28.948Z",
+      "updated_at": "2026-10-14T19:10:28.948Z",
+      "category_name": "Ophthalmic",
+      "gallery_images": [
+        {
+          "id": "img-1-oph-1",
+          "product_id": "oph-1",
+          "image_url": "/images/blog-instruments-tray.png",
+          "alt_text": "Castroviejo Micro Dissecting Forceps",
+          "sort_order": 1
+        }
+      ]
+    },
+    {
+      "id": "furn-1",
+      "category_id": "cat-hospital-furniture",
+      "title": "Stainless Steel MAYO Instrument Trolley",
+      "slug": "furn-1-stainless-steel-mayo-instrument-trolley",
+      "sku": "FURN-MY-101",
+      "short_description": "Hydraulic height-adjustable MAYO instrument tray stand with smooth anti-static casters.",
+      "full_description": "Hydraulic height-adjustable MAYO instrument tray stand with smooth anti-static casters. Manufactured to precision standards using German and Japanese stainless steel. Certified ISO 13485 & CE compliant.",
+      "featured_image": "/images/icon-hospital-furniture.png",
+      "features": [
+        "Crafted from Japanese AISI 420 Stainless Steel",
+        "ISO 13485:2016 and CE Compliant",
+        "Precision Heat Treated & Nitric Passivated",
+        "Autoclavable at 134°C / 273°F"
+      ],
+      "specifications": {
+        "Spec 1": "Adjustable Hydraulic Height",
+        "Spec 2": "Removable 304 Steel Tray"
+      },
+      "catalogue_pdf": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "is_featured": true,
+      "is_published": true,
+      "seo_title": "Stainless Steel MAYO Instrument Trolley - Durable Hospital Supplies",
+      "seo_description": "Hydraulic height-adjustable MAYO instrument tray stand with smooth anti-static casters.",
+      "sort_order": 111,
+      "created_at": "2026-10-14T19:10:28.948Z",
+      "updated_at": "2026-10-14T19:10:28.948Z",
+      "category_name": "Hospital Furniture",
+      "gallery_images": [
+        {
+          "id": "img-1-furn-1",
+          "product_id": "furn-1",
+          "image_url": "/images/icon-hospital-furniture.png",
+          "alt_text": "Stainless Steel MAYO Instrument Trolley",
+          "sort_order": 1
+        }
+      ]
+    },
+    {
+      "id": "sgl-1",
+      "category_id": "cat-single-use-instruments",
+      "title": "Disposable Sterile Suture Removal Kit",
+      "slug": "sgl-1-disposable-sterile-suture-removal-kit",
+      "sku": "SGL-ST-101",
+      "short_description": "Individually packed sterile suture removal kit containing Littauer scissors and forceps.",
+      "full_description": "Individually packed sterile suture removal kit containing Littauer scissors and forceps. Manufactured to precision standards using German and Japanese stainless steel. Certified ISO 13485 & CE compliant.",
+      "featured_image": "/images/icon-single-use-instruments.png",
+      "features": [
+        "Crafted from Japanese AISI 420 Stainless Steel",
+        "ISO 13485:2016 and CE Compliant",
+        "Precision Heat Treated & Nitric Passivated",
+        "Autoclavable at 134°C / 273°F"
+      ],
+      "specifications": {
+        "Spec 1": "EO Gas Sterilized Pouch",
+        "Spec 2": "Single-Use Disposable"
+      },
+      "catalogue_pdf": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "is_featured": true,
+      "is_published": true,
+      "seo_title": "Disposable Sterile Suture Removal Kit - Durable Hospital Supplies",
+      "seo_description": "Individually packed sterile suture removal kit containing Littauer scissors and forceps.",
+      "sort_order": 121,
+      "created_at": "2026-10-14T19:10:28.948Z",
+      "updated_at": "2026-10-14T19:10:28.948Z",
+      "category_name": "Single Use Instruments",
+      "gallery_images": [
+        {
+          "id": "img-1-sgl-1",
+          "product_id": "sgl-1",
+          "image_url": "/images/icon-single-use-instruments.png",
+          "alt_text": "Disposable Sterile Suture Removal Kit",
+          "sort_order": 1
+        }
+      ]
+    }
+  ],
+  "durable_catalogues": [
+    {
+      "id": "de7eebac-44e4-421e-9d25-bc80220ec6bd",
+      "category_id": null,
+      "title": "General Surgery",
+      "slug": "general-surgery",
+      "description": "Technical specifications and product sizing guide.",
+      "cover_image": "https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1791542413711-whatsapp-image-2026-10-09-at-2-45-57-pm.jpeg",
+      "pdf_url": "https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/catalogues/5c36c424-4669-4aff-a735-66ba3344ac6f-HOSPITAL_FURNITURE_DURABLE.pdf",
+      "is_published": true,
+      "sort_order": 1,
+      "created_at": "2026-10-14T19:10:28.948Z",
+      "updated_at": "2026-10-14T19:10:28.948Z",
+      "category_name": "General Surgery"
+    },
+    {
+      "id": "729429af-e823-49d5-8c5f-b911499cd5c5",
+      "category_id": null,
+      "title": "Durable Implant Catalogue",
+      "slug": "durable-implant-catalogue",
+      "description": "Explore our comprehensive range of high-quality <b>implant instruments</b>, designed to support precision, reliability, and consistent performance in surgical procedures. Manufactured with a focus on quality <b>craftsmanship</b>, durability, and attention to detail, our instruments meet the needs of healthcare professionals, hospitals, and medical distributors worldwide.",
+      "cover_image": "https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1791556633742-durable-implant-catalogue.jpg",
+      "pdf_url": "https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/catalogues/aafa12c2-e3c6-44fc-9e49-55923cb7dcc3-durable_implant_catalogue.pdf",
+      "is_published": true,
+      "sort_order": 2,
+      "created_at": "2026-10-14T19:10:28.948Z",
+      "updated_at": "2026-10-14T19:10:28.948Z",
+      "category_name": "Implants"
+    },
+    {
+      "id": "948729d7-2291-46b5-b8c9-5e36e66d41ee",
+      "category_id": null,
+      "title": "Dental Instruments",
+      "slug": "dental-instruments",
+      "description": "<p class=\"isSelectedEnd\">Explore our comprehensive range of high-quality <b>dental instruments</b>, designed for <i>precision, durability, and reliable performance</i> in dental procedures. Manufactured with a focus on quality craftsmanship and attention to detail, our instruments serve the needs of <b>dental professionals, clinics, hospitals</b>, and distributors worldwide.</p><p><b>Download our Dental Instruments Catalogue PDF to discover our product range and specifications.</b></p>",
+      "cover_image": "https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1791556496551-dental-durable.jpg",
+      "pdf_url": "https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/catalogues/f67ed3e4-ad9c-4214-93bf-214522669b3f-DENTAL_DURABLE.pdf",
+      "is_published": true,
+      "sort_order": 3,
+      "created_at": "2026-10-14T19:10:28.948Z",
+      "updated_at": "2026-10-14T19:10:28.948Z",
+      "category_name": "Dental Instruments"
+    },
+    {
+      "id": "0e500c4d-750c-40b1-8031-fb62c8599d57",
+      "category_id": null,
+      "title": "Durable Laryngoscope ENT Catalogue",
+      "slug": "durable-laryngoscope-ent-catalogue",
+      "description": "<p class=\"isSelectedEnd\">Discover our comprehensive range of high-quality<b> laryngoscope and ENT instruments</b>, designed to support precision, reliability, and consistent performance in <b>diagnostic</b> and<b> surgical</b> procedures. Manufactured with a focus on quality craftsmanship, durability, and precision engineering, our instruments serve the needs of <b>healthcare professionals, hospitals, clinics</b>, and medical distributors worldwide.</p><p><b>Download our Laryngoscope &amp; ENT Instruments Catalogue PDF to explore our product range and specifications.</b></p>",
+      "cover_image": "https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1791556932007-durable-laryngoscope-ent-devices-catalogue.jpg",
+      "pdf_url": "https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/catalogues/6e42bee1-a2b3-4b7c-9ec9-c2d4c5ec7804-durable_laryngoscope_ent_devices_catalogue.pdf",
+      "is_published": true,
+      "sort_order": 4,
+      "created_at": "2026-10-14T19:10:28.948Z",
+      "updated_at": "2026-10-14T19:10:28.948Z",
+      "category_name": "ENT & Laryngoscope"
+    },
+    {
+      "id": "d0000000-0000-0000-0000-000000000002",
+      "category_id": null,
+      "title": "General Surgery",
+      "slug": "hospital-furniture",
+      "description": "<p class=\"isSelectedEnd\">Explore our comprehensive range of high-quality <b>general surgery instruments</b>, engineered for precision, durability, and reliable performance in surgical procedures. Crafted with a focus on<b> quality, functionality</b>, and<b> precision engineering</b>, our instruments meet the needs of surgeons, hospitals, healthcare professionals, and medical distributors worldwide.</p><p><b>Download our General Surgery Instruments Catalogue PDF to discover our product range and specifications.</b></p>",
+      "cover_image": "https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1791556439664-surgical-durable.jpg",
+      "pdf_url": "https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/catalogues/7e4b0a5c-dc17-4a0c-aa09-25a4e3cbb9c3-surgical_durable.pdf",
+      "is_published": true,
+      "sort_order": 5,
+      "created_at": "2026-10-14T19:10:28.948Z",
+      "updated_at": "2026-10-14T19:10:28.948Z",
+      "category_name": "General Surgery"
+    }
+  ],
+  "durable_subcategories_pdf": [
+    {
+      "id": "sub-gen-1",
+      "categorySlug": "general-surgery",
+      "categoryName": "General Surgery",
+      "title": "Anesthesia",
+      "image": "/images/blog-surgeon-scalpel.png",
+      "pdfUrl": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "accessCode": "12345",
+      "description": "Experience Future of Anesthesia Instruments with ENDO Tech",
+      "sortOrder": 1,
+      "isPublished": true
+    },
+    {
+      "id": "sub-gen-2",
+      "categorySlug": "general-surgery",
+      "categoryName": "General Surgery",
+      "title": "Diagnostic",
+      "image": "/images/blog-instruments-tray.png",
+      "pdfUrl": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "accessCode": "12345",
+      "description": "Experience Future of Diagnostic Instruments with ENDO Tech",
+      "sortOrder": 2,
+      "isPublished": true
+    },
+    {
+      "id": "sub-gen-3",
+      "categorySlug": "general-surgery",
+      "categoryName": "General Surgery",
+      "title": "Scissors",
+      "image": "/images/cat-scissors-shears.png",
+      "pdfUrl": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "accessCode": "12345",
+      "description": "Experience Future of Scissors with ENDO Tech",
+      "sortOrder": 3,
+      "isPublished": true
+    },
+    {
+      "id": "sub-gen-4",
+      "categorySlug": "general-surgery",
+      "categoryName": "General Surgery",
+      "title": "Dissecting Forcep",
+      "image": "/images/cat-forceps-clamps.png",
+      "pdfUrl": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "accessCode": "12345",
+      "description": "Experience Future of Dissecting Forcep with ENDO Tech",
+      "sortOrder": 4,
+      "isPublished": true
+    },
+    {
+      "id": "sub-gen-5",
+      "categorySlug": "general-surgery",
+      "categoryName": "General Surgery",
+      "title": "Hemostatic Clamps",
+      "image": "/images/surgical-tray-durable.png",
+      "pdfUrl": "/pdf/general-surgical-instruments-catalogue.pdf",
+      "accessCode": "12345",
+      "description": "Hemostatic locking clamps and vascular forceps.",
+      "sortOrder": 5,
+      "isPublished": true
+    },
+    {
+      "id": "sub-dent-1",
+      "categorySlug": "dental",
+      "categoryName": "Dental",
+      "title": "Extraction & Oral Surgery",
+      "image": "/images/dental-clinic-banner.png",
+      "pdfUrl": "/pdf/dental-maxillofacial-catalogue.pdf",
+      "accessCode": "12345",
+      "description": "Extracting forceps in English & American patterns, root elevators, and luxators.",
+      "sortOrder": 1,
+      "isPublished": true
+    },
+    {
+      "id": "sub-dent-2",
+      "categorySlug": "dental",
+      "categoryName": "Dental",
+      "title": "Dental Bone Surgery",
+      "image": "/images/blog-instruments-tray.png",
+      "pdfUrl": "/pdf/dental-maxillofacial-catalogue.pdf",
+      "accessCode": "12345",
+      "description": "Osteotomes, gouges, chisels, bone rongeurs, and surgical mallets.",
+      "sortOrder": 2,
+      "isPublished": true
+    },
+    {
+      "id": "sub-dent-3",
+      "categorySlug": "dental",
+      "categoryName": "Dental",
+      "title": "Periodontics & Cleaning",
+      "image": "/images/icon-dental.png",
+      "pdfUrl": "/pdf/dental-maxillofacial-catalogue.pdf",
+      "accessCode": "12345",
+      "description": "Scalers, Gracey curettes, periodontal probes, and amalgam carvers.",
+      "sortOrder": 3,
+      "isPublished": true
+    }
+  ]
+}

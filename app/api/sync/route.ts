@@ -1,51 +1,34 @@
 import { NextResponse } from 'next/server'
 import { createClient as createServerClient } from '@/src/lib/supabase/server'
 import { createPublicClient } from '@/src/lib/supabase/public'
-
-// Global in-memory cache on server for ultra-fast response across lambdas
-const globalServerStore = new Map<string, any>()
+import { getServerData, setServerData, getAllServerData } from '@/src/lib/serverDataStore'
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const key = searchParams.get('key')
   const fetchAll = searchParams.get('all') === 'true'
 
-  // Handle fetch all keys across cloud
+  // Handle fetch all keys across cloud and server file store
   if (fetchAll) {
-    try {
-      const supabase = createPublicClient()
-      const { data, error } = await supabase
-        .from('page_sections')
-        .select('heading, content')
-        .like('heading', 'durable_%')
-
-      if (!error && data) {
-        const allMap: Record<string, any> = {}
-        data.forEach((row) => {
-          if (row.heading && row.content) {
-            const parsed = row.content.data !== undefined ? row.content.data : row.content
-            allMap[row.heading] = parsed
-            globalServerStore.set(row.heading, parsed)
-          }
-        })
-        return NextResponse.json({ success: true, data: allMap, count: Object.keys(allMap).length })
-      }
-    } catch (err) {
-      console.warn('[Sync API GET ALL] Supabase query notice:', err)
-    }
-    return NextResponse.json({ success: false, data: {} })
+    const allServerData = getAllServerData()
+    return NextResponse.json({
+      success: true,
+      data: allServerData,
+      count: Object.keys(allServerData).length,
+    })
   }
 
   if (!key) {
     return NextResponse.json({ error: 'Missing key parameter' }, { status: 400 })
   }
 
-  // 1. Check in-memory server store
-  if (globalServerStore.has(key)) {
-    return NextResponse.json({ success: true, data: globalServerStore.get(key), source: 'memory' })
+  // 1. Check persistent server file store
+  const storedVal = getServerData(key, null)
+  if (storedVal !== null && storedVal !== undefined) {
+    return NextResponse.json({ success: true, data: storedVal, source: 'server_store' })
   }
 
-  // 2. Try fetching from Supabase
+  // 2. Try fetching from Supabase page_sections if not found
   try {
     const supabase = createPublicClient()
     const { data, error } = await supabase
@@ -56,7 +39,7 @@ export async function GET(request: Request) {
 
     if (!error && data && data.content) {
       const parsedValue = data.content.data !== undefined ? data.content.data : data.content
-      globalServerStore.set(key, parsedValue)
+      setServerData(key, parsedValue)
       return NextResponse.json({ success: true, data: parsedValue, source: 'supabase' })
     }
   } catch (err) {
@@ -75,10 +58,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Key and value required' }, { status: 400 })
     }
 
-    // 1. Save to global server memory store
-    globalServerStore.set(key, value)
+    // 1. Save to persistent server store (atomic JSON file write)
+    setServerData(key, value)
 
-    // 2. Try saving to Supabase page_sections as global key-value store
+    // 2. Best-effort Supabase background update
     try {
       let supabase: any
       try {
@@ -87,7 +70,6 @@ export async function POST(request: Request) {
         supabase = createPublicClient()
       }
 
-      // Find if entry already exists
       const { data: existing } = await supabase
         .from('page_sections')
         .select('id')
@@ -103,44 +85,13 @@ export async function POST(request: Request) {
           })
           .eq('id', existing.id)
       } else {
-        // Need a valid page_id from pages table
-        let targetPageId: string | null = null
-
         const { data: homePage } = await supabase
           .from('pages')
           .select('id')
           .eq('slug', 'home')
           .maybeSingle()
 
-        if (homePage && homePage.id) {
-          targetPageId = homePage.id
-        } else {
-          const { data: anyPage } = await supabase
-            .from('pages')
-            .select('id')
-            .limit(1)
-            .maybeSingle()
-
-          if (anyPage && anyPage.id) {
-            targetPageId = anyPage.id
-          } else {
-            // Create a default home page row
-            const { data: createdPage } = await supabase
-              .from('pages')
-              .insert({
-                title: 'Home Page',
-                slug: 'home',
-                page_type: 'home',
-                is_published: true,
-              })
-              .select('id')
-              .maybeSingle()
-
-            if (createdPage && createdPage.id) {
-              targetPageId = createdPage.id
-            }
-          }
-        }
+        const targetPageId = homePage?.id
 
         if (targetPageId) {
           await supabase.from('page_sections').insert({
@@ -156,7 +107,10 @@ export async function POST(request: Request) {
       console.warn(`[Sync API POST] Supabase write notice for "${key}":`, dbErr)
     }
 
-    return NextResponse.json({ success: true, message: `Key "${key}" saved globally across all devices` })
+    return NextResponse.json({
+      success: true,
+      message: `Key "${key}" saved permanently across all devices and refreshes`,
+    })
   } catch (err: any) {
     console.error('[Sync API POST Error]:', err)
     return NextResponse.json({ error: err.message }, { status: 500 })

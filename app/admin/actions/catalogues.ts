@@ -2,8 +2,13 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/src/lib/supabase/server'
+import { createPublicClient } from '@/src/lib/supabase/public'
 import { CatalogueItem, CatalogueFormData, catalogueSchema } from '@/src/types/catalogue'
-import { INITIAL_CATALOGUES_SEED } from '@/src/lib/dataStore'
+import {
+  getServerCatalogues,
+  upsertServerCatalogue,
+  deleteServerCatalogue,
+} from '@/src/lib/serverDataStore'
 
 function revalidateCataloguePaths(slug?: string) {
   try {
@@ -29,31 +34,7 @@ export async function fetchCataloguesAction(params?: {
   limit?: number
 }) {
   try {
-    const supabase = await createClient()
-
-    let rawCatalogues: CatalogueItem[] = []
-
-    try {
-      const { data, error } = await supabase.from('catalogues').select('*, categories(name)')
-      if (!error && data) {
-        rawCatalogues = data.map((c) => ({
-          id: c.id,
-          category_id: c.category_id,
-          title: c.title,
-          slug: c.slug,
-          description: c.description,
-          cover_image: c.cover_image,
-          pdf_url: c.pdf_url,
-          is_published: c.is_published,
-          sort_order: c.sort_order,
-          created_at: c.created_at,
-          updated_at: c.updated_at,
-          category_name: (c.categories as { name?: string })?.name || null,
-        }))
-      }
-    } catch (e) {
-      console.error('Error fetching catalogues from Supabase:', e)
-    }
+    let rawCatalogues: CatalogueItem[] = getServerCatalogues()
 
     // Apply Search
     if (params?.search && params.search.trim() !== '') {
@@ -78,7 +59,9 @@ export async function fetchCataloguesAction(params?: {
     // Apply Sorting
     switch (params?.sortBy) {
       case 'oldest':
-        rawCatalogues.sort((a, b) => new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime())
+        rawCatalogues.sort(
+          (a, b) => new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime()
+        )
         break
       case 'title':
         rawCatalogues.sort((a, b) => a.title.localeCompare(b.title))
@@ -88,14 +71,17 @@ export async function fetchCataloguesAction(params?: {
         break
       case 'newest':
       default:
-        rawCatalogues.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())
+        rawCatalogues.sort(
+          (a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
+        )
         break
     }
 
     return { catalogues: rawCatalogues, count: rawCatalogues.length, error: null }
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Failed to fetch catalogues'
-    return { catalogues: [], count: 0, error: message }
+    const fallback = getServerCatalogues()
+    return { catalogues: fallback, count: fallback.length, error: message }
   }
 }
 
@@ -105,9 +91,10 @@ export async function createCatalogueAction(
 ) {
   try {
     const validated = catalogueSchema.parse(formData)
-    const supabase = await createClient()
+    const newId = `cat-pdf-${Date.now()}`
 
-    const insertPayload = {
+    const newCatalogue: CatalogueItem = {
+      id: newId,
       title: validated.title,
       slug: validated.slug,
       category_id: validated.category_id || null,
@@ -116,17 +103,38 @@ export async function createCatalogueAction(
       pdf_url: validated.pdf_url,
       is_published: validated.is_published,
       sort_order: validated.sort_order ?? 0,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      category_name: 'General Surgery',
     }
 
-    const { data, error } = await supabase.from('catalogues').insert(insertPayload).select().single()
+    // 1. Permanently persist to server file store
+    upsertServerCatalogue(newCatalogue)
 
-    if (error) {
-      console.error('Supabase catalogue creation error:', error)
-      return { catalogue: null, error: error.message }
+    // 2. Best-effort Supabase sync
+    try {
+      let supabase: any
+      try {
+        supabase = await createClient()
+      } catch {
+        supabase = createPublicClient()
+      }
+      await supabase.from('catalogues').insert({
+        title: validated.title,
+        slug: validated.slug,
+        category_id: validated.category_id || null,
+        description: validated.description || null,
+        cover_image: validated.cover_image || '/images/blog-instruments-tray.png',
+        pdf_url: validated.pdf_url,
+        is_published: validated.is_published,
+        sort_order: validated.sort_order ?? 0,
+      })
+    } catch (e) {
+      console.warn('[createCatalogueAction] Supabase notice:', e)
     }
 
     revalidateCataloguePaths(validated.slug)
-    return { catalogue: data as CatalogueItem, error: null }
+    return { catalogue: newCatalogue, error: null }
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Catalogue creation failed'
     return { catalogue: null, error: message }
@@ -140,29 +148,54 @@ export async function updateCatalogueAction(
 ) {
   try {
     const validated = catalogueSchema.parse(formData)
-    const supabase = await createClient()
+    const existing = getServerCatalogues().find((c) => c.id === id || c.slug === id)
 
-    const updatePayload = {
+    const updatedCatalogue: CatalogueItem = {
+      id: existing ? existing.id : id,
       title: validated.title,
       slug: validated.slug,
       category_id: validated.category_id || null,
       description: validated.description || null,
-      cover_image: validated.cover_image || '/images/blog-instruments-tray.png',
-      pdf_url: validated.pdf_url,
+      cover_image: validated.cover_image || (existing ? existing.cover_image : '/images/blog-instruments-tray.png'),
+      pdf_url: validated.pdf_url || (existing ? existing.pdf_url : ''),
       is_published: validated.is_published,
-      sort_order: validated.sort_order ?? 0,
+      sort_order: validated.sort_order ?? (existing ? existing.sort_order : 0),
+      created_at: existing ? existing.created_at : new Date().toISOString(),
       updated_at: new Date().toISOString(),
+      category_name: existing?.category_name || 'General Surgery',
     }
 
-    const { error } = await supabase.from('catalogues').update(updatePayload).eq('id', id)
+    // 1. Permanently persist to server file store
+    upsertServerCatalogue(updatedCatalogue)
 
-    if (error) {
-      console.error('Supabase catalogue update error:', error)
-      return { success: false, error: error.message }
+    // 2. Best-effort Supabase sync
+    try {
+      let supabase: any
+      try {
+        supabase = await createClient()
+      } catch {
+        supabase = createPublicClient()
+      }
+      await supabase
+        .from('catalogues')
+        .update({
+          title: validated.title,
+          slug: validated.slug,
+          category_id: validated.category_id || null,
+          description: validated.description || null,
+          cover_image: validated.cover_image,
+          pdf_url: validated.pdf_url,
+          is_published: validated.is_published,
+          sort_order: validated.sort_order ?? 0,
+          updated_at: new Date().toISOString(),
+        })
+        .or(`id.eq.${id},slug.eq.${id}`)
+    } catch (e) {
+      console.warn('[updateCatalogueAction] Supabase notice:', e)
     }
 
     revalidateCataloguePaths(validated.slug)
-    return { success: true, error: null }
+    return { success: true, catalogue: updatedCatalogue, error: null }
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Catalogue update failed'
     return { success: false, error: message }
@@ -171,16 +204,27 @@ export async function updateCatalogueAction(
 
 export async function toggleCatalogueStatusAction(id: string, isPublished: boolean) {
   try {
-    const supabase = await createClient()
-    const { error } = await supabase
-      .from('catalogues')
-      .update({ is_published: isPublished, updated_at: new Date().toISOString() })
-      .eq('id', id)
-
-    if (error) {
-      return { success: false, error: error.message }
+    const existing = getServerCatalogues().find((c) => c.id === id || c.slug === id)
+    if (existing) {
+      existing.is_published = isPublished
+      existing.updated_at = new Date().toISOString()
+      upsertServerCatalogue(existing)
     }
-    revalidateCataloguePaths()
+
+    try {
+      let supabase: any
+      try {
+        supabase = await createClient()
+      } catch {
+        supabase = createPublicClient()
+      }
+      await supabase
+        .from('catalogues')
+        .update({ is_published: isPublished, updated_at: new Date().toISOString() })
+        .or(`id.eq.${id},slug.eq.${id}`)
+    } catch {}
+
+    revalidateCataloguePaths(existing?.slug)
     return { success: true, error: null }
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Status toggle failed'
@@ -190,12 +234,20 @@ export async function toggleCatalogueStatusAction(id: string, isPublished: boole
 
 export async function deleteCatalogueAction(id: string) {
   try {
-    const supabase = await createClient()
-    const { error } = await supabase.from('catalogues').delete().eq('id', id)
+    // 1. Permanently delete from server file store
+    deleteServerCatalogue(id)
 
-    if (error) {
-      return { success: false, error: error.message }
-    }
+    // 2. Best-effort Supabase sync
+    try {
+      let supabase: any
+      try {
+        supabase = await createClient()
+      } catch {
+        supabase = createPublicClient()
+      }
+      await supabase.from('catalogues').delete().or(`id.eq.${id},slug.eq.${id}`)
+    } catch {}
+
     revalidateCataloguePaths()
     return { success: true, error: null }
   } catch (err: unknown) {

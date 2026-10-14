@@ -121,37 +121,32 @@ export default function AdminCataloguesContentPage() {
     }
   }
 
-  // Handle PDF file selection & upload to Supabase storage
+  // Handle PDF file selection & upload via persistent upload endpoint
   const handlePdfFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
     setIsUploadingPdf(true)
 
     try {
-      const supabase = createClient()
-      const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_')
-      const storagePath = `${crypto.randomUUID()}-${sanitizedName}`
+      const formData = new FormData()
+      formData.append('file', file)
 
-      const { data, error } = await supabase.storage
-        .from('catalogues')
-        .upload(storagePath, file, {
-          contentType: 'application/pdf',
-          upsert: false,
-        })
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      })
 
-      if (data?.path) {
-        const { data: { publicUrl } } = supabase.storage.from('catalogues').getPublicUrl(data.path)
-        if (publicUrl) {
-          setCatModalForm((prev) => ({ ...prev, pdf_url: publicUrl }))
-          setIsUploadingPdf(false)
-          return
-        }
+      const data = await res.json()
+      if (data?.url) {
+        setCatModalForm((prev) => ({ ...prev, pdf_url: data.url }))
+        setIsUploadingPdf(false)
+        return
       }
-      setCatModalForm((prev) => ({ ...prev, pdf_url: `/pdf/${sanitizedName}` }))
-    } catch (err) {
-      console.warn('PDF Upload error, fallback to clean path:', err)
+      throw new Error(data?.error || 'Upload failed')
+    } catch (err: any) {
+      console.warn('PDF Upload error:', err)
       const cleanName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_')
-      setCatModalForm((prev) => ({ ...prev, pdf_url: `/pdf/${cleanName}` }))
+      setCatModalForm((prev) => ({ ...prev, pdf_url: `/uploads/${cleanName}` }))
     } finally {
       setIsUploadingPdf(false)
     }
@@ -182,7 +177,9 @@ export default function AdminCataloguesContentPage() {
       savePersistentData('durable_catalogues_hero', heroForm)
       savePersistentData('durable_catalogues_overview', overviewForm)
       savePersistentData('durable_catalogues_overview_cards', overviewCards)
+      savePersistentData('durable_catalogues', cataloguesList)
 
+      window.dispatchEvent(new Event('durable_content_updated'))
       setIsSaved(true)
       setSaveMessage(customMsg || 'Catalogues page content updated and published live across all devices!')
       setTimeout(() => setIsSaved(false), 4000)
@@ -230,7 +227,11 @@ export default function AdminCataloguesContentPage() {
     if (confirm('Are you sure you want to delete this catalogue?')) {
       const res = await deleteCatalogueAction(id)
       if (res.success) {
-        setCataloguesList((prev) => prev.filter((c) => c.id !== id))
+        setCataloguesList((prev) => {
+          const updated = prev.filter((c) => c.id !== id)
+          savePersistentData('durable_catalogues', updated)
+          return updated
+        })
         window.dispatchEvent(new Event('durable_content_updated'))
         setIsSaved(true)
         setSaveMessage('Catalogue deleted and updated live!')
@@ -256,23 +257,23 @@ export default function AdminCataloguesContentPage() {
     setIsSubmittingModal(true)
 
     try {
-      const slug =
-        catModalForm.slug.trim() ||
+      const generatedSlug =
         catModalForm.title
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, '-')
-          .replace(/^-|-$/g, '')
+          .replace(/^-+|-+$/g, '') || `catalog-${Date.now()}`
+      const slug = catModalForm.slug.trim() || generatedSlug
 
       let cleanPdfUrl = catModalForm.pdf_url.trim()
-      if (!cleanPdfUrl || cleanPdfUrl.startsWith('data:')) {
+      if (!cleanPdfUrl) {
         cleanPdfUrl = `/pdf/${slug}.pdf`
       }
 
       const payload = {
-        title: catModalForm.title,
+        title: catModalForm.title.trim(),
         slug: slug,
         category_id: null,
-        description: catModalForm.description,
+        description: catModalForm.description || '',
         cover_image: catModalForm.cover_image || '/images/catalogue-cover-yellow.png',
         pdf_url: cleanPdfUrl,
         is_published: catModalForm.is_published,
@@ -295,7 +296,11 @@ export default function AdminCataloguesContentPage() {
         }
       }
 
-      await loadCataloguesFromDb()
+      const refreshed = await fetchCataloguesAction()
+      if (refreshed.catalogues) {
+        setCataloguesList(refreshed.catalogues)
+        savePersistentData('durable_catalogues', refreshed.catalogues)
+      }
       window.dispatchEvent(new Event('durable_content_updated'))
       setIsModalOpen(false)
       setIsSaved(true)
@@ -309,7 +314,7 @@ export default function AdminCataloguesContentPage() {
   }
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto pb-16">
+    <div className="space-y-8 w-full pb-16">
       {/* Top Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>

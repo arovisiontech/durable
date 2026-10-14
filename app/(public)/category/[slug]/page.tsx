@@ -2,9 +2,10 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { CATEGORIES_DATA } from '@/src/data/categoriesData'
 import { CategoryHeroBanner } from '@/src/components/public/CategoryHeroBanner'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Package } from 'lucide-react'
 import { SubcategoryPdfSection } from '@/src/components/public/SubcategoryPdfSection'
-import { createPublicClient } from '@/src/lib/supabase/public'
+import { fetchPublicCategories, fetchPublicProducts } from '@/app/actions/public'
+import { ProductPublicCard } from '@/src/components/public/ProductPublicCard'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -23,16 +24,12 @@ export async function generateMetadata({ params }: CategoryPageProps) {
   let description = 'High quality surgical, medical, and dental instruments manufactured to ISO 13485 standards.'
 
   try {
-    const supabase = createPublicClient()
-    const { data: dbCat } = await supabase
-      .from('categories')
-      .select('name, description')
-      .eq('slug', slug)
-      .maybeSingle()
+    const allCategories = await fetchPublicCategories()
+    const found = allCategories.find((c) => c.slug === slug || c.id === slug)
 
-    if (dbCat) {
-      categoryName = dbCat.name
-      if (dbCat.description) description = dbCat.description
+    if (found) {
+      categoryName = found.name
+      if (found.description) description = found.description
     } else if (CATEGORIES_DATA[slug]) {
       categoryName = `${CATEGORIES_DATA[slug].title} ${CATEGORIES_DATA[slug].highlight}`
       description = CATEGORIES_DATA[slug].description
@@ -51,6 +48,10 @@ export default async function CategoryDetailPage({ params }: CategoryPageProps) 
   const resolvedParams = await params
   const slug = resolvedParams.slug
 
+  // 1. Fetch dynamic categories list from persistent server data store
+  const allCategories = await fetchPublicCategories()
+  const currentCategory = allCategories.find((c) => c.slug === slug || c.id === slug)
+
   let categoryData = {
     title: slug.split('-').slice(0, -1).join(' ').toUpperCase() || slug.toUpperCase(),
     highlight: slug.split('-').slice(-1)[0]?.toUpperCase() || '',
@@ -59,73 +60,46 @@ export default async function CategoryDetailPage({ params }: CategoryPageProps) 
     slug,
   }
 
-  // Check Supabase first
-  try {
-    const supabase = createPublicClient()
-    const { data: dbCat } = await supabase
-      .from('categories')
-      .select('*')
-      .eq('slug', slug)
-      .maybeSingle()
+  if (currentCategory) {
+    const words = currentCategory.name.split(' ')
+    const highlight = words.length > 1 ? words.pop()! : ''
+    const title = words.join(' ') || currentCategory.name
 
-    if (dbCat) {
-      const words = dbCat.name.split(' ')
-      const highlight = words.length > 1 ? words.pop()! : ''
-      const title = words.join(' ') || dbCat.name
-
-      categoryData = {
-        title,
-        highlight,
-        badgeText: 'ISO 13485 & CE CERTIFIED',
-        description: dbCat.description || 'Precision surgical and medical instruments.',
-        slug: dbCat.slug,
-      }
-    } else if (CATEGORIES_DATA[slug]) {
-      categoryData = {
-        title: CATEGORIES_DATA[slug].title,
-        highlight: CATEGORIES_DATA[slug].highlight,
-        badgeText: CATEGORIES_DATA[slug].badgeText,
-        description: CATEGORIES_DATA[slug].description,
-        slug,
-      }
-    } else {
-      // If category exists neither in Supabase nor in hardcoded map, generate dynamic fallback
-      categoryData = {
-        title: slug.replace(/-/g, ' ').toUpperCase(),
-        highlight: 'INSTRUMENTS',
-        badgeText: 'OFFICIAL CATEGORY',
-        description: `Explore full range of ${slug.replace(/-/g, ' ')} surgical instruments.`,
-        slug,
-      }
+    categoryData = {
+      title,
+      highlight,
+      badgeText: 'ISO 13485 & CE CERTIFIED',
+      description: currentCategory.description || 'Precision surgical and medical instruments.',
+      slug: currentCategory.slug,
     }
-  } catch (err) {
-    console.error('Error fetching category slug from Supabase:', err)
+  } else if (CATEGORIES_DATA[slug]) {
+    categoryData = {
+      title: CATEGORIES_DATA[slug].title,
+      highlight: CATEGORIES_DATA[slug].highlight,
+      badgeText: CATEGORIES_DATA[slug].badgeText,
+      description: CATEGORIES_DATA[slug].description,
+      slug,
+    }
   }
 
-  // Fetch all active categories for nav pills
-  let allCategoriesList = [
-    { slug: 'general-surgery', name: 'General Surgery' },
-    { slug: 'dental', name: 'Dental' },
-    { slug: 'medical-hollowware', name: 'Medical Hollowware' },
-    { slug: 'ophthalmic', name: 'Ophthalmic' },
-    { slug: 'hospital-furniture', name: 'Hospital Furniture' },
-    { slug: 'single-use-instruments', name: 'Single Use Instruments' },
-  ]
+  // 2. Fetch live products for this category from persistent server store
+  const { products: categoryProducts } = await fetchPublicProducts({
+    categorySlug: slug,
+    limit: 100,
+  })
 
-  try {
-    const supabase = createPublicClient()
-    const { data: rawCats } = await supabase
-      .from('categories')
-      .select('slug, name')
-      .eq('is_published', true)
-      .order('sort_order', { ascending: true })
-
-    if (rawCats && rawCats.length > 0) {
-      allCategoriesList = rawCats.map((c) => ({ slug: c.slug, name: c.name }))
-    }
-  } catch (e) {
-    console.error('Pill categories fetch error:', e)
-  }
+  // 3. Navigation pills from active categories
+  const allCategoriesList =
+    allCategories.length > 0
+      ? allCategories.map((c) => ({ slug: c.slug, name: c.name }))
+      : [
+          { slug: 'general-surgery', name: 'General Surgery' },
+          { slug: 'dental', name: 'Dental' },
+          { slug: 'medical-hollowware', name: 'Medical Hollowware' },
+          { slug: 'ophthalmic', name: 'Ophthalmic' },
+          { slug: 'hospital-furniture', name: 'Hospital Furniture' },
+          { slug: 'single-use-instruments', name: 'Single Use Instruments' },
+        ]
 
   return (
     <div className="w-full bg-[#FAFAFA] min-h-screen pb-16 space-y-10">
@@ -138,7 +112,6 @@ export default async function CategoryDetailPage({ params }: CategoryPageProps) 
       />
 
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10 relative z-10">
-        
         {/* 2. Category Navigation Pills Bar */}
         <div className="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-xs flex items-center justify-between gap-4 overflow-x-auto">
           <div className="flex items-center gap-2 min-w-max">
@@ -168,6 +141,31 @@ export default async function CategoryDetailPage({ params }: CategoryPageProps) 
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
+
+        {/* 2.2 Live Products Grid Showcase */}
+        {categoryProducts && categoryProducts.length > 0 && (
+          <div className="space-y-6 pt-2">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-3 border-b border-slate-200">
+              <div>
+                <span className="text-[11px] font-extrabold text-[#E31B23] tracking-widest uppercase">
+                  ACTIVE PRODUCT LINE
+                </span>
+                <h2 className="text-xl sm:text-2xl font-black text-[#0B1B3D] tracking-tight">
+                  {categoryData.title} {categoryData.highlight} Instruments
+                </h2>
+              </div>
+              <p className="text-xs text-slate-500 font-medium">
+                Showing {categoryProducts.length} manufactured items
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {categoryProducts.map((prod) => (
+                <ProductPublicCard key={prod.id} product={prod} />
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* 2.5 Subcategories PDF Catalogs Grid Showcase */}
         <SubcategoryPdfSection
