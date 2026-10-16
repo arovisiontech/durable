@@ -162,7 +162,9 @@ export async function createCategoryAction(formData: CategoryFormData) {
 export async function updateCategoryAction(id: string, formData: CategoryFormData) {
   try {
     const validated = categorySchema.parse(formData)
-    const existing = getServerCategories().find((c) => c.id === id || c.slug === id)
+    const existing = getServerCategories().find(
+      (c) => c.id === id || c.slug === id || (validated.slug && c.slug === validated.slug)
+    )
 
     const updatedCategory: CategoryItem = {
       id: existing ? existing.id : id,
@@ -202,7 +204,17 @@ export async function updateCategoryAction(id: string, formData: CategoryFormDat
           is_published: validated.is_published,
           updated_at: new Date().toISOString(),
         })
-        .or(`id.eq.${id},slug.eq.${id}`)
+        .or(`id.eq.${id},slug.eq.${id},slug.eq.${validated.slug}`)
+
+      // Also sync full categories collection to page_sections for global consistency
+      const allServerCats = getServerCategories()
+      await supabase
+        .from('page_sections')
+        .update({
+          content: { data: allServerCats },
+          updated_at: new Date().toISOString(),
+        })
+        .eq('heading', 'durable_categories')
     } catch (e) {
       console.warn('[updateCategoryAction] Supabase notice:', e)
     }

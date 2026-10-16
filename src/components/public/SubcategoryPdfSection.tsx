@@ -9,18 +9,29 @@ import { safeViewPdf, safeDownloadPdf } from '@/src/lib/pdfHelper'
 interface SubcategoryPdfSectionProps {
   categorySlug: string
   categoryTitle: string
+  initialSubcategories?: SubcategoryPdfItem[]
 }
 
 // Fallback dummy images for catalog covers if non-custom
-export function SubcategoryPdfSection({ categorySlug, categoryTitle }: SubcategoryPdfSectionProps) {
-  const [subcategories, setSubcategories] = useState<SubcategoryPdfItem[]>([])
+export function SubcategoryPdfSection({ categorySlug, categoryTitle, initialSubcategories }: SubcategoryPdfSectionProps) {
+  const [subcategories, setSubcategories] = useState<SubcategoryPdfItem[]>(() => {
+    if (initialSubcategories && initialSubcategories.length > 0) {
+      return initialSubcategories
+    }
+    const all = getStoredSubcategoryPdfs()
+    return all.filter(
+      (item) => item.categorySlug.toLowerCase().trim() === categorySlug.toLowerCase().trim()
+    )
+  })
 
   const loadData = () => {
     const all = getStoredSubcategoryPdfs()
     const filtered = all.filter(
       (item) => item.categorySlug.toLowerCase().trim() === categorySlug.toLowerCase().trim()
     )
-    setSubcategories(filtered)
+    if (filtered.length > 0) {
+      setSubcategories(filtered)
+    }
 
     if (typeof window !== 'undefined') {
       getItemIDB<SubcategoryPdfItem[]>('durable_subcategories_pdf').then((idbData) => {

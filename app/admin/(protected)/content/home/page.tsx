@@ -363,15 +363,17 @@ export default function AdminContentHomePage() {
     })
     loadPersistentData('durable_solutions_data', DEFAULT_SOLUTIONS_9, (data) => {
       if (Array.isArray(data) && data.length > 0) {
-        if (data.length < 9) {
-          const existingTitles = new Set(data.map((d: any) => (d.title || '').toLowerCase().trim()))
-          const missing = DEFAULT_SOLUTIONS_9.filter(
-            (d) => !existingTitles.has(d.title.toLowerCase().trim())
-          )
-          setSolutionsData([...data, ...missing])
-        } else {
-          setSolutionsData(data)
+        // Guaranteed deduplication so duplicate cards can never occur
+        const seen = new Set<string>()
+        const clean: AdminSolutionCard[] = []
+        for (const item of data) {
+          const k = ((item.count || '') + '_' + (item.title || '')).toLowerCase().trim()
+          if (!seen.has(k)) {
+            seen.add(k)
+            clean.push(item)
+          }
         }
+        setSolutionsData(clean)
       }
     })
     loadPersistentData('durable_quality_trust_data', qualityTrustData, (data) => {
@@ -398,12 +400,18 @@ export default function AdminContentHomePage() {
   }, [])
 
   // SAVE ALL CHANGES TO STORAGE & CLOUD AUTOMATICALLY
-  const saveAllToStorage = (overrideHero?: AdminHeroSlide[]) => {
+  const saveAllToStorage = (
+    overrideHero?: AdminHeroSlide[],
+    overrideSolutions?: AdminSolutionCard[]
+  ) => {
     try {
-      savePersistentData('durable_hero_slides', overrideHero || heroSlides)
+      const heroToSave = overrideHero || heroSlides
+      const solutionsToSave = overrideSolutions || solutionsData
+
+      savePersistentData('durable_hero_slides', heroToSave)
       savePersistentData('durable_about_data', aboutData)
       savePersistentData('durable_stats_data', statsData)
-      savePersistentData('durable_solutions_data', solutionsData)
+      savePersistentData('durable_solutions_data', solutionsToSave)
       savePersistentData('durable_quality_trust_data', qualityTrustData)
       savePersistentData('durable_pillars_data', pillarsData)
       savePersistentData('durable_precision_data', precisionData)
@@ -786,8 +794,8 @@ export default function AdminContentHomePage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {solutionsData.map((sol) => (
-              <div key={sol.id} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3 flex flex-col justify-between">
+            {solutionsData.map((sol, index) => (
+              <div key={`${sol.id}-${index}`} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3 flex flex-col justify-between">
                 <div className="space-y-2">
                   <div className="w-full h-28 rounded-xl overflow-hidden bg-white border border-slate-200 flex items-center justify-center p-2">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -812,11 +820,15 @@ export default function AdminContentHomePage() {
                   </button>
                   <button
                     onClick={() => {
-                      const updated = solutionsData.filter((s) => s.id !== sol.id)
-                      setSolutionsData(updated)
-                      saveAllToStorage()
+                      if (confirm(`Are you sure you want to remove card "${sol.title}"?`)) {
+                        const updated = solutionsData.filter((_, idx) => idx !== index)
+                        setSolutionsData(updated)
+                        savePersistentData('durable_solutions_data', updated)
+                        saveAllToStorage(undefined, updated)
+                      }
                     }}
                     className="p-1 text-red-600 hover:bg-red-50 rounded-lg cursor-pointer"
+                    title={`Delete card "${sol.title}"`}
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -1494,7 +1506,8 @@ export default function AdminContentHomePage() {
                       updated = [...solutionsData, { ...solutionForm, id: `sol-${Date.now()}` }]
                     }
                     setSolutionsData(updated)
-                    saveAllToStorage()
+                    savePersistentData('durable_solutions_data', updated)
+                    saveAllToStorage(undefined, updated)
                     setActiveModal(null)
                   }}
                   className="w-full py-2.5 bg-[#E31B23] text-white text-xs font-black rounded-xl cursor-pointer"

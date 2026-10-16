@@ -2,11 +2,15 @@ import { CATEGORIES_DATA } from '@/src/data/categoriesData'
 import { ProductItem } from '@/src/types/product'
 import { CategoryItem } from '@/src/types/category'
 import { CatalogueItem } from '@/src/types/catalogue'
+import persistentData from '@/src/data/persistent_data.json'
 
 export type { ProductItem, CategoryItem, CatalogueItem }
 
 // Initial Default Categories Seed (Matching exact 9 Categories in SS 2)
-export const INITIAL_CATEGORIES_SEED: CategoryItem[] = [
+export const INITIAL_CATEGORIES_SEED: CategoryItem[] =
+  Array.isArray((persistentData as any)?.durable_categories) && (persistentData as any).durable_categories.length > 0
+    ? (persistentData as any).durable_categories
+    : [
   {
     id: 'cat-gen-surg',
     parent_id: null,
@@ -179,7 +183,10 @@ export const INITIAL_PRODUCTS_SEED: ProductItem[] = Object.values(CATEGORIES_DAT
 })
 
 // Initial Catalogues Seed
-export const INITIAL_CATALOGUES_SEED: CatalogueItem[] = [
+export const INITIAL_CATALOGUES_SEED: CatalogueItem[] =
+  Array.isArray((persistentData as any)?.durable_catalogues) && (persistentData as any).durable_catalogues.length > 0
+    ? (persistentData as any).durable_catalogues
+    : [
   {
     id: 'de7eebac-44e4-421e-9d25-bc80220ec6bd',
     category_id: null,
@@ -317,7 +324,10 @@ export interface SubcategoryPdfItem {
   isPublished?: boolean
 }
 
-export const INITIAL_SUBCATEGORY_PDF_SEED: SubcategoryPdfItem[] = [
+export const INITIAL_SUBCATEGORY_PDF_SEED: SubcategoryPdfItem[] =
+  Array.isArray((persistentData as any)?.durable_subcategories_pdf) && (persistentData as any).durable_subcategories_pdf.length > 0
+    ? (persistentData as any).durable_subcategories_pdf
+    : [
   // 1. General Surgery
   {
     id: 'sub-gen-1',

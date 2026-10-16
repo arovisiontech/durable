@@ -79,14 +79,29 @@ const DEFAULT_SOLUTIONS: CategoryCard[] = [
   },
 ]
 
-export function SolutionsSection() {
-  const [solutions, setSolutions] = useState<CategoryCard[]>(DEFAULT_SOLUTIONS)
+interface SolutionsSectionProps {
+  initialSolutions?: CategoryCard[]
+}
+
+export function SolutionsSection({ initialSolutions }: SolutionsSectionProps = {}) {
+  const [solutions, setSolutions] = useState<CategoryCard[]>(
+    initialSolutions && initialSolutions.length > 0 ? initialSolutions : DEFAULT_SOLUTIONS
+  )
 
   const loadSolutions = async () => {
     // 1. First priority: load authoritative solutions cards edited in Admin Content (#sec-solutions)
     loadPersistentData('durable_solutions_data', DEFAULT_SOLUTIONS, (data: any) => {
       if (Array.isArray(data) && data.length > 0) {
-        const mapped: CategoryCard[] = data.map((item, idx) => ({
+        const seen = new Set<string>()
+        const clean: any[] = []
+        for (const item of data) {
+          const k = ((item.count || '') + '_' + (item.title || '')).toLowerCase().trim()
+          if (!seen.has(k)) {
+            seen.add(k)
+            clean.push(item)
+          }
+        }
+        const mapped: CategoryCard[] = clean.map((item, idx) => ({
           id: item.count || String(idx + 1).padStart(2, '0'),
           title: item.title,
           slug: item.slug || item.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),

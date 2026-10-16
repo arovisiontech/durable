@@ -116,15 +116,37 @@ export function CategoryFormModal({
       toast.error(res.error)
     } else {
       const existing = getStoredCategories()
+      let updated: CategoryItem[] = []
       if (isEditing && categoryToEdit) {
-        const updated = existing.map((c) =>
-          c.id === categoryToEdit.id
-            ? { ...c, ...data, updated_at: new Date().toISOString() }
-            : c
+        const found = existing.some(
+          (c) =>
+            c.id === categoryToEdit.id ||
+            c.slug === categoryToEdit.slug ||
+            (c.slug && data.slug && c.slug === data.slug)
         )
-        saveStoredCategories(updated as any)
+        if (found) {
+          updated = existing.map((c) =>
+            c.id === categoryToEdit.id ||
+            c.slug === categoryToEdit.slug ||
+            (c.slug && data.slug && c.slug === data.slug)
+              ? { ...c, ...data, updated_at: new Date().toISOString() }
+              : c
+          )
+        } else if (res.category) {
+          updated = [...existing, res.category]
+        }
       } else if (res.category) {
-        saveStoredCategories([...existing, res.category] as any)
+        updated = [...existing, res.category]
+      }
+
+      if (updated.length > 0) {
+        saveStoredCategories(updated as any)
+        fetch('/api/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key: 'durable_categories', value: updated }),
+        }).catch(() => {})
+        window.dispatchEvent(new Event('durable_content_updated'))
       }
 
       toast.success(

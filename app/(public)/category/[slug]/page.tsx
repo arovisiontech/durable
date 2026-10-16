@@ -5,6 +5,7 @@ import { CategoryHeroBanner } from '@/src/components/public/CategoryHeroBanner'
 import { ArrowRight } from 'lucide-react'
 import { SubcategoryPdfSection } from '@/src/components/public/SubcategoryPdfSection'
 import { fetchPublicCategories } from '@/app/actions/public'
+import { getServerSubcategoryPdfs } from '@/src/lib/serverDataStore'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -139,10 +140,19 @@ export default async function CategoryDetailPage({ params }: CategoryPageProps) 
         </div>
 
         {/* 2.5 Subcategories PDF Catalogs Grid Showcase */}
-        <SubcategoryPdfSection
-          categorySlug={categoryData.slug}
-          categoryTitle={`${categoryData.title} ${categoryData.highlight}`}
-        />
+        {(() => {
+          const allServerSubcats = getServerSubcategoryPdfs()
+          const matchedSubcats = allServerSubcats.filter(
+            (item) => item.categorySlug.toLowerCase().trim() === categoryData.slug.toLowerCase().trim()
+          )
+          return (
+            <SubcategoryPdfSection
+              categorySlug={categoryData.slug}
+              categoryTitle={`${categoryData.title} ${categoryData.highlight}`}
+              initialSubcategories={matchedSubcats}
+            />
+          )
+        })()}
 
         {/* 3. Bottom OEM & Bulk Procurement Banner */}
         <div className="bg-[#0B1B3D] text-white rounded-3xl p-8 sm:p-10 shadow-2xl border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">

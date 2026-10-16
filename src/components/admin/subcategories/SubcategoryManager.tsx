@@ -80,13 +80,18 @@ export function SubcategoryManager() {
         .then((result) => {
           if (result?.data && Array.isArray(result.data) && result.data.length > 0) {
             setSubcategories((prev) => {
-              // If local is empty, take server data
-              if (!prev || prev.length === 0) {
-                saveStoredSubcategoryPdfs(result.data)
-                return result.data
+              const map = new Map<string, SubcategoryPdfItem>()
+              result.data.forEach((item: SubcategoryPdfItem) => {
+                if (item && item.id) map.set(item.id, item)
+              })
+              if (Array.isArray(prev)) {
+                prev.forEach((item) => {
+                  if (item && item.id && !map.has(item.id)) map.set(item.id, item)
+                })
               }
-              // If server has more or updated items, merge carefully without destroying edits
-              return prev
+              const merged = Array.from(map.values())
+              saveStoredSubcategoryPdfs(merged)
+              return merged
             })
           }
         })

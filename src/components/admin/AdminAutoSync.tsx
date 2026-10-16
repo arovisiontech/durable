@@ -25,8 +25,42 @@ export function AdminAutoSync() {
                 try {
                   const existingLocal = localStorage.getItem(k)
                   const newString = JSON.stringify(val)
-                  // Only populate if local key is completely missing or empty, preserving client edits
-                  if (!existingLocal || existingLocal === '[]' || existingLocal === '{}') {
+
+                  // For rich collections, ensure local storage doesn't keep a truncated or duplicate-laden list
+                  if (k === 'durable_solutions_data' && Array.isArray(val)) {
+                    // Deduplicate
+                    const seen = new Set<string>()
+                    const clean = val.filter((item: any) => {
+                      const id = ((item.count || '') + '_' + (item.title || '')).toLowerCase().trim()
+                      if (seen.has(id)) return false
+                      seen.add(id)
+                      return true
+                    })
+                    const cleanStr = JSON.stringify(clean)
+                    if (existingLocal !== cleanStr) {
+                      localStorage.setItem(k, cleanStr)
+                      setItemIDB(k, clean).catch(() => {})
+                      updatedCount++
+                    }
+                  } else if (k === 'durable_subcategories_pdf' && Array.isArray(val)) {
+                    // Always upgrade if cloud/server has all 49 client-uploaded sections
+                    let localCount = 0
+                    try { localCount = existingLocal ? JSON.parse(existingLocal).length : 0 } catch {}
+                    if (val.length >= localCount || !existingLocal) {
+                      localStorage.setItem(k, newString)
+                      setItemIDB(k, val).catch(() => {})
+                      updatedCount++
+                    }
+                  } else if (k === 'durable_catalogues' && Array.isArray(val)) {
+                    // Always upgrade if cloud/server has all 40 client catalogues
+                    let localCount = 0
+                    try { localCount = existingLocal ? JSON.parse(existingLocal).length : 0 } catch {}
+                    if (val.length >= localCount || !existingLocal) {
+                      localStorage.setItem(k, newString)
+                      setItemIDB(k, val).catch(() => {})
+                      updatedCount++
+                    }
+                  } else if (!existingLocal || existingLocal === '[]' || existingLocal === '{}') {
                     localStorage.setItem(k, newString)
                     setItemIDB(k, val).catch(() => {})
                     updatedCount++
@@ -43,31 +77,6 @@ export function AdminAutoSync() {
           }
         } catch (pullErr) {
           console.warn('[AdminAutoSync] Error pulling cloud data:', pullErr)
-        }
-
-        // 2. PUSH LOCAL DATA: Upload any locally created keys to Supabase Cloud
-        const keysToSync: string[] = []
-        for (let i = 0; i < localStorage.length; i++) {
-          const key = localStorage.key(i)
-          if (key && key.startsWith('durable_')) {
-            keysToSync.push(key)
-          }
-        }
-
-        for (const key of keysToSync) {
-          try {
-            const raw = localStorage.getItem(key)
-            if (!raw) continue
-            const value = JSON.parse(raw)
-
-            await fetch('/api/sync', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ key, value }),
-            })
-          } catch (itemErr) {
-            // Silently continue
-          }
         }
       } catch (err) {
         console.error('[AdminAutoSync] Sync notice:', err)
