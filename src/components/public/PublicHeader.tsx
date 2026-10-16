@@ -70,7 +70,7 @@ export function PublicHeader({ navigation = [] }: PublicHeaderProps) {
   }, [])
 
   return (
-    <header className="w-full relative z-50 bg-white shadow-xs">
+    <header className="w-full sticky top-0 z-50 bg-white/98 backdrop-blur-md shadow-md transition-all duration-300">
       {/* Top Accent Line */}
       <div className="h-1.5 bg-[#051026] w-full" />
 

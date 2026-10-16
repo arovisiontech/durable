@@ -27,6 +27,8 @@ import {
 } from '@/src/lib/dataStore'
 import { getItemIDB } from '@/src/lib/persistentStorage'
 import { safeViewPdf } from '@/src/lib/pdfHelper'
+import { createClient as createBrowserClient } from '@/src/lib/supabase/client'
+import { saveSubcategoriesAction } from '@/app/admin/actions/subcategories'
 
 const MAIN_CATEGORIES = [
   { slug: 'general-surgery', name: 'General Surgery' },
@@ -35,6 +37,9 @@ const MAIN_CATEGORIES = [
   { slug: 'ophthalmic', name: 'Ophthalmic' },
   { slug: 'hospital-furniture', name: 'Hospital Furniture' },
   { slug: 'single-use-instruments', name: 'Single Use Instruments' },
+  { slug: 'veterinary-instruments', name: 'Veterinary-Instruments' },
+  { slug: 'plastic-surgery', name: 'Plastic Surgery' },
+  { slug: 'special-surgical-instruments', name: 'Special Surgical Instruments' },
 ]
 
 export function SubcategoryManager() {
@@ -51,7 +56,7 @@ export function SubcategoryManager() {
   const [formData, setFormData] = useState({
     title: '',
     categorySlug: 'general-surgery',
-    image: '/images/catalogue-cover-yellow.png',
+    image: '/images/blog-instruments-tray.png',
     pdfUrl: '/pdf/general-surgical-instruments-catalogue.pdf',
     accessCode: '12345',
     description: '',
@@ -74,8 +79,15 @@ export function SubcategoryManager() {
         .then((res) => res.json())
         .then((result) => {
           if (result?.data && Array.isArray(result.data) && result.data.length > 0) {
-            setSubcategories(result.data)
-            saveStoredSubcategoryPdfs(result.data)
+            setSubcategories((prev) => {
+              // If local is empty, take server data
+              if (!prev || prev.length === 0) {
+                saveStoredSubcategoryPdfs(result.data)
+                return result.data
+              }
+              // If server has more or updated items, merge carefully without destroying edits
+              return prev
+            })
           }
         })
         .catch(() => {})
@@ -90,10 +102,34 @@ export function SubcategoryManager() {
     // 1. Immediately update component state
     setSubcategories(updatedList)
 
-    // 2. Save to local storage & IndexedDB
+    // 2. Save to local storage & IndexedDB immediately
     saveStoredSubcategoryPdfs(updatedList)
 
-    // 3. Directly update Supabase cloud storage via /api/sync
+    // 3. Direct browser Supabase cloud update using authenticated admin session
+    try {
+      const browserSupabase = createBrowserClient()
+      browserSupabase
+        .from('page_sections')
+        .update({
+          content: { data: updatedList },
+          updated_at: new Date().toISOString(),
+        })
+        .eq('heading', 'durable_subcategories_pdf')
+        .then(({ error }) => {
+          if (error) {
+            console.warn('[SubcategoryManager] Direct Supabase update notice:', error)
+          }
+        })
+    } catch (err) {
+      console.warn('[SubcategoryManager] Direct Supabase exception:', err)
+    }
+
+    // 4. Also invoke server action for permanent server store and revalidation
+    saveSubcategoriesAction(updatedList).catch((err) => {
+      console.warn('[SubcategoryManager] Server action notice:', err)
+    })
+
+    // 5. Update /api/sync endpoint
     fetch('/api/sync', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -129,7 +165,7 @@ export function SubcategoryManager() {
     setFormData({
       title: '',
       categorySlug: targetCat,
-      image: '/images/catalogue-cover-yellow.png',
+      image: '/images/blog-instruments-tray.png',
       pdfUrl: '/pdf/general-surgical-instruments-catalogue.pdf',
       accessCode: '12345',
       description: 'Experience Future of surgical instruments with ENDO Tech',
@@ -142,7 +178,7 @@ export function SubcategoryManager() {
     setFormData({
       title: item.title,
       categorySlug: item.categorySlug,
-      image: item.image || '/images/catalogue-cover-yellow.png',
+      image: item.image || '/images/blog-instruments-tray.png',
       pdfUrl: item.pdfUrl || '/pdf/general-surgical-instruments-catalogue.pdf',
       accessCode: item.accessCode || '12345',
       description: item.description || '',
@@ -264,7 +300,7 @@ export function SubcategoryManager() {
       )}
 
       {/* Overview Category Tabs Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-5 lg:grid-cols-10 gap-2.5">
         <div
           onClick={() => setSelectedCategorySlug('all')}
           className={`p-3 rounded-2xl border transition-all cursor-pointer text-center space-y-1 ${

@@ -12,15 +12,6 @@ interface SubcategoryPdfSectionProps {
 }
 
 // Fallback dummy images for catalog covers if non-custom
-const DUMMY_COVER_IMAGES: Record<string, string> = {
-  'general-surgery': '/images/blog-instruments-tray.png',
-  dental: '/images/dental-clinic-banner.png',
-  'medical-hollowware': '/images/surgical-tray-durable.png',
-  ophthalmic: '/images/blog-surgeon-scalpel.png',
-  'hospital-furniture': '/images/about-surgical-instruments.png',
-  'single-use-instruments': '/images/process-hand-filing.png',
-}
-
 export function SubcategoryPdfSection({ categorySlug, categoryTitle }: SubcategoryPdfSectionProps) {
   const [subcategories, setSubcategories] = useState<SubcategoryPdfItem[]>([])
 
@@ -37,7 +28,9 @@ export function SubcategoryPdfSection({ categorySlug, categoryTitle }: Subcatego
           const idbFiltered = idbData.filter(
             (item) => item.categorySlug.toLowerCase().trim() === categorySlug.toLowerCase().trim()
           )
-          setSubcategories(idbFiltered)
+          if (idbFiltered.length > 0) {
+            setSubcategories(idbFiltered)
+          }
         }
       })
 
@@ -103,9 +96,9 @@ export function SubcategoryPdfSection({ categorySlug, categoryTitle }: Subcatego
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {subcategories.map((item) => {
           const coverImg =
-            item.image && item.image !== '/images/catalogue-cover-yellow.png'
+            item.image && item.image.trim() !== ''
               ? item.image
-              : DUMMY_COVER_IMAGES[categorySlug] || '/images/blog-instruments-tray.png'
+              : '/images/blog-instruments-tray.png'
 
           return (
             <div

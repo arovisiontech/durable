@@ -22,9 +22,15 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Missing key parameter' }, { status: 400 })
   }
 
-  // 1. Check Supabase page_sections first for the latest live synchronized cloud data!
+  // 1. Check Supabase page_sections for live synchronized cloud data
   try {
-    const supabase = createPublicClient()
+    let supabase: any
+    try {
+      supabase = await createServerClient()
+    } catch {
+      supabase = createPublicClient()
+    }
+
     const { data, error } = await supabase
       .from('page_sections')
       .select('content, updated_at')
@@ -34,7 +40,9 @@ export async function GET(request: Request) {
 
     if (!error && data && data.length > 0 && data[0]?.content) {
       const parsedValue = data[0].content.data !== undefined ? data[0].content.data : data[0].content
-      return NextResponse.json({ success: true, data: parsedValue, source: 'supabase' })
+      if (parsedValue !== null && parsedValue !== undefined) {
+        return NextResponse.json({ success: true, data: parsedValue, source: 'supabase' })
+      }
     }
   } catch (err) {
     console.warn(`[Sync API GET] Supabase query notice for "${key}":`, err)
@@ -58,16 +66,36 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Key and value required' }, { status: 400 })
     }
 
-    // 1. Direct cloud update to Supabase page_sections (persists permanently on Vercel)
+    // 1. Direct cloud update to Supabase page_sections (persists permanently across all devices)
     try {
-      const supabase = createPublicClient()
-      const { error: sbUpdateErr } = await supabase
+      let supabase: any
+      try {
+        supabase = await createServerClient()
+      } catch {
+        supabase = createPublicClient()
+      }
+
+      const nowIso = new Date().toISOString()
+      const { data: updateData, error: sbUpdateErr } = await supabase
         .from('page_sections')
         .update({
           content: { data: value },
-          updated_at: new Date().toISOString(),
+          updated_at: nowIso,
         })
         .eq('heading', key)
+        .select()
+
+      if (!sbUpdateErr && (!updateData || updateData.length === 0)) {
+        await supabase.from('page_sections').insert({
+          page_id: '10000000-0000-0000-0000-000000000001',
+          section_type: 'custom_sync',
+          heading: key,
+          content: { data: value },
+          sort_order: 0,
+          is_visible: true,
+          updated_at: nowIso,
+        })
+      }
 
       if (sbUpdateErr) {
         console.warn(`[Sync API POST] Supabase update notice for "${key}":`, sbUpdateErr)
@@ -80,7 +108,7 @@ export async function POST(request: Request) {
     try {
       setServerData(key, value)
     } catch (fsErr) {
-      // Read-only on serverless Vercel is expected
+      // Read-only on serverless Vercel is handled by Supabase above
     }
 
     return NextResponse.json({

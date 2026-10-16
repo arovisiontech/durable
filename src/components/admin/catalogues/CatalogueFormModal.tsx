@@ -152,10 +152,6 @@ export function CatalogueFormModal({
       setIsUploadingPdf(true)
       setPdfUploadProgress(30)
 
-      // Create instant fast Object URL for any PDF file size (100MB, 500MB, 1000MB+)
-      const localPdfUrl = URL.createObjectURL(file)
-      setPdfUploadProgress(70)
-
       // Try uploading to Supabase Storage in background if available
       try {
         const supabase = createClient()
@@ -188,17 +184,51 @@ export function CatalogueFormModal({
           }
         }
       } catch (storageErr) {
-        console.warn('Supabase storage fallback to local Blob URL:', storageErr)
+        console.warn('Supabase storage fallback:', storageErr)
       }
 
-      setPdfUploadProgress(100)
-      setPdfInfo({
-        url: localPdfUrl,
-        filename: file.name,
-        sizeText: formatFileSize(file.size),
-      })
-      setValue('pdf_url', localPdfUrl, { shouldValidate: true })
-      toast.success('PDF document attached successfully!')
+      // Fallback 1: Upload via /api/upload endpoint
+      try {
+        const formData = new FormData()
+        formData.append('file', file)
+        const res = await fetch('/api/upload', { method: 'POST', body: formData })
+        const json = await res.json()
+        if (res.ok && json.url) {
+          setPdfInfo({
+            url: json.url,
+            filename: file.name,
+            sizeText: formatFileSize(file.size),
+          })
+          setValue('pdf_url', json.url, { shouldValidate: true })
+          setIsUploadingPdf(false)
+          setPdfUploadProgress(100)
+          toast.success('PDF document attached successfully!')
+          return
+        }
+      } catch (apiErr) {
+        console.warn('API upload fallback:', apiErr)
+      }
+
+      // Fallback 2: Permanent Data URL
+      const reader = new FileReader()
+      reader.onload = () => {
+        const dataUrl = reader.result as string
+        setPdfInfo({
+          url: dataUrl,
+          filename: file.name,
+          sizeText: formatFileSize(file.size),
+        })
+        setValue('pdf_url', dataUrl, { shouldValidate: true })
+        setIsUploadingPdf(false)
+        setPdfUploadProgress(100)
+        toast.success('PDF document attached successfully!')
+      }
+      reader.onerror = () => {
+        toast.error('Failed to read PDF file.')
+        setIsUploadingPdf(false)
+      }
+      reader.readAsDataURL(file)
+      return
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'PDF upload failed'
       toast.error(msg)

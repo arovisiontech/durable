@@ -25,7 +25,8 @@ export function AdminAutoSync() {
                 try {
                   const existingLocal = localStorage.getItem(k)
                   const newString = JSON.stringify(val)
-                  if (!existingLocal || existingLocal !== newString) {
+                  // Only populate if local key is completely missing or empty, preserving client edits
+                  if (!existingLocal || existingLocal === '[]' || existingLocal === '{}') {
                     localStorage.setItem(k, newString)
                     setItemIDB(k, val).catch(() => {})
                     updatedCount++

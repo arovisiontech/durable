@@ -81,7 +81,7 @@ export default async function CategoryDetailPage({ params }: CategoryPageProps) 
     }
   }
 
-  // 2. Navigation pills from active categories
+  // 2. Navigation pills from active categories (all 9 categories matching SS 3)
   const allCategoriesList =
     allCategories.length > 0
       ? allCategories.map((c) => ({ slug: c.slug, name: c.name }))
@@ -92,6 +92,9 @@ export default async function CategoryDetailPage({ params }: CategoryPageProps) 
           { slug: 'ophthalmic', name: 'Ophthalmic' },
           { slug: 'hospital-furniture', name: 'Hospital Furniture' },
           { slug: 'single-use-instruments', name: 'Single Use Instruments' },
+          { slug: 'veterinary-instruments', name: 'Veterinary-Instruments' },
+          { slug: 'plastic-surgery', name: 'Plastic Surgery' },
+          { slug: 'special-surgical-instruments', name: 'Special Surgical Instruments' },
         ]
 
   return (
