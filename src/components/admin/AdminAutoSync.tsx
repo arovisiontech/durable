@@ -42,20 +42,8 @@ export function AdminAutoSync() {
                       setItemIDB(k, clean).catch(() => {})
                       updatedCount++
                     }
-                  } else if (k === 'durable_subcategories_pdf' && Array.isArray(val)) {
-                    // Always upgrade if cloud/server has all 49 client-uploaded sections
-                    let localCount = 0
-                    try { localCount = existingLocal ? JSON.parse(existingLocal).length : 0 } catch {}
-                    if (val.length >= localCount || !existingLocal) {
-                      localStorage.setItem(k, newString)
-                      setItemIDB(k, val).catch(() => {})
-                      updatedCount++
-                    }
-                  } else if (k === 'durable_catalogues' && Array.isArray(val)) {
-                    // Always upgrade if cloud/server has all 40 client catalogues
-                    let localCount = 0
-                    try { localCount = existingLocal ? JSON.parse(existingLocal).length : 0 } catch {}
-                    if (val.length >= localCount || !existingLocal) {
+                  } else if ((k === 'durable_subcategories_pdf' || k === 'durable_catalogues' || k === 'durable_categories') && Array.isArray(val)) {
+                    if (existingLocal !== newString) {
                       localStorage.setItem(k, newString)
                       setItemIDB(k, val).catch(() => {})
                       updatedCount++

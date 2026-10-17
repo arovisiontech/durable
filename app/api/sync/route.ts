@@ -11,6 +11,32 @@ export async function GET(request: Request) {
   // Handle fetch all keys across cloud and server file store
   if (fetchAll) {
     const allServerData = getAllServerData()
+    try {
+      let supabase: any
+      try {
+        supabase = await createServerClient()
+      } catch {
+        supabase = createPublicClient()
+      }
+      const { data: cloudSections } = await supabase
+        .from('page_sections')
+        .select('heading, content, updated_at')
+        .order('updated_at', { ascending: false })
+
+      if (cloudSections && cloudSections.length > 0) {
+        const seenHeading = new Set<string>()
+        for (const row of cloudSections) {
+          if (row.heading && !seenHeading.has(row.heading) && row.content) {
+            seenHeading.add(row.heading)
+            const val = row.content.data !== undefined ? row.content.data : row.content
+            allServerData[row.heading] = val
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('[Sync API GET fetchAll] Supabase query notice:', e)
+    }
+
     return NextResponse.json({
       success: true,
       data: allServerData,

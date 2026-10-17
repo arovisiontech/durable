@@ -10,11 +10,14 @@ import {
 import { CategoryItem } from '@/src/types/category'
 import { ProductItem } from '@/src/types/product'
 import { CatalogueItem } from '@/src/types/catalogue'
+import { SubcategoryPdfItem } from '@/src/lib/dataStore'
 import {
   getServerCategories,
   getServerProducts,
   getServerProductByIdOrSlug,
   getServerCatalogues,
+  getServerSubcategoryPdfs,
+  getServerData,
 } from '@/src/lib/serverDataStore'
 
 export async function fetchPublicSiteSettings(): Promise<PublicSiteSettings | null> {
@@ -46,14 +49,97 @@ export async function fetchPublicNavigation(): Promise<PublicNavigationItem[]> {
 
 export async function fetchPublicCategories(): Promise<CategoryItem[]> {
   try {
-    const all = getServerCategories()
-    const published = all.filter((c) => c.is_published !== false)
-    published.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
-    return published
+    const supabase = createPublicClient()
+    const { data: pageSec } = await supabase
+      .from('page_sections')
+      .select('content')
+      .eq('heading', 'durable_categories')
+      .order('updated_at', { ascending: false })
+      .limit(1)
+
+    if (pageSec && pageSec.length > 0 && pageSec[0]?.content) {
+      const parsed = pageSec[0].content.data !== undefined ? pageSec[0].content.data : pageSec[0].content
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const published = parsed.filter((c: any) => c.is_published !== false)
+        published.sort((a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0))
+        return published as CategoryItem[]
+      }
+    }
   } catch (err) {
-    console.error('Error fetching public categories:', err)
-    return getServerCategories()
+    console.warn('Error fetching public categories from cloud:', err)
   }
+
+  const all = getServerCategories()
+  const published = all.filter((c) => c.is_published !== false)
+  published.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
+  return published
+}
+
+export async function fetchPublicSubcategoryPdfs(): Promise<SubcategoryPdfItem[]> {
+  try {
+    const supabase = createPublicClient()
+    const { data: pageSec } = await supabase
+      .from('page_sections')
+      .select('content')
+      .eq('heading', 'durable_subcategories_pdf')
+      .order('updated_at', { ascending: false })
+      .limit(1)
+
+    if (pageSec && pageSec.length > 0 && pageSec[0]?.content) {
+      const parsed = pageSec[0].content.data !== undefined ? pageSec[0].content.data : pageSec[0].content
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed as SubcategoryPdfItem[]
+      }
+    }
+  } catch (err) {
+    console.warn('Error fetching public subcategories from cloud:', err)
+  }
+
+  return getServerSubcategoryPdfs()
+}
+
+export async function fetchPublicSolutions(): Promise<any[]> {
+  try {
+    const supabase = createPublicClient()
+    const { data: pageSec } = await supabase
+      .from('page_sections')
+      .select('content')
+      .eq('heading', 'durable_solutions_data')
+      .order('updated_at', { ascending: false })
+      .limit(1)
+
+    if (pageSec && pageSec.length > 0 && pageSec[0]?.content) {
+      const parsed = pageSec[0].content.data !== undefined ? pageSec[0].content.data : pageSec[0].content
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const seenTitle = new Set<string>()
+        const seenCount = new Set<string>()
+        return parsed.filter((item: any) => {
+          if (!item || !item.title) return false
+          const titleKey = item.title.toLowerCase().trim()
+          const countKey = (item.count || '').trim()
+          if (seenTitle.has(titleKey) || (countKey && seenCount.has(countKey))) return false
+          seenTitle.add(titleKey)
+          if (countKey) seenCount.add(countKey)
+          return true
+        })
+      }
+    }
+  } catch (err) {
+    console.warn('Error fetching public solutions from cloud:', err)
+  }
+
+  const fallback = getServerData<any[]>('durable_solutions_data', [])
+  const seenTitle = new Set<string>()
+  const seenCount = new Set<string>()
+  return fallback.filter((item: any) => {
+    if (!item || !item.title) return false
+    const titleKey = item.title.toLowerCase().trim()
+    const countKey = (item.count || '').trim()
+    if (seenTitle.has(titleKey) || (countKey && seenCount.has(countKey))) return false
+    seenTitle.add(titleKey)
+    if (countKey) seenCount.add(countKey)
+    return true
+  })
 }
 
 export async function fetchPublicHeroSlides(): Promise<PublicHeroSlide[]> {
@@ -165,7 +251,29 @@ export async function fetchPublicProductBySlug(slug: string) {
 
 export async function fetchPublicCatalogues(params?: { categorySlug?: string; search?: string }) {
   try {
-    let list = getServerCatalogues().filter((c) => c.is_published !== false)
+    let list: CatalogueItem[] = []
+    try {
+      const supabase = createPublicClient()
+      const { data: pageSec } = await supabase
+        .from('page_sections')
+        .select('content')
+        .eq('heading', 'durable_catalogues')
+        .order('updated_at', { ascending: false })
+        .limit(1)
+
+      if (pageSec && pageSec.length > 0 && pageSec[0]?.content) {
+        const parsed = pageSec[0].content.data !== undefined ? pageSec[0].content.data : pageSec[0].content
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          list = parsed.filter((c: any) => c.is_published !== false)
+        }
+      }
+    } catch (e) {
+      console.warn('fetchPublicCatalogues cloud notice:', e)
+    }
+
+    if (!list || list.length === 0) {
+      list = getServerCatalogues().filter((c) => c.is_published !== false)
+    }
 
     if (params?.search && params.search.trim() !== '') {
       const term = params.search.trim().toLowerCase()

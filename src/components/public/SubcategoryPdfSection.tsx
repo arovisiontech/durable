@@ -15,7 +15,7 @@ interface SubcategoryPdfSectionProps {
 // Fallback dummy images for catalog covers if non-custom
 export function SubcategoryPdfSection({ categorySlug, categoryTitle, initialSubcategories }: SubcategoryPdfSectionProps) {
   const [subcategories, setSubcategories] = useState<SubcategoryPdfItem[]>(() => {
-    if (initialSubcategories && initialSubcategories.length > 0) {
+    if (initialSubcategories !== undefined) {
       return initialSubcategories
     }
     const all = getStoredSubcategoryPdfs()
@@ -24,50 +24,44 @@ export function SubcategoryPdfSection({ categorySlug, categoryTitle, initialSubc
     )
   })
 
-  const loadData = () => {
-    const all = getStoredSubcategoryPdfs()
-    const filtered = all.filter(
-      (item) => item.categorySlug.toLowerCase().trim() === categorySlug.toLowerCase().trim()
-    )
-    if (filtered.length > 0) {
-      setSubcategories(filtered)
+  // Synchronize when initialSubcategories prop updates from server
+  useEffect(() => {
+    if (initialSubcategories !== undefined) {
+      setSubcategories(initialSubcategories)
     }
+  }, [initialSubcategories, categorySlug])
 
-    if (typeof window !== 'undefined') {
-      getItemIDB<SubcategoryPdfItem[]>('durable_subcategories_pdf').then((idbData) => {
-        if (idbData && Array.isArray(idbData) && idbData.length > 0) {
-          const idbFiltered = idbData.filter(
-            (item) => item.categorySlug.toLowerCase().trim() === categorySlug.toLowerCase().trim()
-          )
-          if (idbFiltered.length > 0) {
-            setSubcategories(idbFiltered)
-          }
-        }
-      })
+  // Listen for live updates dispatched by admin panel actions
+  useEffect(() => {
+    if (typeof window === 'undefined') return
 
+    const handleLiveSync = () => {
       fetch('/api/sync?key=durable_subcategories_pdf')
         .then((res) => res.json())
         .then((result) => {
-          if (result?.data && Array.isArray(result.data) && result.data.length > 0) {
-            const serverFiltered = result.data.filter(
+          if (result?.data && Array.isArray(result.data)) {
+            const filtered = result.data.filter(
               (item: SubcategoryPdfItem) =>
                 item.categorySlug.toLowerCase().trim() === categorySlug.toLowerCase().trim()
             )
-            if (serverFiltered.length > 0) {
-              setSubcategories(serverFiltered)
-            }
+            setSubcategories(filtered)
+            // Keep local storage fresh
+            try {
+              localStorage.setItem('durable_subcategories_pdf', JSON.stringify(result.data))
+            } catch {}
           }
         })
         .catch(() => {})
     }
-  }
 
-  useEffect(() => {
-    loadData()
-    const handleUpdate = () => loadData()
-    window.addEventListener('durable_content_updated', handleUpdate)
-    return () => window.removeEventListener('durable_content_updated', handleUpdate)
-  }, [categorySlug])
+    // Only if initialSubcategories was not provided at all, do initial client fetch
+    if (initialSubcategories === undefined) {
+      handleLiveSync()
+    }
+
+    window.addEventListener('durable_content_updated', handleLiveSync)
+    return () => window.removeEventListener('durable_content_updated', handleLiveSync)
+  }, [categorySlug, initialSubcategories])
 
   const handleViewPdf = (item: SubcategoryPdfItem) => {
     const targetUrl = item.pdfUrl || '/pdf/general-surgical-instruments-catalogue.pdf'

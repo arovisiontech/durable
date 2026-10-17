@@ -50,34 +50,51 @@ export function DownloadableCataloguesSection({ initialCatalogues }: Downloadabl
     return DEFAULT_CARD_ITEMS
   })
 
+  // Synchronize when initialCatalogues prop updates from server
+  useEffect(() => {
+    if (initialCatalogues !== undefined) {
+      const mapped: CatalogueCardItem[] = initialCatalogues.map((item, idx) => ({
+        id: item.id || `cat-${idx + 1}`,
+        code: `CATALOG 0${idx + 1}`,
+        tag: item.category_name || 'Medical Catalog',
+        title: item.title,
+        description: item.description || DEFAULT_CARD_ITEMS[idx]?.description || 'Technical specifications and product sizing guide.',
+        image: item.cover_image || DEFAULT_CARD_ITEMS[idx]?.image || '/images/catalogue-cover-yellow.png',
+        pdfUrl: item.pdf_url || '/pdf/general-surgical-instruments-catalogue.pdf',
+        accessCode: '12345',
+      }))
+      setCatalogues(mapped)
+    }
+  }, [initialCatalogues])
+
   const loadCatalogues = async () => {
     try {
       const res = await fetchPublicCatalogues()
       const list = res.catalogues || []
-      if (list.length > 0) {
-        const mapped: CatalogueCardItem[] = list.map((item, idx) => ({
-          id: item.id || `cat-${idx + 1}`,
-          code: `CATALOG 0${idx + 1}`,
-          tag: item.category_name || 'Medical Catalog',
-          title: item.title,
-          description: item.description || DEFAULT_CARD_ITEMS[idx]?.description || 'Technical specifications and product sizing guide.',
-          image: item.cover_image || DEFAULT_CARD_ITEMS[idx]?.image || '/images/catalogue-cover-yellow.png',
-          pdfUrl: item.pdf_url || '/pdf/general-surgical-instruments-catalogue.pdf',
-          accessCode: '12345',
-        }))
-        setCatalogues(mapped)
-      }
+      const mapped: CatalogueCardItem[] = list.map((item, idx) => ({
+        id: item.id || `cat-${idx + 1}`,
+        code: `CATALOG 0${idx + 1}`,
+        tag: item.category_name || 'Medical Catalog',
+        title: item.title,
+        description: item.description || DEFAULT_CARD_ITEMS[idx]?.description || 'Technical specifications and product sizing guide.',
+        image: item.cover_image || DEFAULT_CARD_ITEMS[idx]?.image || '/images/catalogue-cover-yellow.png',
+        pdfUrl: item.pdf_url || '/pdf/general-surgical-instruments-catalogue.pdf',
+        accessCode: '12345',
+      }))
+      setCatalogues(mapped)
     } catch (e) {
       console.error('Error fetching public catalogues:', e)
     }
   }
 
   useEffect(() => {
-    loadCatalogues()
+    if (initialCatalogues === undefined) {
+      loadCatalogues()
+    }
     const handleUpdate = () => loadCatalogues()
     window.addEventListener('durable_content_updated', handleUpdate)
     return () => window.removeEventListener('durable_content_updated', handleUpdate)
-  }, [])
+  }, [initialCatalogues])
 
   // Modal State for Access Code Protection (Download Only)
   const [selectedCatalogue, setSelectedCatalogue] = useState<CatalogueCardItem | null>(null)

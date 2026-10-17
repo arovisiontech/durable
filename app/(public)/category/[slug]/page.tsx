@@ -4,8 +4,7 @@ import { CATEGORIES_DATA } from '@/src/data/categoriesData'
 import { CategoryHeroBanner } from '@/src/components/public/CategoryHeroBanner'
 import { ArrowRight } from 'lucide-react'
 import { SubcategoryPdfSection } from '@/src/components/public/SubcategoryPdfSection'
-import { fetchPublicCategories } from '@/app/actions/public'
-import { getServerSubcategoryPdfs } from '@/src/lib/serverDataStore'
+import { fetchPublicCategories, fetchPublicSubcategoryPdfs } from '@/app/actions/public'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -48,8 +47,11 @@ export default async function CategoryDetailPage({ params }: CategoryPageProps) 
   const resolvedParams = await params
   const slug = resolvedParams.slug
 
-  // 1. Fetch dynamic categories list from persistent server data store
-  const allCategories = await fetchPublicCategories()
+  // 1. Fetch dynamic categories and subcategories list from cloud
+  const [allCategories, allSubcategories] = await Promise.all([
+    fetchPublicCategories(),
+    fetchPublicSubcategoryPdfs(),
+  ])
   const currentCategory = allCategories.find((c) => c.slug === slug || c.id === slug)
 
   let categoryData = {
@@ -141,8 +143,7 @@ export default async function CategoryDetailPage({ params }: CategoryPageProps) 
 
         {/* 2.5 Subcategories PDF Catalogs Grid Showcase */}
         {(() => {
-          const allServerSubcats = getServerSubcategoryPdfs()
-          const matchedSubcats = allServerSubcats.filter(
+          const matchedSubcats = allSubcategories.filter(
             (item) => item.categorySlug.toLowerCase().trim() === categoryData.slug.toLowerCase().trim()
           )
           return (

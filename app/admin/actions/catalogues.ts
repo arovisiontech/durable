@@ -8,6 +8,7 @@ import {
   getServerCatalogues,
   upsertServerCatalogue,
   deleteServerCatalogue,
+  setServerData,
 } from '@/src/lib/serverDataStore'
 
 function revalidateCataloguePaths(slug?: string) {
@@ -25,6 +26,69 @@ function revalidateCataloguePaths(slug?: string) {
   }
 }
 
+async function getSupabaseClient() {
+  try {
+    return await createClient()
+  } catch {
+    return createPublicClient()
+  }
+}
+
+async function getCloudCatalogues(): Promise<CatalogueItem[]> {
+  try {
+    const supabase = await getSupabaseClient()
+    const { data: pageSec } = await supabase
+      .from('page_sections')
+      .select('content')
+      .eq('heading', 'durable_catalogues')
+      .order('updated_at', { ascending: false })
+      .limit(1)
+
+    if (pageSec && pageSec.length > 0 && pageSec[0]?.content) {
+      const parsed = pageSec[0].content.data !== undefined ? pageSec[0].content.data : pageSec[0].content
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed as CatalogueItem[]
+      }
+    }
+  } catch (err) {
+    console.warn('[getCloudCatalogues] notice:', err)
+  }
+  return getServerCatalogues()
+}
+
+async function saveCloudCatalogues(items: CatalogueItem[]) {
+  try {
+    const supabase = await getSupabaseClient()
+    const nowIso = new Date().toISOString()
+    const { data: updateData, error } = await supabase
+      .from('page_sections')
+      .update({
+        content: { data: items },
+        updated_at: nowIso,
+      })
+      .eq('heading', 'durable_catalogues')
+      .select()
+
+    if (!error && (!updateData || updateData.length === 0)) {
+      await supabase.from('page_sections').insert({
+        page_id: '10000000-0000-0000-0000-000000000001',
+        section_type: 'custom_sync',
+        heading: 'durable_catalogues',
+        content: { data: items },
+        sort_order: 0,
+        is_visible: true,
+        updated_at: nowIso,
+      })
+    }
+  } catch (err) {
+    console.warn('[saveCloudCatalogues] notice:', err)
+  }
+
+  try {
+    setServerData('durable_catalogues', items)
+  } catch {}
+}
+
 export async function fetchCataloguesAction(params?: {
   search?: string
   categoryId?: string
@@ -34,7 +98,7 @@ export async function fetchCataloguesAction(params?: {
   limit?: number
 }) {
   try {
-    let rawCatalogues: CatalogueItem[] = getServerCatalogues()
+    let rawCatalogues: CatalogueItem[] = await getCloudCatalogues()
 
     // Apply Search
     if (params?.search && params.search.trim() !== '') {
@@ -108,17 +172,17 @@ export async function createCatalogueAction(
       category_name: 'General Surgery',
     }
 
-    // 1. Permanently persist to server file store
+    // 1. Sync to Supabase page_sections for persistent cloud visibility
+    const currentList = await getCloudCatalogues()
+    const updatedList = [newCatalogue, ...currentList.filter(c => c.id !== newCatalogue.id && c.slug !== newCatalogue.slug)]
+    await saveCloudCatalogues(updatedList)
+
+    // 2. Permanently persist to server file store
     upsertServerCatalogue(newCatalogue)
 
-    // 2. Best-effort Supabase sync
+    // 3. Best-effort Supabase table sync
     try {
-      let supabase: any
-      try {
-        supabase = await createClient()
-      } catch {
-        supabase = createPublicClient()
-      }
+      const supabase = await getSupabaseClient()
       await supabase.from('catalogues').insert({
         title: validated.title,
         slug: validated.slug,
@@ -165,17 +229,17 @@ export async function updateCatalogueAction(
       category_name: existing?.category_name || 'General Surgery',
     }
 
-    // 1. Permanently persist to server file store
+    // 1. Sync to Supabase page_sections
+    const currentList = await getCloudCatalogues()
+    const updatedList = currentList.map((c) => (c.id === id || c.slug === id ? updatedCatalogue : c))
+    await saveCloudCatalogues(updatedList)
+
+    // 2. Permanently persist to server file store
     upsertServerCatalogue(updatedCatalogue)
 
-    // 2. Best-effort Supabase sync
+    // 3. Best-effort Supabase table sync
     try {
-      let supabase: any
-      try {
-        supabase = await createClient()
-      } catch {
-        supabase = createPublicClient()
-      }
+      const supabase = await getSupabaseClient()
       await supabase
         .from('catalogues')
         .update({
@@ -211,13 +275,14 @@ export async function toggleCatalogueStatusAction(id: string, isPublished: boole
       upsertServerCatalogue(existing)
     }
 
+    const currentList = await getCloudCatalogues()
+    const updatedList = currentList.map((c) =>
+      c.id === id || c.slug === id ? { ...c, is_published: isPublished, updated_at: new Date().toISOString() } : c
+    )
+    await saveCloudCatalogues(updatedList)
+
     try {
-      let supabase: any
-      try {
-        supabase = await createClient()
-      } catch {
-        supabase = createPublicClient()
-      }
+      const supabase = await getSupabaseClient()
       await supabase
         .from('catalogues')
         .update({ is_published: isPublished, updated_at: new Date().toISOString() })
@@ -234,17 +299,17 @@ export async function toggleCatalogueStatusAction(id: string, isPublished: boole
 
 export async function deleteCatalogueAction(id: string) {
   try {
-    // 1. Permanently delete from server file store
+    // 1. Sync to Supabase page_sections
+    const currentList = await getCloudCatalogues()
+    const updatedList = currentList.filter((c) => c.id !== id && c.slug !== id)
+    await saveCloudCatalogues(updatedList)
+
+    // 2. Permanently delete from server file store
     deleteServerCatalogue(id)
 
-    // 2. Best-effort Supabase sync
+    // 3. Best-effort Supabase table sync
     try {
-      let supabase: any
-      try {
-        supabase = await createClient()
-      } catch {
-        supabase = createPublicClient()
-      }
+      const supabase = await getSupabaseClient()
       await supabase.from('catalogues').delete().or(`id.eq.${id},slug.eq.${id}`)
     } catch {}
 

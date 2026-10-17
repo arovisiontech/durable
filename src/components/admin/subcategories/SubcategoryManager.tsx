@@ -28,7 +28,7 @@ import {
 import { getItemIDB } from '@/src/lib/persistentStorage'
 import { safeViewPdf } from '@/src/lib/pdfHelper'
 import { createClient as createBrowserClient } from '@/src/lib/supabase/client'
-import { saveSubcategoriesAction } from '@/app/admin/actions/subcategories'
+import { saveSubcategoriesAction, fetchSubcategoriesAction } from '@/app/admin/actions/subcategories'
 
 const MAIN_CATEGORIES = [
   { slug: 'general-surgery', name: 'General Surgery' },
@@ -42,9 +42,18 @@ const MAIN_CATEGORIES = [
   { slug: 'special-surgical-instruments', name: 'Special Surgical Instruments' },
 ]
 
-export function SubcategoryManager() {
-  const [subcategories, setSubcategories] = useState<SubcategoryPdfItem[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+export interface SubcategoryManagerProps {
+  initialSubcategories?: SubcategoryPdfItem[]
+}
+
+export function SubcategoryManager({ initialSubcategories }: SubcategoryManagerProps = {}) {
+  const [subcategories, setSubcategories] = useState<SubcategoryPdfItem[]>(() => {
+    if (initialSubcategories && Array.isArray(initialSubcategories) && initialSubcategories.length > 0) {
+      return initialSubcategories
+    }
+    return getStoredSubcategoryPdfs()
+  })
+  const [isLoading, setIsLoading] = useState(!initialSubcategories || initialSubcategories.length === 0)
   const [search, setSearch] = useState('')
   const [selectedCategorySlug, setSelectedCategorySlug] = useState('all')
   const [isSaved, setIsSaved] = useState(false)
@@ -62,46 +71,50 @@ export function SubcategoryManager() {
     description: '',
   })
 
-  const loadData = useCallback(() => {
-    setIsLoading(true)
-    const local = getStoredSubcategoryPdfs()
-    setSubcategories(local)
-    setIsLoading(false)
+  // Synchronize when initialSubcategories prop updates from server
+  useEffect(() => {
+    if (initialSubcategories && Array.isArray(initialSubcategories)) {
+      setSubcategories(initialSubcategories)
+      saveStoredSubcategoryPdfs(initialSubcategories)
+      setIsLoading(false)
+    }
+  }, [initialSubcategories])
+
+  const loadData = useCallback(async () => {
+    try {
+      const res = await fetchSubcategoriesAction()
+      if (res?.subcategories && Array.isArray(res.subcategories)) {
+        setSubcategories(res.subcategories)
+        saveStoredSubcategoryPdfs(res.subcategories)
+        setIsLoading(false)
+        return
+      }
+    } catch (err) {
+      console.warn('[SubcategoryManager] fetchSubcategoriesAction notice:', err)
+    }
 
     if (typeof window !== 'undefined') {
-      getItemIDB<SubcategoryPdfItem[]>('durable_subcategories_pdf').then((idbData) => {
-        if (idbData && Array.isArray(idbData) && idbData.length > 0) {
-          setSubcategories(idbData)
-        }
-      })
-
       fetch('/api/sync?key=durable_subcategories_pdf')
         .then((res) => res.json())
         .then((result) => {
-          if (result?.data && Array.isArray(result.data) && result.data.length > 0) {
-            setSubcategories((prev) => {
-              const map = new Map<string, SubcategoryPdfItem>()
-              result.data.forEach((item: SubcategoryPdfItem) => {
-                if (item && item.id) map.set(item.id, item)
-              })
-              if (Array.isArray(prev)) {
-                prev.forEach((item) => {
-                  if (item && item.id && !map.has(item.id)) map.set(item.id, item)
-                })
-              }
-              const merged = Array.from(map.values())
-              saveStoredSubcategoryPdfs(merged)
-              return merged
-            })
+          if (result?.data && Array.isArray(result.data)) {
+            setSubcategories(result.data)
+            saveStoredSubcategoryPdfs(result.data)
           }
         })
         .catch(() => {})
+        .finally(() => setIsLoading(false))
     }
   }, [])
 
   useEffect(() => {
-    loadData()
-  }, [loadData])
+    if (!initialSubcategories || initialSubcategories.length === 0) {
+      loadData()
+    }
+    const handleUpdate = () => loadData()
+    window.addEventListener('durable_content_updated', handleUpdate)
+    return () => window.removeEventListener('durable_content_updated', handleUpdate)
+  }, [loadData, initialSubcategories])
 
   const saveToStorage = (updatedList: SubcategoryPdfItem[], msg?: string) => {
     // 1. Immediately update component state
