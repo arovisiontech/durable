@@ -377,9 +377,12 @@ export default function AdminContentHomePage() {
           }
         }
         setSolutionsData(clean)
-        try {
-          localStorage.setItem('durable_solutions_data', JSON.stringify(clean))
-        } catch {}
+        if (clean.length !== data.length) {
+          try {
+            localStorage.setItem('durable_solutions_data', JSON.stringify(clean))
+          } catch {}
+          savePersistentData('durable_solutions_data', clean)
+        }
       }
     })
     loadPersistentData('durable_quality_trust_data', qualityTrustData, (data) => {

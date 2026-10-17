@@ -45,56 +45,24 @@ export async function GET(request: Request) {
 
     const serverVal = getServerData(key, null)
 
-    // Handle deduplication and safe merging for collection types
+    // Handle deduplication for solutions cards
     if (key === 'durable_solutions_data') {
       const sourceList = Array.isArray(parsedValue) && parsedValue.length > 0 ? parsedValue : serverVal
       if (Array.isArray(sourceList)) {
-        const seen = new Set<string>()
+        const seenTitle = new Set<string>()
+        const seenCount = new Set<string>()
         const cleanList = sourceList.filter((item: any) => {
-          const k = ((item.count || '') + '_' + (item.title || '')).toLowerCase().trim()
-          if (seen.has(k)) return false
-          seen.add(k)
+          if (!item || !item.title) return false
+          const titleKey = item.title.toLowerCase().trim()
+          const countKey = (item.count || '').trim()
+          if (seenTitle.has(titleKey) || (countKey && seenCount.has(countKey))) {
+            return false
+          }
+          seenTitle.add(titleKey)
+          if (countKey) seenCount.add(countKey)
           return true
         })
         return NextResponse.json({ success: true, data: cleanList, source: 'deduplicated' })
-      }
-    } else if (key === 'durable_subcategories_pdf') {
-      const serverItems = Array.isArray(serverVal) ? serverVal : []
-      const cloudItems = Array.isArray(parsedValue) ? parsedValue : []
-      const mergedMap = new Map<string, any>()
-      // Server holds all 49 client-uploaded sections & catalogues
-      serverItems.forEach((item: any) => mergedMap.set(item.id, item))
-      // Cloud overrides with any live runtime edits
-      cloudItems.forEach((item: any) => {
-        if (item && item.id) mergedMap.set(item.id, item)
-      })
-      const merged = Array.from(mergedMap.values())
-      if (merged.length > 0) {
-        return NextResponse.json({ success: true, data: merged, source: 'merged' })
-      }
-    } else if (key === 'durable_catalogues') {
-      const serverItems = Array.isArray(serverVal) ? serverVal : []
-      const cloudItems = Array.isArray(parsedValue) ? parsedValue : []
-      const mergedMap = new Map<string, any>()
-      serverItems.forEach((item: any) => mergedMap.set(item.id, item))
-      cloudItems.forEach((item: any) => {
-        if (item && item.id) mergedMap.set(item.id, item)
-      })
-      const merged = Array.from(mergedMap.values())
-      if (merged.length > 0) {
-        return NextResponse.json({ success: true, data: merged, source: 'merged' })
-      }
-    } else if (key === 'durable_categories') {
-      const serverItems = Array.isArray(serverVal) ? serverVal : []
-      const cloudItems = Array.isArray(parsedValue) ? parsedValue : []
-      const mergedMap = new Map<string, any>()
-      serverItems.forEach((item: any) => mergedMap.set(item.id || item.slug, item))
-      cloudItems.forEach((item: any) => {
-        if (item) mergedMap.set(item.id || item.slug, item)
-      })
-      const merged = Array.from(mergedMap.values())
-      if (merged.length > 0) {
-        return NextResponse.json({ success: true, data: merged, source: 'merged' })
       }
     }
 
@@ -125,32 +93,21 @@ export async function POST(request: Request) {
 
     let valueToSave = value
 
-    // 0. Safeguards for collections
+    // Clean and deduplicate solutions cards if posted
     if (key === 'durable_solutions_data' && Array.isArray(value)) {
-      const seen = new Set<string>()
+      const seenTitle = new Set<string>()
+      const seenCount = new Set<string>()
       valueToSave = value.filter((item: any) => {
-        if (!item) return false
-        const k = ((item.count || '') + '_' + (item.title || '')).toLowerCase().trim()
-        if (seen.has(k)) return false
-        seen.add(k)
+        if (!item || !item.title) return false
+        const titleKey = item.title.toLowerCase().trim()
+        const countKey = (item.count || '').trim()
+        if (seenTitle.has(titleKey) || (countKey && seenCount.has(countKey))) {
+          return false
+        }
+        seenTitle.add(titleKey)
+        if (countKey) seenCount.add(countKey)
         return true
       })
-    } else if (key === 'durable_subcategories_pdf' && Array.isArray(value)) {
-      const serverVal = getServerData<any[] | null>(key, null)
-      if (Array.isArray(serverVal) && serverVal.length > 0) {
-        const mergedMap = new Map<string, any>()
-        serverVal.forEach((item: any) => { if (item?.id) mergedMap.set(item.id, item) })
-        value.forEach((item: any) => { if (item?.id) mergedMap.set(item.id, item) })
-        valueToSave = Array.from(mergedMap.values())
-      }
-    } else if (key === 'durable_catalogues' && Array.isArray(value)) {
-      const serverVal = getServerData<any[] | null>(key, null)
-      if (Array.isArray(serverVal) && serverVal.length > 0) {
-        const mergedMap = new Map<string, any>()
-        serverVal.forEach((item: any) => { if (item?.id) mergedMap.set(item.id, item) })
-        value.forEach((item: any) => { if (item?.id) mergedMap.set(item.id, item) })
-        valueToSave = Array.from(mergedMap.values())
-      }
     }
 
     // 1. Direct cloud update to Supabase page_sections (persists permanently across all devices)

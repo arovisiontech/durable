@@ -293,6 +293,16 @@ export async function deleteCategoryAction(id: string) {
         supabase = createPublicClient()
       }
       await supabase.from('categories').delete().or(`id.eq.${id},slug.eq.${id}`)
+
+      // Also update page_sections with remaining categories so cloud sync reflects deletion
+      const remainingCats = getServerCategories()
+      await supabase
+        .from('page_sections')
+        .update({
+          content: { data: remainingCats },
+          updated_at: new Date().toISOString(),
+        })
+        .eq('heading', 'durable_categories')
     } catch {}
 
     revalidateCategoryPaths()

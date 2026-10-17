@@ -52,6 +52,13 @@ export function CategoryDeleteDialog({
       const updated = stored.filter((c) => c.id !== category.id && c.slug !== category.slug)
       saveStoredCategories(updated)
 
+      fetch('/api/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: 'durable_categories', value: updated }),
+      }).catch(() => {})
+      window.dispatchEvent(new Event('durable_content_updated'))
+
       toast.success(`Deleted category "${category.name}"`)
       onSuccess()
       onClose()
