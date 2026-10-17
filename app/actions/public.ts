@@ -275,6 +275,15 @@ export async function fetchPublicCatalogues(params?: { categorySlug?: string; se
       list = getServerCatalogues().filter((c) => c.is_published !== false)
     }
 
+    // Only display master catalogues uploaded for catalogues page, excluding subcategory section PDFs
+    list = list.filter((c: any) => {
+      if (c.is_published === false) return false
+      if (c.id && typeof c.id === 'string' && c.id.startsWith('cat-sub-')) return false
+      if (c.slug && typeof c.slug === 'string' && c.slug.includes('section-')) return false
+      if (c.title && typeof c.title === 'string' && c.title.includes('(Section ')) return false
+      return true
+    })
+
     if (params?.search && params.search.trim() !== '') {
       const term = params.search.trim().toLowerCase()
       list = list.filter(

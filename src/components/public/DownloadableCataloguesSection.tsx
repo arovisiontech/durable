@@ -96,20 +96,26 @@ export function DownloadableCataloguesSection({ initialCatalogues }: Downloadabl
     return () => window.removeEventListener('durable_content_updated', handleUpdate)
   }, [initialCatalogues])
 
-  // Modal State for Access Code Protection (Download Only)
+  // Modal State for Access Code Protection (View & Download)
   const [selectedCatalogue, setSelectedCatalogue] = useState<CatalogueCardItem | null>(null)
+  const [modalMode, setModalMode] = useState<'view' | 'download'>('view')
   const [inputCode, setInputCode] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
   const [isSuccess, setIsSuccess] = useState(false)
 
-  // Direct View without Password
-  const handleViewDirectly = (cat: CatalogueCardItem) => {
-    safeViewPdf(cat.pdfUrl)
+  // Protected View with Password 12345
+  const handleOpenViewModal = (cat: CatalogueCardItem) => {
+    setSelectedCatalogue(cat)
+    setModalMode('view')
+    setInputCode('')
+    setErrorMsg('')
+    setIsSuccess(false)
   }
 
-  // Open Modal for Protected Download
+  // Protected Download with Password 12345
   const handleOpenDownloadModal = (cat: CatalogueCardItem) => {
     setSelectedCatalogue(cat)
+    setModalMode('download')
     setInputCode('')
     setErrorMsg('')
     setIsSuccess(false)
@@ -126,18 +132,20 @@ export function DownloadableCataloguesSection({ initialCatalogues }: Downloadabl
       setErrorMsg('')
 
       setTimeout(() => {
-        // Trigger file download safely
-        const fileName = `${selectedCatalogue.title.toLowerCase().replace(/\s+/g, '-')}-catalogue.pdf`
-        safeDownloadPdf(selectedCatalogue.pdfUrl, fileName)
+        if (modalMode === 'view') {
+          safeViewPdf(selectedCatalogue.pdfUrl)
+        } else {
+          const fileName = `${selectedCatalogue.title.toLowerCase().replace(/\s+/g, '-')}-catalogue.pdf`
+          safeDownloadPdf(selectedCatalogue.pdfUrl, fileName)
+        }
 
-        // Close modal after download
         setTimeout(() => {
           setSelectedCatalogue(null)
           setIsSuccess(false)
-        }, 1500)
-      }, 600)
+        }, 800)
+      }, 500)
     } else {
-      setErrorMsg('Invalid Access Code! Please request the correct code from the owner.')
+      setErrorMsg('Invalid Access Code! Please enter 12345 to access this catalogue.')
     }
   }
 
@@ -181,7 +189,7 @@ export function DownloadableCataloguesSection({ initialCatalogues }: Downloadabl
 
                   {/* Description Paragraph */}
                   <p className="text-xs font-semibold text-slate-500 leading-relaxed line-clamp-4">
-                    {cat.description}
+                    {(cat.description || '').replace(/<[^>]*>?/gm, '').trim()}
                   </p>
                 </div>
 
@@ -190,16 +198,17 @@ export function DownloadableCataloguesSection({ initialCatalogues }: Downloadabl
 
                 {/* Action Buttons */}
                 <div className="flex items-center gap-3 pt-1">
-                  {/* View Catalog Red Button */}
+                  {/* View Catalog Red Button with Password Protection */}
                   <button
-                    onClick={() => handleViewDirectly(cat)}
+                    onClick={() => handleOpenViewModal(cat)}
                     className="inline-flex items-center gap-1.5 bg-[#E31B23] hover:bg-red-700 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-md transition-colors"
                   >
                     <Eye className="w-3.5 h-3.5" />
                     <span>View Catalog</span>
+                    <Lock className="w-3 h-3 text-red-200" />
                   </button>
 
-                  {/* Download PDF Outlined Button */}
+                  {/* Download PDF Outlined Button with Password Protection */}
                   <button
                     onClick={() => handleOpenDownloadModal(cat)}
                     className="inline-flex items-center gap-1.5 bg-white hover:bg-slate-50 border border-slate-800 text-slate-800 font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-xs transition-colors"
@@ -229,13 +238,14 @@ export function DownloadableCataloguesSection({ initialCatalogues }: Downloadabl
             {/* Header Icon */}
             <div className="text-center space-y-2">
               <div className="w-14 h-14 rounded-2xl bg-red-50 text-[#E31B23] border border-red-100 flex items-center justify-center mx-auto shadow-xs">
-                <Lock className="w-7 h-7" />
+                {modalMode === 'view' ? <Eye className="w-7 h-7" /> : <Lock className="w-7 h-7" />}
               </div>
               <h3 className="text-xl font-black text-[#0B1B3D] tracking-tight">
-                Catalogue Protected
+                {modalMode === 'view' ? 'Protected Catalogue Access' : 'Protected Catalogue Download'}
               </h3>
               <p className="text-xs text-slate-500 font-semibold leading-relaxed">
-                Please enter the access code provided by the owner to download <strong className="text-slate-900">{selectedCatalogue.title}</strong>.
+                Please enter the access code <strong className="text-slate-900">(12345)</strong> to {modalMode === 'view' ? 'view' : 'download'}{' '}
+                <strong className="text-slate-900">{selectedCatalogue.title}</strong>.
               </p>
             </div>
 
@@ -271,7 +281,7 @@ export function DownloadableCataloguesSection({ initialCatalogues }: Downloadabl
               {isSuccess && (
                 <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2 text-xs font-bold text-emerald-700">
                   <CheckCircle2 className="w-4 h-4 shrink-0" />
-                  <span>Access Granted! Downloading PDF...</span>
+                  <span>Access Granted! {modalMode === 'view' ? 'Opening Catalogue PDF...' : 'Downloading Catalogue PDF...'}</span>
                 </div>
               )}
 
@@ -281,8 +291,14 @@ export function DownloadableCataloguesSection({ initialCatalogues }: Downloadabl
                 disabled={isSuccess}
                 className="w-full bg-[#E31B23] hover:bg-red-700 disabled:bg-emerald-600 text-white font-black text-xs uppercase tracking-wider py-3.5 rounded-xl shadow-md transition-colors flex items-center justify-center gap-2"
               >
-                <Download className="w-4 h-4" />
-                <span>{isSuccess ? 'Verifying...' : 'Unlock & Download PDF'}</span>
+                {modalMode === 'view' ? <Eye className="w-4 h-4" /> : <Download className="w-4 h-4" />}
+                <span>
+                  {isSuccess
+                    ? 'Verifying...'
+                    : modalMode === 'view'
+                    ? 'Unlock & View Catalog'
+                    : 'Unlock & Download PDF'}
+                </span>
               </button>
             </form>
 

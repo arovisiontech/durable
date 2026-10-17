@@ -47,13 +47,23 @@ async function getCloudCatalogues(): Promise<CatalogueItem[]> {
     if (pageSec && pageSec.length > 0 && pageSec[0]?.content) {
       const parsed = pageSec[0].content.data !== undefined ? pageSec[0].content.data : pageSec[0].content
       if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed as CatalogueItem[]
+        return (parsed as CatalogueItem[]).filter((c: any) => {
+          if (c.id && typeof c.id === 'string' && c.id.startsWith('cat-sub-')) return false
+          if (c.slug && typeof c.slug === 'string' && c.slug.includes('section-')) return false
+          if (c.title && typeof c.title === 'string' && c.title.includes('(Section ')) return false
+          return true
+        })
       }
     }
   } catch (err) {
     console.warn('[getCloudCatalogues] notice:', err)
   }
-  return getServerCatalogues()
+  return getServerCatalogues().filter((c: any) => {
+    if (c.id && typeof c.id === 'string' && c.id.startsWith('cat-sub-')) return false
+    if (c.slug && typeof c.slug === 'string' && c.slug.includes('section-')) return false
+    if (c.title && typeof c.title === 'string' && c.title.includes('(Section ')) return false
+    return true
+  })
 }
 
 async function saveCloudCatalogues(items: CatalogueItem[]) {
