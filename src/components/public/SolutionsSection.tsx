@@ -18,64 +18,64 @@ const DEFAULT_SOLUTIONS: CategoryCard[] = [
     id: '01',
     title: 'General Surgery',
     slug: 'general-surgery',
-    description: 'High-precision surgical scissors, forceps, scalpels, and retractors.',
+    description: 'Precision Instruments For All Surgical Discipline',
     image_url: '/images/cat-scissors-shears.png',
   },
   {
     id: '02',
-    title: 'Dental Instruments',
+    title: 'Dental',
     slug: 'dental',
-    description: 'Precision dental scalpels, probes, forceps, and restorative tools.',
-    image_url: '/images/icon-dental.png',
+    description: 'Complete Dental Solutions For Every Specialty',
+    image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1791989743190-dental-icon-1.png',
   },
   {
     id: '03',
     title: 'Medical Hollowware',
     slug: 'medical-hollowware',
-    description: 'Otoscopes, ophthalmoscopes, reflex hammers, and diagnostic sets.',
-    image_url: '/images/cat-handles-blades.png',
+    description: 'Instrument Storage & Sterilization Solutions',
+    image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1791989765619-holloware-icon-1.png',
   },
   {
     id: '04',
-    title: 'ophthalmic',
+    title: 'Ophthalmic',
     slug: 'ophthalmic',
-    description: 'Bone holding forceps, rongeurs, bone chisels, and implant tools.',
-    image_url: '/images/cat-scissors-shears.png',
+    description: 'Complete Ophthalmic Instrument Range',
+    image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1791989797985-ophthalmic-icon-1.png',
   },
   {
     id: '05',
-    title: 'hospital furniture',
+    title: 'Hospital Furniture',
     slug: 'hospital-furniture',
     description: 'Functional Solutions For Hospitals',
-    image_url: '/images/icon-hospital-furniture.png',
+    image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1791989818476-hospital-furniture-icon-1.png',
   },
   {
     id: '06',
     title: 'Single Use Instruments',
     slug: 'single-use-instruments',
     description: 'Reliable Single-Use Solutions',
-    image_url: '/images/icon-single-use-instruments.png',
+    image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1791989834976-singleuse-icon-1.png',
   },
   {
     id: '07',
     title: 'Veterinary Instruments',
     slug: 'veterinary-instruments',
     description: 'Efficiency in veterinary procedures and animal healthcare.',
-    image_url: '/images/cat-scissors-shears.png',
+    image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1791989858009-veterinary.png',
   },
   {
     id: '08',
     title: 'Plastic Surgery',
     slug: 'plastic-surgery',
     description: 'Reliable performance in delicate plastic and reconstructive procedures.',
-    image_url: '/images/cat-retractors.png',
+    image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1791989874226-plastic.png',
   },
   {
     id: '09',
     title: 'Special Surgical Instruments',
     slug: 'special-surgical-instruments',
     description: 'Specialized, precision-engineered instruments designed for demanding surgical procedures, offering excellent control, accuracy.',
-    image_url: '/images/cat-handles-blades.png',
+    image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1791989893235-special-ins.png',
   },
 ]
 
@@ -92,12 +92,15 @@ export function SolutionsSection({ initialSolutions }: SolutionsSectionProps = {
     // 1. First priority: load authoritative solutions cards edited in Admin Content (#sec-solutions)
     loadPersistentData('durable_solutions_data', DEFAULT_SOLUTIONS, (data: any) => {
       if (Array.isArray(data) && data.length > 0) {
-        const seen = new Set<string>()
+        const seenTitle = new Set<string>()
+        const seenCount = new Set<string>()
         const clean: any[] = []
         for (const item of data) {
-          const k = ((item.count || '') + '_' + (item.title || '')).toLowerCase().trim()
-          if (!seen.has(k)) {
-            seen.add(k)
+          const titleKey = (item.title || '').toLowerCase().trim()
+          const countKey = (item.count || '').trim()
+          if (!seenTitle.has(titleKey) && (!countKey || !seenCount.has(countKey))) {
+            seenTitle.add(titleKey)
+            if (countKey) seenCount.add(countKey)
             clean.push(item)
           }
         }

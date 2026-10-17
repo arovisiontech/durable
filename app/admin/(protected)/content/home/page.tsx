@@ -159,61 +159,61 @@ export default function AdminContentHomePage() {
       title: 'General Surgery',
       image_url: '/images/cat-scissors-shears.png',
       count: '01',
-      description: 'High-precision surgical scissors, forceps, scalpels, and retractors.',
+      description: 'Precision Instruments For All Surgical Discipline',
     },
     {
       id: 'sol-2',
-      title: 'Dental Instruments',
-      image_url: '/images/icon-dental.png',
+      title: 'Dental',
+      image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1791989743190-dental-icon-1.png',
       count: '02',
-      description: 'Precision dental scalpels, probes, forceps, and restorative tools.',
+      description: 'Complete Dental Solutions For Every Specialty',
     },
     {
       id: 'sol-3',
       title: 'Medical Hollowware',
-      image_url: '/images/cat-handles-blades.png',
+      image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1791989765619-holloware-icon-1.png',
       count: '03',
-      description: 'Otoscopes, ophthalmoscopes, reflex hammers, and diagnostic sets.',
+      description: 'Instrument Storage & Sterilization Solutions',
     },
     {
       id: 'sol-4',
-      title: 'ophthalmic',
-      image_url: '/images/cat-scissors-shears.png',
+      title: 'Ophthalmic',
+      image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1791989797985-ophthalmic-icon-1.png',
       count: '04',
-      description: 'Bone holding forceps, rongeurs, bone chisels, and implant tools.',
+      description: 'Complete Ophthalmic Instrument Range',
     },
     {
       id: 'sol-5',
-      title: 'hospital furniture',
-      image_url: '/images/icon-hospital-furniture.png',
+      title: 'Hospital Furniture',
+      image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1791989818476-hospital-furniture-icon-1.png',
       count: '05',
       description: 'Functional Solutions For Hospitals',
     },
     {
       id: 'sol-6',
       title: 'Single Use Instruments',
-      image_url: '/images/icon-single-use-instruments.png',
+      image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1791989834976-singleuse-icon-1.png',
       count: '06',
       description: 'Reliable Single-Use Solutions',
     },
     {
       id: 'sol-7',
       title: 'Veterinary Instruments',
-      image_url: '/images/cat-scissors-shears.png',
+      image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1791989858009-veterinary.png',
       count: '07',
       description: 'Efficiency in veterinary procedures and animal healthcare.',
     },
     {
       id: 'sol-8',
       title: 'Plastic Surgery',
-      image_url: '/images/cat-retractors.png',
+      image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1791989874226-plastic.png',
       count: '08',
       description: 'Reliable performance in delicate plastic and reconstructive procedures.',
     },
     {
       id: 'sol-9',
       title: 'Special Surgical Instruments',
-      image_url: '/images/cat-handles-blades.png',
+      image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1791989893235-special-ins.png',
       count: '09',
       description: 'Specialized, precision-engineered instruments designed for demanding surgical procedures, offering excellent control, accuracy.',
     },
@@ -363,17 +363,23 @@ export default function AdminContentHomePage() {
     })
     loadPersistentData('durable_solutions_data', DEFAULT_SOLUTIONS_9, (data) => {
       if (Array.isArray(data) && data.length > 0) {
-        // Guaranteed deduplication so duplicate cards can never occur
-        const seen = new Set<string>()
+        // Guaranteed deduplication by title and count so duplicate cards can never occur
+        const seenTitle = new Set<string>()
+        const seenCount = new Set<string>()
         const clean: AdminSolutionCard[] = []
         for (const item of data) {
-          const k = ((item.count || '') + '_' + (item.title || '')).toLowerCase().trim()
-          if (!seen.has(k)) {
-            seen.add(k)
+          const titleKey = (item.title || '').toLowerCase().trim()
+          const countKey = (item.count || '').trim()
+          if (!seenTitle.has(titleKey) && (!countKey || !seenCount.has(countKey))) {
+            seenTitle.add(titleKey)
+            if (countKey) seenCount.add(countKey)
             clean.push(item)
           }
         }
         setSolutionsData(clean)
+        try {
+          localStorage.setItem('durable_solutions_data', JSON.stringify(clean))
+        } catch {}
       }
     })
     loadPersistentData('durable_quality_trust_data', qualityTrustData, (data) => {
