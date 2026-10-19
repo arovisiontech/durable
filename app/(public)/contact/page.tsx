@@ -22,7 +22,7 @@ const DEFAULT_INFO = {
   phone1: 'Phone : (+92) 52 3563200',
   phone2: 'Phone: (+92) 52 3553777 | (+92) 523252500',
   emailTitle: 'Email Support',
-  email: 'Info@Durablehs.Com',
+  email: 'info@durablehs.com',
   hoursTitle: 'Business Hours',
   hoursLine1: 'Monday - Saturday: 8:00 AM - 6:00 PM (PKT)',
   hoursLine2: '24/7 Priority Emergency Export Support',

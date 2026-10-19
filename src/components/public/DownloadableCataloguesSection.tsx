@@ -313,11 +313,11 @@ export function DownloadableCataloguesSection({ initialCatalogues }: Downloadabl
 
               <div className="pt-1 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] font-bold text-[#0B1B3D]">
                 <a
-                  href="mailto:Info@Durablehs.Com?subject=Request%20Catalogue%20Access%20Code"
+                  href="mailto:info@durablehs.com?subject=Request%20Catalogue%20Access%20Code"
                   className="flex items-center gap-1.5 hover:text-[#E31B23] transition-colors"
                 >
                   <Mail className="w-3.5 h-3.5 text-[#E31B23]" />
-                  <span>Info@Durablehs.Com</span>
+                  <span>info@durablehs.com</span>
                 </a>
 
                 <a

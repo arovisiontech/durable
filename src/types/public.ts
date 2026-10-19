@@ -57,3 +57,48 @@ export interface PublicSearchResult {
     image_url: string | null
   }>
 }
+
+export interface FooterLinkItem {
+  label: string
+  href: string
+  isHighlight?: boolean
+}
+
+export interface PublicFooterData {
+  bannerSubtitle: string
+  bannerTitle: string
+  bannerButtonText: string
+  bannerButtonLink: string
+
+  logoUrl: string
+  newsletterTitle: string
+  newsletterPlaceholder: string
+  newsletterButtonText: string
+
+  locationTitle: string
+  addressLine1: string
+  addressLine2: string
+  mapUrl: string
+  phone1: string
+  phone2: string
+  email: string
+
+  socials: {
+    instagram: string
+    facebook: string
+    twitter: string
+    linkedin: string
+    pinterest: string
+  }
+
+  quickLinksTitle: string
+  quickLinks: FooterLinkItem[]
+
+  productRangeTitle: string
+  productRangeLinks: FooterLinkItem[]
+
+  copyrightText: string
+  designedByText: string
+  designedByLink: string
+}
+

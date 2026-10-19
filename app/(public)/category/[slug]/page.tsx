@@ -84,8 +84,8 @@ export default async function CategoryDetailPage({ params }: CategoryPageProps) 
     }
   }
 
-  // 2. Navigation pills from active categories (all 9 categories matching SS 3)
-  const allCategoriesList =
+  // 2. Navigation pills from active categories (all 9 categories matching SS 3, Dental guaranteed at position 2)
+  let allCategoriesList =
     allCategories.length > 0
       ? allCategories.map((c) => ({ slug: c.slug, name: c.name }))
       : [
@@ -99,6 +99,11 @@ export default async function CategoryDetailPage({ params }: CategoryPageProps) 
           { slug: 'plastic-surgery', name: 'Plastic Surgery' },
           { slug: 'special-surgical-instruments', name: 'Special Surgical Instruments' },
         ]
+
+  if (!allCategoriesList.some((c) => c.slug === 'dental')) {
+    allCategoriesList.splice(1, 0, { slug: 'dental', name: 'Dental' })
+  }
+
 
   return (
     <div className="w-full bg-[#FAFAFA] min-h-screen pb-16 space-y-10">

@@ -31,6 +31,7 @@ import {
   PanelLeftOpen,
   X,
   Cross,
+  MapPin,
 } from 'lucide-react'
 
 interface AdminSidebarProps {
@@ -69,6 +70,7 @@ const contentNavGroup: NavGroup = {
     { name: 'Events Page', href: '/admin/content/events', icon: Calendar },
     { name: 'Blog Page', href: '/admin/content/blog', icon: Newspaper },
     { name: 'Contact Page', href: '/admin/content/contact', icon: Phone },
+    { name: 'Footer & Locations', href: '/admin/content/footer', icon: MapPin },
     { name: 'FAQs', href: '/admin/content/faqs', icon: HelpCircle },
   ],
 }

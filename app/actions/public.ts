@@ -6,7 +6,9 @@ import {
   PublicNavigationItem,
   PublicHeroSlide,
   PublicSearchResult,
+  PublicFooterData,
 } from '@/src/types/public'
+import { DEFAULT_FOOTER_DATA } from '@/src/data/defaultFooterData'
 import { CategoryItem } from '@/src/types/category'
 import { ProductItem } from '@/src/types/product'
 import { CatalogueItem } from '@/src/types/catalogue'
@@ -60,7 +62,30 @@ export async function fetchPublicCategories(): Promise<CategoryItem[]> {
     if (pageSec && pageSec.length > 0 && pageSec[0]?.content) {
       const parsed = pageSec[0].content.data !== undefined ? pageSec[0].content.data : pageSec[0].content
       if (Array.isArray(parsed) && parsed.length > 0) {
-        const published = parsed.filter((c: any) => c.is_published !== false)
+        // Guarantee Dental is always published and in position 2
+        const normalized = parsed.map((c: any) => {
+          if (c.slug === 'dental' || c.id === 'cat-dental' || c.name?.toLowerCase() === 'dental') {
+            return { ...c, is_published: true, sort_order: c.sort_order ?? 2 }
+          }
+          return c
+        })
+        let published = normalized.filter((c: any) => c.is_published !== false)
+        if (!published.some((c: any) => c.slug === 'dental')) {
+          published.splice(1, 0, {
+            id: 'cat-dental',
+            parent_id: null,
+            name: 'Dental',
+            slug: 'dental',
+            description: 'Complete Dental Solutions For Every Specialty',
+            image_url: '/images/icon-dental.png',
+            sort_order: 2,
+            is_published: true,
+            created_at: '2026-10-14T19:10:28.945Z',
+            updated_at: '2026-10-14T19:10:28.945Z',
+            product_count: 4,
+            level: 0,
+          })
+        }
         published.sort((a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0))
         return published as CategoryItem[]
       }
@@ -70,10 +95,33 @@ export async function fetchPublicCategories(): Promise<CategoryItem[]> {
   }
 
   const all = getServerCategories()
-  const published = all.filter((c) => c.is_published !== false)
+  const normalized = all.map((c) => {
+    if (c.slug === 'dental' || c.id === 'cat-dental' || c.name?.toLowerCase() === 'dental') {
+      return { ...c, is_published: true, sort_order: c.sort_order ?? 2 }
+    }
+    return c
+  })
+  let published = normalized.filter((c) => c.is_published !== false)
+  if (!published.some((c) => c.slug === 'dental')) {
+    published.splice(1, 0, {
+      id: 'cat-dental',
+      parent_id: null,
+      name: 'Dental',
+      slug: 'dental',
+      description: 'Complete Dental Solutions For Every Specialty',
+      image_url: '/images/icon-dental.png',
+      sort_order: 2,
+      is_published: true,
+      created_at: '2026-10-14T19:10:28.945Z',
+      updated_at: '2026-10-14T19:10:28.945Z',
+      product_count: 4,
+      level: 0,
+    })
+  }
   published.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
   return published
 }
+
 
 export async function fetchPublicSubcategoryPdfs(): Promise<SubcategoryPdfItem[]> {
   try {
@@ -435,3 +483,42 @@ export async function searchPublicAction(queryStr: string): Promise<PublicSearch
     return { products: [], categories: [] }
   }
 }
+
+export async function fetchPublicFooterData(): Promise<PublicFooterData> {
+  try {
+    const supabase = createPublicClient()
+    const { data: pageSec } = await supabase
+      .from('page_sections')
+      .select('content')
+      .eq('heading', 'durable_footer_data')
+      .order('updated_at', { ascending: false })
+      .limit(1)
+
+    if (pageSec && pageSec.length > 0 && pageSec[0]?.content) {
+      const parsed = pageSec[0].content.data !== undefined ? pageSec[0].content.data : pageSec[0].content
+      if (parsed && typeof parsed === 'object') {
+        return {
+          ...DEFAULT_FOOTER_DATA,
+          ...parsed,
+          email: parsed.email?.toLowerCase() || DEFAULT_FOOTER_DATA.email,
+          mapUrl: parsed.mapUrl || DEFAULT_FOOTER_DATA.mapUrl,
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('Error fetching public footer data from cloud:', err)
+  }
+
+  const serverVal = getServerData<Record<string, any> | null>('durable_footer_data', null)
+  if (serverVal && typeof serverVal === 'object') {
+    return {
+      ...DEFAULT_FOOTER_DATA,
+      ...(serverVal as Record<string, any>),
+      email: serverVal.email?.toLowerCase() || DEFAULT_FOOTER_DATA.email,
+      mapUrl: serverVal.mapUrl || DEFAULT_FOOTER_DATA.mapUrl,
+    }
+  }
+
+  return DEFAULT_FOOTER_DATA
+}
+

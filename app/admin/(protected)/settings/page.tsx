@@ -22,8 +22,8 @@ export default function AdminSettingsPage() {
     tagline: 'Precision. Quality. Trust.',
     siteDescription:
       'Durable Hospital Supplies is a trusted manufacturer and exporter of premium surgical, dental, hollowware, and ophthalmic instruments serving 15+ countries worldwide.',
-    contactEmail: 'Info@Durablehs.Com',
-    salesEmail: 'Sales@Durablehs.Com',
+    contactEmail: 'info@durablehs.com',
+    salesEmail: 'sales@durablehs.com',
     phoneMain: '(+92) 52 3563200',
     phoneAlt: '(+92) 52 3553777',
     address: 'Noal More, Roras Road P.O. Box 919, Sialkot - 51310 Pakistan',

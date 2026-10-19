@@ -123,7 +123,7 @@ const DEFAULT_FAQS = [
     category: 'General & Payments',
     question: 'How can I obtain your full PDF catalogue and price list?',
     answer:
-      'You can download our 2026 General Surgical and Dental PDF Catalogues directly from our Catalogues page, or send an inquiry to Info@Durablehs.Com to receive custom SKU pricing spreadsheets tailored to your order quantity.',
+      'You can download our 2026 General Surgical and Dental PDF Catalogues directly from our Catalogues page, or send an inquiry to info@durablehs.com to receive custom SKU pricing spreadsheets tailored to your order quantity.',
     isActive: true,
   },
 ]
