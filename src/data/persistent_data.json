@@ -1892,5 +1892,106 @@
     "copyrightText": "© 2026 Durable Hospital Supplies All Rights Reserved",
     "designedByText": "Brandie Design Agency",
     "designedByLink": "#"
-  }
+  },
+  "durable_process_data": [
+    {
+      "id": "proc-1792524647601-dz7i",
+      "step_number": 1,
+      "stepNumber": "01",
+      "title": "QC Inspection",
+      "category": "Research & Development",
+      "subtitle": "Research & Development",
+      "description": "Rigorous quality control and working-end inspection ensuring precise jaw alignment and exact tolerances.",
+      "image_url": "https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792524632956-qc-inspection-teethworking-end.jpg",
+      "image": "https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792524632956-qc-inspection-teethworking-end.jpg"
+    },
+    {
+      "id": "proc-1792524708539-rwyv",
+      "step_number": 2,
+      "stepNumber": "02",
+      "title": "Initial Polishing",
+      "category": "Material Sourcing",
+      "subtitle": "Material Sourcing",
+      "description": "Specialized preliminary polishing removing burrs and surface irregularities before precision finishing.",
+      "image_url": "https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792524686433-initial-polishing.jpg",
+      "image": "https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792524686433-initial-polishing.jpg"
+    },
+    {
+      "id": "proc-1792524761468-dnq4",
+      "step_number": 3,
+      "stepNumber": "03",
+      "title": "Final Setting",
+      "category": "Precision Manufacturing",
+      "subtitle": "Precision Manufacturing",
+      "description": "Expert hand-setting and joint calibration on anvils to guarantee smooth action and perfect closure.",
+      "image_url": "https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792524740321-final-setting.jpg",
+      "image": "https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792524740321-final-setting.jpg"
+    },
+    {
+      "id": "proc-1792524780419-sqrk",
+      "step_number": 4,
+      "stepNumber": "04",
+      "title": "Sand Blasting",
+      "category": "Quality Inspection",
+      "subtitle": "Quality Inspection",
+      "description": "Uniform matte satin finish application through micro-fine abrasive blasting eliminating glare.",
+      "image_url": "https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792524771685-sand-blasting.jpg",
+      "image": "https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792524771685-sand-blasting.jpg"
+    },
+    {
+      "id": "proc-1792524947519-laser",
+      "step_number": 5,
+      "stepNumber": "05",
+      "title": "Laser Marking & Etching",
+      "category": "Surface Finishing",
+      "subtitle": "Surface Finishing",
+      "description": "High-precision fiber laser marking for CE marks, lot numbers, barcodes, and custom brand logos.",
+      "image_url": "https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792524947519-laser-markingetching.jpg",
+      "image": "https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792524947519-laser-markingetching.jpg"
+    },
+    {
+      "id": "proc-1792524995112-weld",
+      "step_number": 6,
+      "stepNumber": "06",
+      "title": "Laser Welding",
+      "category": "Precision Manufacturing",
+      "subtitle": "Precision Manufacturing",
+      "description": "Advanced micro-laser welding of tungsten carbide inserts and delicate joint components.",
+      "image_url": "https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792524995112-laser-welding.jpg",
+      "image": "https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792524995112-laser-welding.jpg"
+    },
+    {
+      "id": "proc-1792525037867-pack",
+      "step_number": 7,
+      "stepNumber": "07",
+      "title": "Final Packing",
+      "category": "Sterilization & Cleaning",
+      "subtitle": "Sterilization & Cleaning",
+      "description": "Ultrasonic solvent bath cleaning followed by cleanroom packaging with medical-grade protective pouches.",
+      "image_url": "https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792525037867-final-packing.jpg",
+      "image": "https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792525037867-final-packing.jpg"
+    },
+    {
+      "id": "proc-1792525066777-disp",
+      "step_number": 8,
+      "stepNumber": "08",
+      "title": "Dispatch & Logistics",
+      "category": "Testing & Validation",
+      "subtitle": "Testing & Validation",
+      "description": "Final outgoing batch inspection, certificate verification, and secure worldwide express dispatch.",
+      "image_url": "https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792525066777-dispatch.jpg",
+      "image": "https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792525066777-dispatch.jpg"
+    },
+    {
+      "id": "proc-1792520578949-pass",
+      "step_number": 9,
+      "stepNumber": "09",
+      "title": "Passivation & Corrosion Testing",
+      "category": "Testing & Validation",
+      "subtitle": "Testing & Validation",
+      "description": "ASTM F1089 boil and copper sulfate testing verifying complete chromium oxide passivation layer against rust.",
+      "image_url": "https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792520578949-dsc0950.jpg",
+      "image": "https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792520578949-dsc0950.jpg"
+    }
+  ]
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import {
   Plus,
@@ -15,7 +15,7 @@ import {
   Filter,
 } from 'lucide-react'
 import { AdminMediaUploadPlaceholder } from '@/src/components/admin/AdminMediaUploadPlaceholder'
-import { savePersistentData, loadPersistentData } from '@/src/lib/persistentStorage'
+import { savePersistentData, loadPersistentData, getLocalStorageSync } from '@/src/lib/persistentStorage'
 
 export interface ProcessStepItem {
   id: string
@@ -41,74 +41,103 @@ export const DEPARTMENT_CATEGORIES = [
 
 const DEFAULT_STEPS: ProcessStepItem[] = [
   {
-    id: 'step-1',
+    id: 'proc-1792524647601-dz7i',
     stepNumber: '01',
     step_number: 1,
-    title: 'Computer Aided R&D & CAD Prototyping',
+    title: 'QC Inspection',
     category: 'Research & Development',
-    subtitle: 'R&D & Engineering',
-    description: '3D CAD modeling, custom instrument prototyping, and ergonomic stress simulation for surgical tools.',
-    image: '/images/process-erp-operator.png',
+    subtitle: 'Research & Development',
+    description: 'Rigorous quality control and working-end inspection ensuring precise jaw alignment and exact tolerances.',
+    image: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792524632956-qc-inspection-teethworking-end.jpg',
+    image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792524632956-qc-inspection-teethworking-end.jpg',
   },
   {
-    id: 'step-2',
+    id: 'proc-1792524708539-rwyv',
     stepNumber: '02',
     step_number: 2,
-    title: 'German & Japanese Stainless Steel Sourcing',
+    title: 'Initial Polishing',
     category: 'Material Sourcing',
-    subtitle: 'Raw Metallurgy Sourcing',
-    description: 'Strict procurement of AISI 420, 440, and 316L medical grade stainless steel with mill test certificates.',
-    image: '/images/process-hand-filing.png',
+    subtitle: 'Material Sourcing',
+    description: 'Specialized preliminary polishing removing burrs and surface irregularities before precision finishing.',
+    image: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792524686433-initial-polishing.jpg',
+    image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792524686433-initial-polishing.jpg',
   },
   {
-    id: 'step-3',
+    id: 'proc-1792524761468-dnq4',
     stepNumber: '03',
     step_number: 3,
-    title: 'Precision Hot Drop Forging & Machining',
+    title: 'Final Setting',
     category: 'Precision Manufacturing',
     subtitle: 'Precision Manufacturing',
-    description: 'Precision hot drop forging at 1100°C followed by CNC milling and master filing of serrations.',
-    image: '/images/process-wooden-anvil.png',
+    description: 'Expert hand-setting and joint calibration on anvils to guarantee smooth action and perfect closure.',
+    image: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792524740321-final-setting.jpg',
+    image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792524740321-final-setting.jpg',
   },
   {
-    id: 'step-4',
+    id: 'proc-1792524780419-sqrk',
     stepNumber: '04',
     step_number: 4,
-    title: 'Microscopic & Hardness QC Inspection',
+    title: 'Sand Blasting',
     category: 'Quality Inspection',
     subtitle: 'Quality Inspection',
-    description: '100% microscopic inspection under 20x magnification for jaw alignment and Rockwell C hardness testing (48-52 HRC).',
-    image: '/images/process-traveler-card.png',
+    description: 'Uniform matte satin finish application through micro-fine abrasive blasting eliminating glare.',
+    image: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792524771685-sand-blasting.jpg',
+    image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792524771685-sand-blasting.jpg',
   },
   {
-    id: 'step-5',
+    id: 'proc-1792524947519-laser',
     stepNumber: '05',
     step_number: 5,
-    title: 'Anti-Glare Satin Surface Anodizing',
+    title: 'Laser Marking & Etching',
     category: 'Surface Finishing',
     subtitle: 'Surface Finishing',
-    description: 'Passivated non-reflective satin anodizing and electro-polishing eliminating glare under operating room lamps.',
-    image: '/images/process-hand-filing.png',
+    description: 'High-precision fiber laser marking for CE marks, lot numbers, barcodes, and custom brand logos.',
+    image: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792524947519-laser-markingetching.jpg',
+    image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792524947519-laser-markingetching.jpg',
   },
   {
-    id: 'step-6',
+    id: 'proc-1792524995112-weld',
     stepNumber: '06',
     step_number: 6,
-    title: 'Ultrasonic Sterilization & Cleaning',
-    category: 'Sterilization & Cleaning',
-    subtitle: 'Sterilization & Cleaning',
-    description: 'Multi-stage ultrasonic solvent wash, bio-burden cleaning, and ISO Class 7 cleanroom packaging.',
-    image: '/images/about-surgical-instruments.png',
+    title: 'Laser Welding',
+    category: 'Precision Manufacturing',
+    subtitle: 'Precision Manufacturing',
+    description: 'Advanced micro-laser welding of tungsten carbide inserts and delicate joint components.',
+    image: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792524995112-laser-welding.jpg',
+    image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792524995112-laser-welding.jpg',
   },
   {
-    id: 'step-7',
+    id: 'proc-1792525037867-pack',
     stepNumber: '07',
     step_number: 7,
-    title: 'Boil & Passivation Corrosion Testing',
+    title: 'Final Packing',
+    category: 'Sterilization & Cleaning',
+    subtitle: 'Sterilization & Cleaning',
+    description: 'Ultrasonic solvent bath cleaning followed by cleanroom packaging with medical-grade protective pouches.',
+    image: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792525037867-final-packing.jpg',
+    image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792525037867-final-packing.jpg',
+  },
+  {
+    id: 'proc-1792525066777-disp',
+    stepNumber: '08',
+    step_number: 8,
+    title: 'Dispatch & Logistics',
     category: 'Testing & Validation',
     subtitle: 'Testing & Validation',
-    description: 'ASTM F1089 boil test and chemical nitric acid passivation verification to guarantee zero rust.',
-    image: '/images/process-erp-operator.png',
+    description: 'Final outgoing batch inspection, certificate verification, and secure worldwide express dispatch.',
+    image: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792525066777-dispatch.jpg',
+    image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792525066777-dispatch.jpg',
+  },
+  {
+    id: 'proc-1792520578949-pass',
+    stepNumber: '09',
+    step_number: 9,
+    title: 'Passivation & Corrosion Testing',
+    category: 'Testing & Validation',
+    subtitle: 'Testing & Validation',
+    description: 'ASTM F1089 boil and copper sulfate testing verifying complete chromium oxide passivation layer against rust.',
+    image: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792520578949-dsc0950.jpg',
+    image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792520578949-dsc0950.jpg',
   },
 ]
 
@@ -120,16 +149,26 @@ function normalizeCategory(rawCategory?: string, rawSubtitle?: string): string {
   if (str.includes('research') || str.includes('r&d') || str.includes('cad')) return 'Research & Development'
   if (str.includes('source') || str.includes('material') || str.includes('steel')) return 'Material Sourcing'
   if (str.includes('inspection') || str.includes('qc') || str.includes('microscopic')) return 'Quality Inspection'
-  if (str.includes('surface') || str.includes('anodiz') || str.includes('satin') || str.includes('polish')) return 'Surface Finishing'
-  if (str.includes('sterili') || str.includes('clean') || str.includes('ultrasonic')) return 'Sterilization & Cleaning'
-  if (str.includes('test') || str.includes('validation') || str.includes('boil') || str.includes('corrosion')) return 'Testing & Validation'
-  if (str.includes('manuf') || str.includes('forg') || str.includes('machin') || str.includes('filing')) return 'Precision Manufacturing'
+  if (str.includes('surface') || str.includes('anodiz') || str.includes('satin') || str.includes('polish') || str.includes('etching') || str.includes('marking')) return 'Surface Finishing'
+  if (str.includes('sterili') || str.includes('clean') || str.includes('ultrasonic') || str.includes('packing')) return 'Sterilization & Cleaning'
+  if (str.includes('test') || str.includes('validation') || str.includes('boil') || str.includes('corrosion') || str.includes('dispatch') || str.includes('logistics')) return 'Testing & Validation'
+  if (str.includes('manuf') || str.includes('forg') || str.includes('machin') || str.includes('filing') || str.includes('weld') || str.includes('setting')) return 'Precision Manufacturing'
 
   return rawCategory || rawSubtitle || 'Precision Manufacturing'
 }
 
 export default function AdminProcessStepsPage() {
-  const [steps, setSteps] = useState<ProcessStepItem[]>(DEFAULT_STEPS)
+  const [steps, setSteps] = useState<ProcessStepItem[]>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = getLocalStorageSync<ProcessStepItem[]>('durable_process_data', null as any)
+      if (Array.isArray(saved) && saved.length > 0) return saved
+    }
+    return DEFAULT_STEPS
+  })
+  const stepsRef = useRef<ProcessStepItem[]>(steps)
+  useEffect(() => {
+    stepsRef.current = steps
+  }, [steps])
   const [selectedTab, setSelectedTab] = useState<string>('All')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingStep, setEditingStep] = useState<ProcessStepItem | null>(null)
@@ -179,6 +218,7 @@ export default function AdminProcessStepsPage() {
 
   const saveToStorage = (updatedSteps: ProcessStepItem[], customMsg?: string) => {
     try {
+      stepsRef.current = updatedSteps
       savePersistentData('durable_process_data', updatedSteps)
       setSaveMessage(customMsg || 'Process steps updated and published live across all devices!')
       setIsSaved(true)

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import {
   Save,
@@ -31,7 +31,7 @@ import {
 } from 'lucide-react'
 import { AdminMediaUploadPlaceholder } from '@/src/components/admin/AdminMediaUploadPlaceholder'
 import { RichTextToolbar } from '@/src/components/admin/RichTextToolbar'
-import { savePersistentData, loadPersistentData } from '@/src/lib/persistentStorage'
+import { savePersistentData, loadPersistentData, getLocalStorageSync } from '@/src/lib/persistentStorage'
 
 // Interfaces
 export interface AdminHeroSlide {
@@ -292,16 +292,94 @@ export default function AdminContentHomePage() {
     ctaUrl: '/contact',
   })
 
-  // 8. PROCESS STEPS STATE (7 Departments)
-  const [processSteps, setProcessSteps] = useState<AdminProcessStep[]>([
-    { id: 'step-1', step_number: 1, title: 'Computer Aided R&D & CAD Prototyping', category: 'Research & Development', description: '3D modeling, CAD prototyping and ergonomic testing.', image_url: '/images/process-erp-operator.png' },
-    { id: 'step-2', step_number: 2, title: 'German & Japanese Stainless Steel Sourcing', category: 'Material Sourcing', description: 'German & Japanese stainless steel grade selection.', image_url: '/images/process-hand-filing.png' },
-    { id: 'step-3', step_number: 3, title: 'Precision Machining & Hand Filing', category: 'Precision Manufacturing', description: 'Master craftsmen hand-file jaw serrations and box joints.', image_url: '/images/process-wooden-anvil.png' },
-    { id: 'step-4', step_number: 4, title: 'Microscopic & Hardness Inspection', category: 'Quality Inspection', description: 'Microscopic inspection and Rockwell C hardness verification.', image_url: '/images/process-traveler-card.png' },
-    { id: 'step-5', step_number: 5, title: 'Anti-Glare Satin Surface Anodizing', category: 'Surface Finishing', description: 'Passivated satin finish preventing glare under surgical lamps.', image_url: '/images/process-hand-filing.png' },
-    { id: 'step-6', step_number: 6, title: 'Ultrasonic Sterilization & Cleaning', category: 'Sterilization & Cleaning', description: 'ISO Class 7 cleanroom ultrasonic wash and residue removal.', image_url: '/images/about-surgical-instruments.png' },
-    { id: 'step-7', step_number: 7, title: 'Boil & Passivation Corrosion Testing', category: 'Testing & Validation', description: 'Autoclave testing and chemical passivation validation.', image_url: '/images/process-erp-operator.png' },
-  ])
+  // 8. PROCESS STEPS STATE (All 9 Manufacturing Steps)
+  const DEFAULT_PROCESS_STEPS_9: AdminProcessStep[] = [
+    {
+      id: 'proc-1792524647601-dz7i',
+      step_number: 1,
+      title: 'QC Inspection',
+      category: 'Research & Development',
+      description: 'Rigorous quality control and working-end inspection ensuring precise jaw alignment and exact tolerances.',
+      image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792524632956-qc-inspection-teethworking-end.jpg',
+    },
+    {
+      id: 'proc-1792524708539-rwyv',
+      step_number: 2,
+      title: 'Initial Polishing',
+      category: 'Material Sourcing',
+      description: 'Specialized preliminary polishing removing burrs and surface irregularities before precision finishing.',
+      image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792524686433-initial-polishing.jpg',
+    },
+    {
+      id: 'proc-1792524761468-dnq4',
+      step_number: 3,
+      title: 'Final Setting',
+      category: 'Precision Manufacturing',
+      description: 'Expert hand-setting and joint calibration on anvils to guarantee smooth action and perfect closure.',
+      image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792524740321-final-setting.jpg',
+    },
+    {
+      id: 'proc-1792524780419-sqrk',
+      step_number: 4,
+      title: 'Sand Blasting',
+      category: 'Quality Inspection',
+      description: 'Uniform matte satin finish application through micro-fine abrasive blasting eliminating glare.',
+      image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792524771685-sand-blasting.jpg',
+    },
+    {
+      id: 'proc-1792524947519-laser',
+      step_number: 5,
+      title: 'Laser Marking & Etching',
+      category: 'Surface Finishing',
+      description: 'High-precision fiber laser marking for CE marks, lot numbers, barcodes, and custom brand logos.',
+      image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792524947519-laser-markingetching.jpg',
+    },
+    {
+      id: 'proc-1792524995112-weld',
+      step_number: 6,
+      title: 'Laser Welding',
+      category: 'Precision Manufacturing',
+      description: 'Advanced micro-laser welding of tungsten carbide inserts and delicate joint components.',
+      image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792524995112-laser-welding.jpg',
+    },
+    {
+      id: 'proc-1792525037867-pack',
+      step_number: 7,
+      title: 'Final Packing',
+      category: 'Sterilization & Cleaning',
+      description: 'Ultrasonic solvent bath cleaning followed by cleanroom packaging with medical-grade protective pouches.',
+      image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792525037867-final-packing.jpg',
+    },
+    {
+      id: 'proc-1792525066777-disp',
+      step_number: 8,
+      title: 'Dispatch & Logistics',
+      category: 'Testing & Validation',
+      description: 'Final outgoing batch inspection, certificate verification, and secure worldwide express dispatch.',
+      image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792525066777-dispatch.jpg',
+    },
+    {
+      id: 'proc-1792520578949-pass',
+      step_number: 9,
+      title: 'Passivation & Corrosion Testing',
+      category: 'Testing & Validation',
+      description: 'ASTM F1089 boil and copper sulfate testing verifying complete chromium oxide passivation layer against rust.',
+      image_url: 'https://usxgwauwqhasrzaxcvyg.supabase.co/storage/v1/object/public/website-media/uploads/2026-10/1792520578949-dsc0950.jpg',
+    },
+  ]
+
+  const [processSteps, setProcessSteps] = useState<AdminProcessStep[]>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = getLocalStorageSync<AdminProcessStep[]>('durable_process_data', null as any)
+      if (Array.isArray(saved) && saved.length > 0) return saved
+    }
+    return DEFAULT_PROCESS_STEPS_9
+  })
+
+  const processStepsRef = useRef<AdminProcessStep[]>(processSteps)
+  useEffect(() => {
+    processStepsRef.current = processSteps
+  }, [processSteps])
 
   // 9. VIDEO & CERTIFICATION LOGOS STATE
   const [videoData, setVideoData] = useState({
@@ -439,7 +517,7 @@ export default function AdminContentHomePage() {
     try {
       const heroToSave = overrideHero || heroSlides
       const solutionsToSave = overrideSolutions || solutionsData
-      const processToSave = overrideProcess || processSteps
+      const processToSave = overrideProcess || processStepsRef.current
       const certToSave = overrideCert || certLogos
       const blocksToSave = overrideBlocks || customBlocks
 
@@ -465,7 +543,7 @@ export default function AdminContentHomePage() {
 
   const handleSaveAll = (e?: React.FormEvent) => {
     if (e) e.preventDefault()
-    saveAllToStorage()
+    saveAllToStorage(undefined, undefined, processStepsRef.current)
   }
 
   // --- ACTIONS ---
@@ -1134,16 +1212,17 @@ export default function AdminContentHomePage() {
                 <ListOrdered className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-lg font-black text-[#0B1B3D]">8. How We Process Across Department Workflow (7 Departments)</h2>
-                <p className="text-xs text-slate-500">Manage all 7 manufacturing department steps (R&D, Forging, Machining, Sterilization, etc.).</p>
+                <h2 className="text-lg font-black text-[#0B1B3D]">8. How We Process Across Department Workflow ({processSteps.length} Steps)</h2>
+                <p className="text-xs text-slate-500">Manage all manufacturing department workflow steps ({processSteps.length} active steps).</p>
               </div>
             </div>
 
             <button
               onClick={() => {
                 setEditingItemId(null)
+                const currentList = processStepsRef.current.length > 0 ? processStepsRef.current : processSteps
                 setProcessForm({
-                  step_number: processSteps.length + 1,
+                  step_number: currentList.length + 1,
                   title: '',
                   category: 'Research & Development',
                   description: '',
@@ -1197,8 +1276,10 @@ export default function AdminContentHomePage() {
                   <button
                     type="button"
                     onClick={() => {
-                      const updated = processSteps.filter((p) => p.id !== step.id)
+                      const currentList = processStepsRef.current.length > 0 ? processStepsRef.current : processSteps
+                      const updated = currentList.filter((p) => p.id !== step.id)
                       setProcessSteps(updated)
+                      processStepsRef.current = updated
                       savePersistentData('durable_process_data', updated)
                       saveAllToStorage(undefined, undefined, updated)
                     }}
@@ -1665,19 +1746,21 @@ export default function AdminContentHomePage() {
                   type="button"
                   onClick={() => {
                     let updated: AdminProcessStep[] = []
+                    const currentList = processStepsRef.current.length > 0 ? processStepsRef.current : processSteps
                     if (editingItemId) {
-                      updated = processSteps.map((p) =>
+                      updated = currentList.map((p) =>
                         p.id === editingItemId
                           ? { ...p, ...processForm, id: editingItemId }
                           : p
                       )
                     } else {
                       updated = [
-                        ...processSteps,
+                        ...currentList,
                         { id: `proc-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, ...processForm },
                       ]
                     }
                     setProcessSteps(updated)
+                    processStepsRef.current = updated
                     savePersistentData('durable_process_data', updated)
                     saveAllToStorage(undefined, undefined, updated)
                     setActiveModal(null)

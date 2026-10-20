@@ -69,7 +69,7 @@ export async function GET(request: Request) {
       parsedValue = data[0].content.data !== undefined ? data[0].content.data : data[0].content
     }
 
-    const serverVal = getServerData(key, null)
+    const serverVal = getServerData<any>(key, null)
 
     // Handle deduplication for solutions cards
     if (key === 'durable_solutions_data') {
@@ -89,6 +89,24 @@ export async function GET(request: Request) {
           return true
         })
         return NextResponse.json({ success: true, data: cleanList, source: 'deduplicated' })
+      }
+    }
+
+    // Handle process data: ensure full 9 steps are never truncated by stale 4-item cloud rows
+    if (key === 'durable_process_data') {
+      const serverCount = Array.isArray(serverVal) ? serverVal.length : 0
+      const cloudCount = Array.isArray(parsedValue) ? parsedValue.length : 0
+      if (serverCount > cloudCount) {
+        // Heal Supabase in background
+        if (supabase) {
+          supabase
+            .from('page_sections')
+            .update({ content: { data: serverVal }, updated_at: new Date().toISOString() })
+            .eq('heading', 'durable_process_data')
+            .then(() => {})
+            .catch(() => {})
+        }
+        return NextResponse.json({ success: true, data: serverVal, source: 'server_store_rich' })
       }
     }
 

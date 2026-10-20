@@ -130,17 +130,25 @@ export function loadPersistentData<T>(
   const syncData = getLocalStorageSync<T>(key, defaultValue)
 
   if (typeof window !== 'undefined') {
+    let currentBestData: T =
+      syncData !== defaultValue && syncData !== null && syncData !== undefined
+        ? syncData
+        : defaultValue
+
     // 1. Load from IndexedDB
     getItemIDB<T>(key)
       .then((idbData) => {
         if (idbData !== null && idbData !== undefined) {
+          currentBestData = idbData
           onLoaded(idbData)
-        } else if (syncData !== defaultValue) {
+        } else if (syncData !== defaultValue && syncData !== null && syncData !== undefined) {
           onLoaded(syncData)
         }
       })
       .catch(() => {
-        onLoaded(syncData)
+        if (syncData !== defaultValue && syncData !== null && syncData !== undefined) {
+          onLoaded(syncData)
+        }
       })
 
     // 2. Fetch latest saved data from Cloud DB (/api/sync) automatically across all devices
@@ -148,11 +156,31 @@ export function loadPersistentData<T>(
       .then((res) => res.json())
       .then((resData) => {
         if (resData && resData.success && resData.data !== null && resData.data !== undefined) {
-          onLoaded(resData.data)
+          const cloudData = resData.data
+
+          // Smart Protection: NEVER allow stale cloud data with fewer items to overwrite richer local data
+          if (Array.isArray(currentBestData) && Array.isArray(cloudData)) {
+            if (currentBestData.length > cloudData.length) {
+              console.info(
+                `[persistentStorage] Preserving richer local data for "${key}" (${currentBestData.length} items vs Cloud ${cloudData.length} items). Updating cloud.`
+              )
+              // Sync the richer local data back to the cloud to heal Supabase
+              fetch('/api/sync', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key, value: currentBestData }),
+              }).catch(() => {})
+              return
+            }
+          }
+
+          // Otherwise cloudData is valid and up to date
+          currentBestData = cloudData
+          onLoaded(cloudData)
           // Update local IDB & LocalStorage with latest cloud data
-          setItemIDB(key, resData.data).catch(() => {})
+          setItemIDB(key, cloudData).catch(() => {})
           try {
-            localStorage.setItem(key, JSON.stringify(resData.data))
+            localStorage.setItem(key, JSON.stringify(cloudData))
           } catch (e) {}
         }
       })
