@@ -32,6 +32,7 @@ interface AdminMediaUploadPlaceholderProps {
   previewHeight?: string
   className?: string
   helperText?: string
+  onUploadingChange?: (uploading: boolean) => void
 }
 
 export function AdminMediaUploadPlaceholder({
@@ -46,6 +47,7 @@ export function AdminMediaUploadPlaceholder({
   previewHeight = 'h-36',
   className = '',
   helperText,
+  onUploadingChange,
 }: AdminMediaUploadPlaceholderProps) {
   // Normalize effective type
   const effectiveType = mediaType === 'document' ? 'pdf' : (mediaType || type || 'image')
@@ -78,7 +80,8 @@ export function AdminMediaUploadPlaceholder({
 
     const file = files[0]
     setIsUploading(true)
-    setProgress(20)
+    onUploadingChange?.(true)
+    setProgress(30)
     setUploadError(null)
 
     const isPdf =
@@ -93,7 +96,7 @@ export function AdminMediaUploadPlaceholder({
     try {
       // 1. Direct upload using authenticated browser Supabase client
       const supabase = createClient()
-      setProgress(40)
+      setProgress(50)
 
       const { data: uploadData, error: uploadErr } = await supabase.storage
         .from(bucketName)
@@ -112,6 +115,7 @@ export function AdminMediaUploadPlaceholder({
           setProgress(100)
           onChange(pubData.publicUrl)
           setIsUploading(false)
+          onUploadingChange?.(false)
           if (fileInputRef.current) fileInputRef.current.value = ''
           return
         }
@@ -122,7 +126,7 @@ export function AdminMediaUploadPlaceholder({
       }
 
       // 2. Fallback to /api/upload endpoint
-      setProgress(60)
+      setProgress(75)
       const formData = new FormData()
       formData.append('file', file)
 
@@ -136,6 +140,7 @@ export function AdminMediaUploadPlaceholder({
         setProgress(100)
         onChange(data.url)
         setIsUploading(false)
+        onUploadingChange?.(false)
         if (fileInputRef.current) fileInputRef.current.value = ''
         return
       }
@@ -149,17 +154,20 @@ export function AdminMediaUploadPlaceholder({
           const result = reader.result as string
           onChange(result)
           setIsUploading(false)
+          onUploadingChange?.(false)
           setProgress(100)
           if (fileInputRef.current) fileInputRef.current.value = ''
         }
         reader.onerror = () => {
           setUploadError('Failed to read file from disk')
           setIsUploading(false)
+          onUploadingChange?.(false)
         }
         reader.readAsDataURL(file)
       } catch (err: any) {
         setUploadError(err?.message || 'Upload failed')
         setIsUploading(false)
+        onUploadingChange?.(false)
       }
     }
   }
@@ -213,6 +221,19 @@ export function AdminMediaUploadPlaceholder({
       {/* Value Preview State */}
       {value && value.trim() !== '' ? (
         <div className="relative group border border-slate-200 rounded-2xl bg-slate-50 p-3 overflow-hidden shadow-xs">
+          {/* Active Uploading Overlay */}
+          {isUploading && (
+            <div className="absolute inset-0 bg-slate-900/85 backdrop-blur-xs z-30 flex flex-col items-center justify-center space-y-2 p-4 text-white">
+              <SpinnerIcon className="w-7 h-7 text-[#E31B23] animate-spin" />
+              <span className="text-xs font-black tracking-wide">Uploading File ({progress}%)...</span>
+              <div className="w-48 h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-[#E31B23] transition-all duration-200"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+            </div>
+          )}
           <div className="flex items-center gap-4">
             {/* Visual Media Thumbnail */}
             <div className={`w-28 sm:w-36 ${previewHeight} rounded-xl overflow-hidden bg-slate-900 border border-slate-300 flex items-center justify-center shrink-0 relative`}>

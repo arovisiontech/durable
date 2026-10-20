@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import Link from 'next/link'
 import {
   Plus,
@@ -16,6 +16,7 @@ import {
   FileText,
   Lock,
   Sparkles,
+  Loader2,
 } from 'lucide-react'
 import { AdminMediaUploadPlaceholder } from '@/src/components/admin/AdminMediaUploadPlaceholder'
 import {
@@ -57,16 +58,19 @@ export function SubcategoryManager({ initialSubcategories }: SubcategoryManagerP
   const [search, setSearch] = useState('')
   const [selectedCategorySlug, setSelectedCategorySlug] = useState('all')
   const [isSaved, setIsSaved] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [isUploadingMedia, setIsUploadingMedia] = useState(false)
   const [saveMessage, setSaveMessage] = useState('Subcategories PDF catalogs updated live!')
+  const isSavingRef = useRef(false)
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingItem, setEditingItem] = useState<SubcategoryPdfItem | null>(null)
   const [formData, setFormData] = useState({
     title: '',
-    categorySlug: 'general-surgery',
-    image: '/images/blog-instruments-tray.png',
-    pdfUrl: '/pdf/general-surgical-instruments-catalogue.pdf',
+    categorySlug: 'dental',
+    image: '',
+    pdfUrl: '',
     accessCode: '12345',
     description: '',
   })
@@ -81,9 +85,10 @@ export function SubcategoryManager({ initialSubcategories }: SubcategoryManagerP
   }, [initialSubcategories])
 
   const loadData = useCallback(async () => {
+    if (isSavingRef.current) return
     try {
       const res = await fetchSubcategoriesAction()
-      if (res?.subcategories && Array.isArray(res.subcategories)) {
+      if (res?.subcategories && Array.isArray(res.subcategories) && !isSavingRef.current) {
         setSubcategories(res.subcategories)
         saveStoredSubcategoryPdfs(res.subcategories)
         setIsLoading(false)
@@ -93,11 +98,11 @@ export function SubcategoryManager({ initialSubcategories }: SubcategoryManagerP
       console.warn('[SubcategoryManager] fetchSubcategoriesAction notice:', err)
     }
 
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && !isSavingRef.current) {
       fetch('/api/sync?key=durable_subcategories_pdf')
         .then((res) => res.json())
         .then((result) => {
-          if (result?.data && Array.isArray(result.data)) {
+          if (result?.data && Array.isArray(result.data) && !isSavingRef.current) {
             setSubcategories(result.data)
             saveStoredSubcategoryPdfs(result.data)
           }
@@ -111,50 +116,42 @@ export function SubcategoryManager({ initialSubcategories }: SubcategoryManagerP
     if (!initialSubcategories || initialSubcategories.length === 0) {
       loadData()
     }
-    const handleUpdate = () => loadData()
+    const handleUpdate = () => {
+      if (isSavingRef.current) return
+      loadData()
+    }
     window.addEventListener('durable_content_updated', handleUpdate)
     return () => window.removeEventListener('durable_content_updated', handleUpdate)
   }, [loadData, initialSubcategories])
 
-  const saveToStorage = (updatedList: SubcategoryPdfItem[], msg?: string) => {
+  const saveToStorage = async (updatedList: SubcategoryPdfItem[], msg?: string) => {
+    isSavingRef.current = true
+    setIsSaving(true)
+
     // 1. Immediately update component state
     setSubcategories(updatedList)
 
     // 2. Save to local storage & IndexedDB immediately
     saveStoredSubcategoryPdfs(updatedList)
 
-    // 3. Direct browser Supabase cloud update using authenticated admin session
+    // 3. Await cloud save so server and cloud are guaranteed synchronized
     try {
-      const browserSupabase = createBrowserClient()
-      browserSupabase
-        .from('page_sections')
-        .update({
-          content: { data: updatedList },
-          updated_at: new Date().toISOString(),
-        })
-        .eq('heading', 'durable_subcategories_pdf')
-        .then(({ error }) => {
-          if (error) {
-            console.warn('[SubcategoryManager] Direct Supabase update notice:', error)
-          }
-        })
+      await Promise.allSettled([
+        saveSubcategoriesAction(updatedList),
+        fetch('/api/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key: 'durable_subcategories_pdf', value: updatedList }),
+        }),
+      ])
     } catch (err) {
-      console.warn('[SubcategoryManager] Direct Supabase exception:', err)
+      console.warn('[SubcategoryManager] Cloud save notice:', err)
+    } finally {
+      setTimeout(() => {
+        isSavingRef.current = false
+        setIsSaving(false)
+      }, 600)
     }
-
-    // 4. Also invoke server action for permanent server store and revalidation
-    saveSubcategoriesAction(updatedList).catch((err) => {
-      console.warn('[SubcategoryManager] Server action notice:', err)
-    })
-
-    // 5. Update /api/sync endpoint
-    fetch('/api/sync', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ key: 'durable_subcategories_pdf', value: updatedList }),
-    }).catch((err) => {
-      console.warn('[SubcategoryManager] Sync notice:', err)
-    })
 
     setSaveMessage(msg || 'Subcategories PDF catalogs updated live!')
     setIsSaved(true)
@@ -179,14 +176,14 @@ export function SubcategoryManager({ initialSubcategories }: SubcategoryManagerP
 
   const handleOpenAdd = (defaultCat?: string) => {
     setEditingItem(null)
-    const targetCat = defaultCat && defaultCat !== 'all' ? defaultCat : selectedCategorySlug !== 'all' ? selectedCategorySlug : 'general-surgery'
+    const targetCat = defaultCat && defaultCat !== 'all' ? defaultCat : selectedCategorySlug !== 'all' ? selectedCategorySlug : 'dental'
     setFormData({
       title: '',
       categorySlug: targetCat,
-      image: '/images/blog-instruments-tray.png',
-      pdfUrl: '/pdf/general-surgical-instruments-catalogue.pdf',
+      image: '',
+      pdfUrl: '',
       accessCode: '12345',
-      description: 'Experience Future of surgical instruments with ENDO Tech',
+      description: 'Experience Future of precision dental & surgical instruments with ENDO Tech',
     })
     setIsModalOpen(true)
   }
@@ -577,6 +574,7 @@ export function SubcategoryManager({ initialSubcategories }: SubcategoryManagerP
                   label="Subcategory Cover Artwork Image"
                   value={formData.image}
                   onChange={(url) => setFormData({ ...formData, image: url })}
+                  onUploadingChange={setIsUploadingMedia}
                 />
               </div>
 
@@ -586,6 +584,7 @@ export function SubcategoryManager({ initialSubcategories }: SubcategoryManagerP
                   type="pdf"
                   value={formData.pdfUrl}
                   onChange={(url) => setFormData({ ...formData, pdfUrl: url })}
+                  onUploadingChange={setIsUploadingMedia}
                   placeholderText="Click or Drag to Upload PDF Catalogue File from Device / Gallery"
                   helperText="Supports any size PDF catalogue (1000+ pages, large MBs/KBs files, fast direct upload)"
                 />
@@ -601,9 +600,22 @@ export function SubcategoryManager({ initialSubcategories }: SubcategoryManagerP
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 text-xs font-black text-white bg-[#E31B23] hover:bg-red-700 rounded-xl shadow-md cursor-pointer"
+                  disabled={isUploadingMedia || isSaving}
+                  className="px-6 py-2.5 text-xs font-black text-white bg-[#E31B23] hover:bg-red-700 disabled:opacity-50 rounded-xl shadow-md cursor-pointer flex items-center gap-2"
                 >
-                  {editingItem ? 'Update Subcategory' : 'Save Subcategory PDF'}
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Saving Live...</span>
+                    </>
+                  ) : isUploadingMedia ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Uploading File, Please Wait...</span>
+                    </>
+                  ) : (
+                    <span>{editingItem ? 'Update Subcategory' : 'Save Subcategory PDF'}</span>
+                  )}
                 </button>
               </div>
             </form>

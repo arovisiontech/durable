@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useTransition } from 'react'
 import { submitContactMessageAction } from '@/app/actions/public'
-import { Send, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react'
+import { Send, CheckCircle2, AlertCircle, Loader2, MapPin, ExternalLink } from 'lucide-react'
 
 const DEFAULT_FORM_SETTINGS = {
   title: 'Send Us an Inquiry',
@@ -186,6 +186,54 @@ export function ContactForm() {
           )}
         </button>
       </form>
+
+      {/* Interactive Factory Location Map Section (Directly under Send Inquiry button - SS 2) */}
+      <div className="pt-6 border-t border-slate-100 space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-red-600/15 border border-[#E31B23] flex items-center justify-center text-[#E31B23] shrink-0 shadow-[0_0_12px_rgba(227,27,35,0.3)]">
+              <MapPin className="w-4 h-4 fill-[#E31B23] text-[#E31B23]" />
+            </div>
+            <div>
+              <h4 className="text-xs font-black text-[#0B1B3D] uppercase tracking-wider flex items-center gap-2">
+                <span>Manufacturing HQ & Export Facility</span>
+                <span className="text-[10px] font-bold text-[#E31B23] bg-red-50 px-2 py-0.5 rounded border border-red-200">
+                  SIALKOT, PAKISTAN
+                </span>
+              </h4>
+              <p className="text-[11px] text-slate-500 font-medium leading-relaxed">
+                Noal More, Roras Road P.O. Box 919 Sialkot - 51310 Pakistan.
+              </p>
+            </div>
+          </div>
+
+          <a
+            href="https://maps.app.goo.gl/RGr1xeaZjtdHgCpX8"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#E31B23] hover:bg-red-700 text-white text-[11px] font-black uppercase tracking-wider rounded-xl shadow-xs transition-colors shrink-0 group self-start sm:self-auto"
+          >
+            <span>Open in Google Maps</span>
+            <ExternalLink className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+          </a>
+        </div>
+
+        {/* Embedded Interactive Map with Red Point Pin Highlight */}
+        <div className="w-full h-64 sm:h-72 rounded-2xl overflow-hidden border border-slate-200 shadow-xs relative bg-slate-100">
+          <iframe
+            title="Durable Hospital Supplies Google Maps Location"
+            src="https://maps.google.com/maps?q=32.502844,74.520444+(Durable+Hospital+Supplies)&t=&z=15&ie=UTF8&iwloc=B&output=embed"
+            className="w-full h-full border-0"
+            loading="lazy"
+            allowFullScreen
+          />
+          {/* Main Location Red Pin Indicator Overlay */}
+          <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-xs border border-slate-200 rounded-xl px-3 py-1.5 shadow-md flex items-center gap-2 pointer-events-none">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#E31B23] animate-ping" />
+            <span className="text-[11px] font-black text-[#0B1B3D]">DURABLE HOSPITAL SUPPLIES MAIN HQ</span>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

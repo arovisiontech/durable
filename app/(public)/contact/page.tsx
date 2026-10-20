@@ -137,10 +137,10 @@ export default function ContactPage() {
                   <div className="space-y-0.5 pt-0.5">
                     <h4 className="font-extrabold text-[#0B1B3D] text-sm">{infoData.emailTitle}</h4>
                     <a
-                      href={`mailto:${infoData.email}`}
-                      className="text-slate-700 font-bold hover:text-[#E31B23] transition-colors block"
+                      href={`mailto:${(infoData.email || 'info@durablehs.com').toLowerCase()}`}
+                      className="text-slate-700 font-bold hover:text-[#E31B23] transition-colors block lowercase"
                     >
-                      Email: {infoData.email}
+                      Email: {(infoData.email || 'info@durablehs.com').toLowerCase()}
                     </a>
                   </div>
                 </div>

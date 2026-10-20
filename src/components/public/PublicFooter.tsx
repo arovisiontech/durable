@@ -14,14 +14,23 @@ interface PublicFooterProps {
   initialData?: PublicFooterData
 }
 
-export function PublicFooter({ settings, initialData }: PublicFooterProps) {
+export function PublicFooter({ settings, categories = [], initialData }: PublicFooterProps) {
   const [footerData, setFooterData] = useState<PublicFooterData>(initialData || DEFAULT_FOOTER_DATA)
+  const [liveCategories, setLiveCategories] = useState<CategoryItem[]>(categories)
   const [newsletterEmail, setNewsletterEmail] = useState('')
   const [subscribed, setSubscribed] = useState(false)
+
+  // Keep liveCategories in sync with categories prop
+  useEffect(() => {
+    if (categories && categories.length > 0) {
+      setLiveCategories(categories)
+    }
+  }, [categories])
 
   // Real-time synchronization from Admin Panel / IndexedDB / Cloud
   useEffect(() => {
     const handleUpdate = () => {
+      // Sync footer data
       loadPersistentData<PublicFooterData>(
         'durable_footer_data',
         initialData || DEFAULT_FOOTER_DATA,
@@ -36,6 +45,19 @@ export function PublicFooter({ settings, initialData }: PublicFooterProps) {
           }
         }
       )
+
+      // Sync active categories so Product Range updates automatically
+      loadPersistentData<CategoryItem[]>(
+        'durable_categories',
+        categories || [],
+        (data) => {
+          if (data && Array.isArray(data) && data.length > 0) {
+            const active = data.filter((c) => c.is_published !== false)
+            active.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
+            setLiveCategories(active)
+          }
+        }
+      )
     }
 
     handleUpdate()
@@ -46,7 +68,7 @@ export function PublicFooter({ settings, initialData }: PublicFooterProps) {
       window.removeEventListener('durable_content_updated', handleUpdate)
       window.removeEventListener('storage', handleUpdate)
     }
-  }, [initialData])
+  }, [initialData, categories])
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault()
@@ -98,7 +120,7 @@ export function PublicFooter({ settings, initialData }: PublicFooterProps) {
             <img
               src={footerData.logoUrl || '/logo.svg'}
               alt={settings?.company_name || 'Durable Hospital Supplies'}
-              className="h-12 sm:h-14 w-auto object-contain transition-opacity hover:opacity-95"
+              className="h-16 sm:h-20 md:h-24 max-w-[280px] sm:max-w-[360px] w-auto object-contain transition-transform hover:scale-102"
             />
           </Link>
 
@@ -304,7 +326,16 @@ export function PublicFooter({ settings, initialData }: PublicFooterProps) {
               {footerData.productRangeTitle || 'PRODUCT RANGE'}
             </h3>
             <ul className="space-y-1.5 text-xs sm:text-sm text-slate-200 font-semibold">
-              {(footerData.productRangeLinks || []).map((link, idx) => {
+              {(liveCategories && liveCategories.length > 0
+                ? liveCategories.map((cat) => ({
+                    label: cat.name,
+                    href: `/category/${cat.slug}`,
+                    isHighlight: cat.slug === 'dental' || cat.slug === 'single-use-instruments',
+                  }))
+                : (footerData.productRangeLinks && footerData.productRangeLinks.length > 0)
+                  ? footerData.productRangeLinks
+                  : DEFAULT_FOOTER_DATA.productRangeLinks
+              ).map((link, idx) => {
                 const isHighlight = link.isHighlight
                 return (
                   <li key={idx}>

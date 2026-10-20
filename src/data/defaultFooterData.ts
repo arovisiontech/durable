@@ -42,11 +42,14 @@ export const DEFAULT_FOOTER_DATA: PublicFooterData = {
   productRangeTitle: 'PRODUCT RANGE',
   productRangeLinks: [
     { label: 'General Surgery', href: '/category/general-surgery' },
-    { label: 'Dental Instruments', href: '/category/dental' },
-    { label: 'Diagnostics Instruments', href: '/category/general-surgery' },
-    { label: 'Hollowware', href: '/category/medical-hollowware' },
+    { label: 'Dental', href: '/category/dental' },
+    { label: 'Medical Hollowware', href: '/category/medical-hollowware' },
+    { label: 'Ophthalmic', href: '/category/ophthalmic' },
     { label: 'Hospital Furniture', href: '/category/hospital-furniture' },
-    { label: 'Laparoscopy & Single Use', href: '/category/single-use-instruments', isHighlight: true },
+    { label: 'Single Use Instruments', href: '/category/single-use-instruments', isHighlight: true },
+    { label: 'Veterinary Instruments', href: '/category/veterinary-instruments' },
+    { label: 'Plastic Surgery', href: '/category/plastic-surgery' },
+    { label: 'Special Surgical Instruments', href: '/category/special-surgical-instruments' },
   ],
 
   copyrightText: '© 2026 Durable Hospital Supplies All Rights Reserved',
