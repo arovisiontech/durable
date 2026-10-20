@@ -270,7 +270,18 @@ export function getStoredCategories(): CategoryItem[] {
   if (typeof window === 'undefined') return INITIAL_CATEGORIES_SEED
   try {
     const data = getLocalStorageSync<CategoryItem[]>('durable_categories', INITIAL_CATEGORIES_SEED)
-    if (Array.isArray(data) && data.length > 0) return data
+    if (Array.isArray(data) && data.length > 0) {
+      const normalized = data.map((c: any) => {
+        if (c.slug === 'dental' || c.id === 'cat-dental' || c.name?.toLowerCase() === 'dental') {
+          return { ...c, is_published: true, sort_order: c.sort_order ?? 2 }
+        }
+        return c
+      })
+      if (!normalized.some((c: any) => c.slug === 'dental' || c.id === 'cat-dental')) {
+        normalized.splice(1, 0, INITIAL_CATEGORIES_SEED[1])
+      }
+      return normalized
+    }
   } catch (e) {
     console.error('Failed to parse categories:', e)
   }

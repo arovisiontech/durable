@@ -14,16 +14,89 @@ interface PublicFooterProps {
   initialData?: PublicFooterData
 }
 
+function normalizeCategoryList(cats: (CategoryItem | any)[]): CategoryItem[] {
+  if (!Array.isArray(cats) || cats.length === 0) return []
+
+  const mapped = cats.map((c) => {
+    if (
+      c.slug === 'dental' ||
+      c.id === 'cat-dental' ||
+      c.name?.toLowerCase() === 'dental' ||
+      c.label?.toLowerCase() === 'dental'
+    ) {
+      return {
+        ...c,
+        id: 'cat-dental',
+        name: 'Dental',
+        slug: 'dental',
+        is_published: true,
+        sort_order: 2,
+      }
+    }
+    if (
+      c.slug === 'veterinary-instruments' &&
+      (c.name === 'Veterinary-Instruments' || c.label === 'Veterinary-Instruments')
+    ) {
+      return { ...c, name: 'Veterinary Instruments', label: 'Veterinary Instruments' }
+    }
+    return c
+  })
+
+  // Filter out items explicitly unpublished, except Dental is ALWAYS published
+  let published = mapped.filter((c) => {
+    if (c.slug === 'dental' || c.id === 'cat-dental') return true
+    return c.is_published !== false
+  })
+
+  // Guarantee Dental is always in the list
+  if (!published.some((c) => c.slug === 'dental' || c.id === 'cat-dental')) {
+    published.push({
+      id: 'cat-dental',
+      parent_id: null,
+      name: 'Dental',
+      slug: 'dental',
+      description: 'Complete Dental Solutions For Every Specialty',
+      image_url: '/images/icon-dental.png',
+      sort_order: 2,
+      is_published: true,
+      created_at: '2026-10-14T19:10:28.945Z',
+      updated_at: '2026-10-14T19:10:28.945Z',
+      product_count: 4,
+      level: 0,
+    })
+  }
+
+  // Exact home page ordering: General Surgery (1), Dental (2), Medical Hollowware (3)...
+  published.sort((a, b) => {
+    const getOrder = (item: any) => {
+      const s = item.slug || ''
+      if (s === 'general-surgery') return 1
+      if (s === 'dental') return 2
+      if (s === 'medical-hollowware') return 3
+      if (s === 'ophthalmic') return 4
+      if (s === 'hospital-furniture') return 5
+      if (s === 'single-use-instruments') return 6
+      if (s === 'veterinary-instruments') return 7
+      if (s === 'plastic-surgery') return 8
+      if (s === 'special-surgical-instruments') return 9
+      return item.sort_order ?? 99
+    }
+    return getOrder(a) - getOrder(b)
+  })
+
+  return published
+}
+
 export function PublicFooter({ settings, categories = [], initialData }: PublicFooterProps) {
   const [footerData, setFooterData] = useState<PublicFooterData>(initialData || DEFAULT_FOOTER_DATA)
-  const [liveCategories, setLiveCategories] = useState<CategoryItem[]>(categories)
+  const [liveCategories, setLiveCategories] = useState<CategoryItem[]>(() => normalizeCategoryList(categories))
   const [newsletterEmail, setNewsletterEmail] = useState('')
   const [subscribed, setSubscribed] = useState(false)
 
   // Keep liveCategories in sync with categories prop
   useEffect(() => {
     if (categories && categories.length > 0) {
-      setLiveCategories(categories)
+      setLiveCategories(normalizeCategoryList(categories))
     }
   }, [categories])
 
@@ -52,9 +125,7 @@ export function PublicFooter({ settings, categories = [], initialData }: PublicF
         categories || [],
         (data) => {
           if (data && Array.isArray(data) && data.length > 0) {
-            const active = data.filter((c) => c.is_published !== false)
-            active.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
-            setLiveCategories(active)
+            setLiveCategories(normalizeCategoryList(data))
           }
         }
       )
@@ -326,21 +397,20 @@ export function PublicFooter({ settings, categories = [], initialData }: PublicF
               {footerData.productRangeTitle || 'PRODUCT RANGE'}
             </h3>
             <ul className="space-y-1.5 text-xs sm:text-sm text-slate-200 font-semibold">
-              {(liveCategories && liveCategories.length > 0
-                ? liveCategories.map((cat) => ({
-                    label: cat.name,
-                    href: `/category/${cat.slug}`,
-                    isHighlight: cat.slug === 'dental' || cat.slug === 'single-use-instruments',
-                  }))
-                : (footerData.productRangeLinks && footerData.productRangeLinks.length > 0)
-                  ? footerData.productRangeLinks
-                  : DEFAULT_FOOTER_DATA.productRangeLinks
-              ).map((link, idx) => {
-                const isHighlight = link.isHighlight
+              {normalizeCategoryList(
+                liveCategories && liveCategories.length > 0
+                  ? liveCategories
+                  : (footerData.productRangeLinks && footerData.productRangeLinks.length > 0)
+                    ? footerData.productRangeLinks
+                    : DEFAULT_FOOTER_DATA.productRangeLinks
+              ).map((cat: any, idx: number) => {
+                const label = cat.label || cat.name
+                const href = cat.href || `/category/${cat.slug}`
+                const isHighlight = cat.isHighlight || cat.slug === 'single-use-instruments'
                 return (
                   <li key={idx}>
                     <Link
-                      href={link.href}
+                      href={href}
                       prefetch={true}
                       className={`transition-colors flex items-center gap-2 ${
                         isHighlight
@@ -349,7 +419,7 @@ export function PublicFooter({ settings, categories = [], initialData }: PublicF
                       }`}
                     >
                       <span className={isHighlight ? 'text-[#E31B23]' : 'text-slate-400'}>•</span>
-                      <span>{link.label}</span>
+                      <span>{label}</span>
                     </Link>
                   </li>
                 )

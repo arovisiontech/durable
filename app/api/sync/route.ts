@@ -93,6 +93,31 @@ export async function GET(request: Request) {
     }
 
     if (parsedValue !== null && parsedValue !== undefined) {
+      if (key === 'durable_categories' && Array.isArray(parsedValue)) {
+        const normalized = parsedValue.map((c: any) => {
+          if (c.slug === 'dental' || c.id === 'cat-dental' || c.name?.toLowerCase() === 'dental') {
+            return { ...c, is_published: true, sort_order: c.sort_order ?? 2 }
+          }
+          return c
+        })
+        if (!normalized.some((c: any) => c.slug === 'dental' || c.id === 'cat-dental')) {
+          normalized.splice(1, 0, {
+            id: 'cat-dental',
+            parent_id: null,
+            name: 'Dental',
+            slug: 'dental',
+            description: 'Complete Dental Solutions For Every Specialty',
+            image_url: '/images/icon-dental.png',
+            sort_order: 2,
+            is_published: true,
+            created_at: '2026-10-14T19:10:28.945Z',
+            updated_at: '2026-10-14T19:10:28.945Z',
+            product_count: 4,
+            level: 0,
+          })
+        }
+        return NextResponse.json({ success: true, data: normalized, source: 'supabase' })
+      }
       return NextResponse.json({ success: true, data: parsedValue, source: 'supabase' })
     }
   } catch (err) {
@@ -100,8 +125,17 @@ export async function GET(request: Request) {
   }
 
   // 2. Fallback to persistent server file store
-  const storedVal = getServerData(key, null)
+  const storedVal = getServerData<any>(key, null)
   if (storedVal !== null && storedVal !== undefined) {
+    if (key === 'durable_categories' && Array.isArray(storedVal)) {
+      const normalized = (storedVal as any[]).map((c: any) => {
+        if (c.slug === 'dental' || c.id === 'cat-dental' || c.name?.toLowerCase() === 'dental') {
+          return { ...c, is_published: true, sort_order: c.sort_order ?? 2 }
+        }
+        return c
+      })
+      return NextResponse.json({ success: true, data: normalized, source: 'server_store' })
+    }
     return NextResponse.json({ success: true, data: storedVal, source: 'server_store' })
   }
 
@@ -118,6 +152,32 @@ export async function POST(request: Request) {
     }
 
     let valueToSave = value
+
+    // Guarantee Dental is always published and preserved in durable_categories
+    if (key === 'durable_categories' && Array.isArray(value)) {
+      valueToSave = value.map((c: any) => {
+        if (c.slug === 'dental' || c.id === 'cat-dental' || c.name?.toLowerCase() === 'dental') {
+          return { ...c, is_published: true, sort_order: c.sort_order ?? 2 }
+        }
+        return c
+      })
+      if (!valueToSave.some((c: any) => c.slug === 'dental' || c.id === 'cat-dental')) {
+        valueToSave.splice(1, 0, {
+          id: 'cat-dental',
+          parent_id: null,
+          name: 'Dental',
+          slug: 'dental',
+          description: 'Complete Dental Solutions For Every Specialty',
+          image_url: '/images/icon-dental.png',
+          sort_order: 2,
+          is_published: true,
+          created_at: '2026-10-14T19:10:28.945Z',
+          updated_at: '2026-10-14T19:10:28.945Z',
+          product_count: 4,
+          level: 0,
+        })
+      }
+    }
 
     // Clean and deduplicate solutions cards if posted
     if (key === 'durable_solutions_data' && Array.isArray(value)) {
