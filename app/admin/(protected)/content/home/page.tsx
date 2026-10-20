@@ -395,7 +395,27 @@ export default function AdminContentHomePage() {
       if (data && typeof data === 'object') setPrecisionData((prev) => ({ ...prev, ...data }))
     })
     loadPersistentData('durable_process_data', processSteps, (data) => {
-      if (Array.isArray(data) && data.length > 0) setProcessSteps(data)
+      if (Array.isArray(data) && data.length > 0) {
+        // Guarantee unique IDs so deleting duplicate items works cleanly
+        const seenIds = new Set<string>()
+        const clean = data.map((item: any, idx: number) => {
+          let id = item.id || `proc-${idx}`
+          if (seenIds.has(id)) {
+            id = `${id}-${idx}-${Math.random().toString(36).slice(2, 5)}`
+          }
+          seenIds.add(id)
+          return {
+            ...item,
+            id,
+            step_number: item.step_number || item.stepNumber || idx + 1,
+            title: item.title || '',
+            category: item.category || 'Research & Development',
+            description: item.description || '',
+            image_url: item.image_url || item.image || '/images/process-hand-filing.png',
+          }
+        })
+        setProcessSteps(clean)
+      }
     })
     loadPersistentData('durable_video_data', videoData, (data) => {
       if (data && typeof data === 'object') setVideoData((prev) => ({ ...prev, ...data }))
@@ -411,11 +431,17 @@ export default function AdminContentHomePage() {
   // SAVE ALL CHANGES TO STORAGE & CLOUD AUTOMATICALLY
   const saveAllToStorage = (
     overrideHero?: AdminHeroSlide[],
-    overrideSolutions?: AdminSolutionCard[]
+    overrideSolutions?: AdminSolutionCard[],
+    overrideProcess?: AdminProcessStep[],
+    overrideCert?: AdminCertLogo[],
+    overrideBlocks?: CustomHomeBlock[]
   ) => {
     try {
       const heroToSave = overrideHero || heroSlides
       const solutionsToSave = overrideSolutions || solutionsData
+      const processToSave = overrideProcess || processSteps
+      const certToSave = overrideCert || certLogos
+      const blocksToSave = overrideBlocks || customBlocks
 
       savePersistentData('durable_hero_slides', heroToSave)
       savePersistentData('durable_about_data', aboutData)
@@ -424,10 +450,10 @@ export default function AdminContentHomePage() {
       savePersistentData('durable_quality_trust_data', qualityTrustData)
       savePersistentData('durable_pillars_data', pillarsData)
       savePersistentData('durable_precision_data', precisionData)
-      savePersistentData('durable_process_data', processSteps)
+      savePersistentData('durable_process_data', processToSave)
       savePersistentData('durable_video_data', videoData)
-      savePersistentData('durable_cert_logos', certLogos)
-      savePersistentData('durable_custom_home_blocks', customBlocks)
+      savePersistentData('durable_cert_logos', certToSave)
+      savePersistentData('durable_custom_home_blocks', blocksToSave)
 
       setIsSaved(true)
       setSaveMessage('Home Page changes saved & synced live across all devices!')
@@ -1116,7 +1142,13 @@ export default function AdminContentHomePage() {
             <button
               onClick={() => {
                 setEditingItemId(null)
-                setProcessForm({ step_number: processSteps.length + 1, title: 'New Process Step', category: 'Research & Development', description: 'Step description', image_url: '/images/process-hand-filing.png' })
+                setProcessForm({
+                  step_number: processSteps.length + 1,
+                  title: '',
+                  category: 'Research & Development',
+                  description: '',
+                  image_url: '/images/process-hand-filing.png',
+                })
                 setActiveModal('process')
               }}
               className="px-4 py-2 text-xs font-bold text-white bg-[#0B1B3D] hover:bg-slate-800 rounded-xl transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
@@ -1135,20 +1167,43 @@ export default function AdminContentHomePage() {
                     <img src={step.image_url} alt={step.title} className="w-full h-full object-cover" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <span className="text-[10px] font-black text-[#E31B23] uppercase block">STEP 0{step.step_number} • {step.category}</span>
+                    <span className="text-[10px] font-black text-[#E31B23] uppercase block">
+                      STEP {step.step_number < 10 ? `0${step.step_number}` : step.step_number} • {step.category}
+                    </span>
                     <h3 className="text-xs font-black text-[#0B1B3D]">{step.title}</h3>
-                    <p className="text-[11px] text-slate-500 truncate">{step.description}</p>
+                    <p className="text-[11px] text-slate-500 line-clamp-2">{step.description}</p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 shrink-0">
                   <button
+                    type="button"
+                    onClick={() => {
+                      setEditingItemId(step.id)
+                      setProcessForm({
+                        step_number: step.step_number || 1,
+                        title: step.title || '',
+                        category: step.category || 'Research & Development',
+                        description: step.description || '',
+                        image_url: step.image_url || '/images/process-hand-filing.png',
+                      })
+                      setActiveModal('process')
+                    }}
+                    className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-lg flex items-center gap-1 cursor-pointer transition-colors"
+                  >
+                    <Edit3 className="w-3.5 h-3.5" />
+                    <span>Edit</span>
+                  </button>
+                  <button
+                    type="button"
                     onClick={() => {
                       const updated = processSteps.filter((p) => p.id !== step.id)
                       setProcessSteps(updated)
-                      saveAllToStorage()
+                      savePersistentData('durable_process_data', updated)
+                      saveAllToStorage(undefined, undefined, updated)
                     }}
-                    className="p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg cursor-pointer border border-red-200"
+                    className="p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg cursor-pointer border border-red-200 transition-colors"
+                    title="Delete Process Step"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -1529,6 +1584,22 @@ export default function AdminContentHomePage() {
             {/* PROCESS MODAL */}
             {activeModal === 'process' && (
               <div className="space-y-4">
+                <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                  <h3 className="text-sm font-black text-[#0B1B3D]">
+                    {editingItemId ? 'Edit Process Step' : 'Add New Process Step'}
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveModal(null)
+                      setEditingItemId(null)
+                    }}
+                    className="p-1 text-slate-400 hover:text-slate-600 rounded-lg cursor-pointer"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
                 <AdminMediaUploadPlaceholder
                   label="Process Step Image"
                   value={processForm.image_url}
@@ -1536,43 +1607,85 @@ export default function AdminContentHomePage() {
                   placeholderText="Upload Process Image"
                 />
 
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Department Category</label>
-                  <select
-                    value={processForm.category}
-                    onChange={(e) => setProcessForm({ ...processForm, category: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
-                  >
-                    <option value="Research & Development">Research & Development</option>
-                    <option value="Material Sourcing">Material Sourcing</option>
-                    <option value="Precision Manufacturing">Precision Manufacturing</option>
-                    <option value="Quality Inspection">Quality Inspection</option>
-                    <option value="Surface Finishing">Surface Finishing</option>
-                    <option value="Sterilization & Cleaning">Sterilization & Cleaning</option>
-                    <option value="Testing & Validation">Testing & Validation</option>
-                  </select>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-700">Department Category</label>
+                    <select
+                      value={processForm.category}
+                      onChange={(e) => setProcessForm({ ...processForm, category: e.target.value })}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-[#E31B23]"
+                    >
+                      <option value="Research & Development">Research & Development</option>
+                      <option value="Material Sourcing">Material Sourcing</option>
+                      <option value="Precision Manufacturing">Precision Manufacturing</option>
+                      <option value="Quality Inspection">Quality Inspection</option>
+                      <option value="Surface Finishing">Surface Finishing</option>
+                      <option value="Sterilization & Cleaning">Sterilization & Cleaning</option>
+                      <option value="Testing & Validation">Testing & Validation</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-700">Step Number</label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={99}
+                      value={processForm.step_number}
+                      onChange={(e) => setProcessForm({ ...processForm, step_number: parseInt(e.target.value) || 1 })}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:outline-none focus:border-[#E31B23]"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-700">Step Title</label>
                   <input
                     type="text"
+                    required
+                    placeholder="e.g., German & Japanese Stainless Steel Sourcing"
                     value={processForm.title}
                     onChange={(e) => setProcessForm({ ...processForm, title: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:outline-none focus:border-[#E31B23]"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700">Step Description</label>
+                  <textarea
+                    rows={3}
+                    placeholder="Describe the workflow details, precision standards, or machinery used..."
+                    value={processForm.description}
+                    onChange={(e) => setProcessForm({ ...processForm, description: e.target.value })}
+                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-[#E31B23]"
                   />
                 </div>
 
                 <button
+                  type="button"
                   onClick={() => {
-                    const updated = [...processSteps, { id: `proc-${Date.now()}`, ...processForm }]
+                    let updated: AdminProcessStep[] = []
+                    if (editingItemId) {
+                      updated = processSteps.map((p) =>
+                        p.id === editingItemId
+                          ? { ...p, ...processForm, id: editingItemId }
+                          : p
+                      )
+                    } else {
+                      updated = [
+                        ...processSteps,
+                        { id: `proc-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, ...processForm },
+                      ]
+                    }
                     setProcessSteps(updated)
-                    saveAllToStorage()
+                    savePersistentData('durable_process_data', updated)
+                    saveAllToStorage(undefined, undefined, updated)
                     setActiveModal(null)
+                    setEditingItemId(null)
                   }}
-                  className="w-full py-2.5 bg-[#0B1B3D] text-white text-xs font-black rounded-xl cursor-pointer"
+                  className="w-full py-2.5 bg-[#0B1B3D] hover:bg-slate-800 text-white text-xs font-black rounded-xl cursor-pointer transition-colors"
                 >
-                  Save Process Step
+                  {editingItemId ? 'Update Process Step' : 'Save Process Step'}
                 </button>
               </div>
             )}

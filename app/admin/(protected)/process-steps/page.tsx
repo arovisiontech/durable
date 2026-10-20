@@ -161,12 +161,18 @@ export default function AdminProcessStepsPage() {
           image_url: item.image_url || item.image || '/images/process-hand-filing.png',
         }))
 
-        // Merge loaded with default items if any category is missing
-        const existingCats = new Set(loaded.map((l) => l.category))
-        const missing = DEFAULT_STEPS.filter((d) => !existingCats.has(d.category))
-        const merged = [...loaded, ...missing]
+        // Ensure unique IDs and set steps
+        const seenIds = new Set<string>()
+        const clean = loaded.map((item, idx) => {
+          let id = item.id
+          if (seenIds.has(id)) {
+            id = `${id}-${idx}-${Math.random().toString(36).slice(2, 5)}`
+          }
+          seenIds.add(id)
+          return { ...item, id }
+        })
 
-        setSteps(merged)
+        setSteps(clean)
       }
     })
   }, [])

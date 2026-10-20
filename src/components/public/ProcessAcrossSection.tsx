@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { loadPersistentData } from '@/src/lib/persistentStorage'
 
 export interface ProcessItem {
   id: string
@@ -138,41 +139,41 @@ export function ProcessAcrossSection() {
   ]
 
   const loadData = () => {
-    try {
-      const saved = localStorage.getItem('durable_process_data')
-      if (saved) {
-        const parsed = JSON.parse(saved)
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const mapped: ProcessItem[] = parsed.map((item: any, idx: number) => ({
-            id: item.id || `p-${idx}`,
-            stepNumber: item.stepNumber || (item.step_number ? `0${item.step_number}` : `0${idx + 1}`),
-            title: item.title,
-            category: normalizeCategory(item.category, item.subtitle),
-            subtitle: item.subtitle || item.category || '',
-            description: item.description || '',
-            image: item.image || item.image_url || '/images/process-hand-filing.png',
-          }))
-
-          // Merge loaded items with defaults so all 7 departments have at least 1 process step unless explicitly empty
-          const existingCategories = new Set(mapped.map((m) => m.category))
-          const missingDefaults = DEFAULT_PROCESS.filter((d) => !existingCategories.has(d.category))
-          
-          setProcessItems([...mapped, ...missingDefaults])
-          return
-        }
+    loadPersistentData<any[]>('durable_process_data', DEFAULT_PROCESS, (data) => {
+      if (Array.isArray(data) && data.length > 0) {
+        const mapped: ProcessItem[] = data.map((item: any, idx: number) => ({
+          id: item.id || `p-${idx}`,
+          stepNumber:
+            item.stepNumber ||
+            (item.step_number
+              ? item.step_number < 10
+                ? `0${item.step_number}`
+                : `${item.step_number}`
+              : `0${idx + 1}`),
+          title: item.title || '',
+          category: normalizeCategory(item.category, item.subtitle),
+          subtitle: item.subtitle || item.category || '',
+          description: item.description || '',
+          image: item.image || item.image_url || '/images/process-hand-filing.png',
+        }))
+        setProcessItems(mapped)
+      } else if (Array.isArray(data) && data.length === 0) {
+        setProcessItems([])
+      } else {
+        setProcessItems(DEFAULT_PROCESS)
       }
-      setProcessItems(DEFAULT_PROCESS)
-    } catch (e) {
-      console.error('LocalStorage process read error:', e)
-      setProcessItems(DEFAULT_PROCESS)
-    }
+    })
   }
 
   useEffect(() => {
     loadData()
     const handleUpdate = () => loadData()
     window.addEventListener('durable_content_updated', handleUpdate)
-    return () => window.removeEventListener('durable_content_updated', handleUpdate)
+    window.addEventListener('storage', handleUpdate)
+    return () => {
+      window.removeEventListener('durable_content_updated', handleUpdate)
+      window.removeEventListener('storage', handleUpdate)
+    }
   }, [])
 
   const filteredItems =
