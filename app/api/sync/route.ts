@@ -92,22 +92,36 @@ export async function GET(request: Request) {
       }
     }
 
-    // Handle process data: ensure full 9 steps are never truncated by stale 4-item cloud rows
+    // Handle process data: ensure clean list without corrupt / deleted steps
     if (key === 'durable_process_data') {
-      const serverCount = Array.isArray(serverVal) ? serverVal.length : 0
-      const cloudCount = Array.isArray(parsedValue) ? parsedValue.length : 0
-      if (serverCount > cloudCount) {
-        // Heal Supabase in background
-        if (supabase) {
-          supabase
-            .from('page_sections')
-            .update({ content: { data: serverVal }, updated_at: new Date().toISOString() })
-            .eq('heading', 'durable_process_data')
-            .then(() => {})
-            .catch(() => {})
-        }
-        return NextResponse.json({ success: true, data: serverVal, source: 'server_store_rich' })
+      const sourceList =
+        Array.isArray(parsedValue) && parsedValue.length > 0
+          ? parsedValue
+          : Array.isArray(serverVal) && serverVal.length > 0
+          ? serverVal
+          : []
+
+      const cleanList = sourceList.filter((item: any) => {
+        if (!item) return false
+        const id = item.id || ''
+        const title = (item.title || '').trim().toLowerCase()
+        // Permanently filter out the test item "proc-1792547532465-236o" and dummy "Text"
+        if (id === 'proc-1792547532465-236o') return false
+        if (title === 'text' && (!item.description || item.description.trim() === '')) return false
+        return true
+      })
+
+      // If Supabase row has the corrupt item or wrong count, heal Supabase in background
+      if (Array.isArray(parsedValue) && parsedValue.length !== cleanList.length && supabase) {
+        supabase
+          .from('page_sections')
+          .update({ content: { data: cleanList }, updated_at: new Date().toISOString() })
+          .eq('heading', 'durable_process_data')
+          .then(() => {})
+          .catch(() => {})
       }
+
+      return NextResponse.json({ success: true, data: cleanList, source: 'process_clean' })
     }
 
     if (parsedValue !== null && parsedValue !== undefined) {
@@ -163,13 +177,17 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { key, value } = body
+    const { key, value, deletedId, deletedIds } = body
 
     if (!key || value === undefined) {
       return NextResponse.json({ error: 'Key and value required' }, { status: 400 })
     }
 
     let valueToSave = value
+
+    // If deleted IDs are provided, filter them out
+    const delSet = new Set<string>(Array.isArray(deletedIds) ? deletedIds : [])
+    if (deletedId) delSet.add(deletedId)
 
     // Guarantee Dental is always published and preserved in durable_categories
     if (key === 'durable_categories' && Array.isArray(value)) {
@@ -210,6 +228,19 @@ export async function POST(request: Request) {
         }
         seenTitle.add(titleKey)
         if (countKey) seenCount.add(countKey)
+        return true
+      })
+    }
+
+    // Clean process steps if posted
+    if (key === 'durable_process_data' && Array.isArray(value)) {
+      valueToSave = value.filter((item: any) => {
+        if (!item) return false
+        const id = item.id || ''
+        const title = (item.title || '').trim().toLowerCase()
+        if (delSet.has(id)) return false
+        if (id === 'proc-1792547532465-236o') return false
+        if (title === 'text' && (!item.description || item.description.trim() === '')) return false
         return true
       })
     }

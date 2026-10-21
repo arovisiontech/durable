@@ -129,21 +129,30 @@ export function ProcessAcrossSection() {
     if (typeof window !== 'undefined') {
       const saved = getLocalStorageSync<any[]>('durable_process_data', null as any)
       if (Array.isArray(saved) && saved.length > 0) {
-        return saved.map((item: any, idx: number) => ({
-          id: item.id || `p-${idx}`,
-          stepNumber:
-            item.stepNumber ||
-            (item.step_number
-              ? item.step_number < 10
-                ? `0${item.step_number}`
-                : `${item.step_number}`
-              : `0${idx + 1}`),
-          title: item.title || '',
-          category: normalizeCategory(item.category, item.subtitle),
-          subtitle: item.subtitle || item.category || '',
-          description: item.description || '',
-          image: item.image || item.image_url || '/images/process-hand-filing.png',
-        }))
+        return saved
+          .filter((item: any) => {
+            if (!item) return false
+            const id = item.id || ''
+            const title = (item.title || '').trim().toLowerCase()
+            if (id === 'proc-1792547532465-236o') return false
+            if (title === 'text' && (!item.description || item.description.trim() === '')) return false
+            return true
+          })
+          .map((item: any, idx: number) => ({
+            id: item.id || `p-${idx}`,
+            stepNumber:
+              item.stepNumber ||
+              (item.step_number
+                ? item.step_number < 10
+                  ? `0${item.step_number}`
+                  : `${item.step_number}`
+                : `0${idx + 1}`),
+            title: item.title || '',
+            category: normalizeCategory(item.category, item.subtitle),
+            subtitle: item.subtitle || item.category || '',
+            description: item.description || '',
+            image: item.image || item.image_url || '/images/process-hand-filing.png',
+          }))
       }
     }
     return DEFAULT_PROCESS
@@ -163,21 +172,30 @@ export function ProcessAcrossSection() {
   const loadData = () => {
     loadPersistentData<any[]>('durable_process_data', DEFAULT_PROCESS, (data) => {
       if (Array.isArray(data) && data.length > 0) {
-        const mapped: ProcessItem[] = data.map((item: any, idx: number) => ({
-          id: item.id || `p-${idx}`,
-          stepNumber:
-            item.stepNumber ||
-            (item.step_number
-              ? item.step_number < 10
-                ? `0${item.step_number}`
-                : `${item.step_number}`
-              : `0${idx + 1}`),
-          title: item.title || '',
-          category: normalizeCategory(item.category, item.subtitle),
-          subtitle: item.subtitle || item.category || '',
-          description: item.description || '',
-          image: item.image || item.image_url || '/images/process-hand-filing.png',
-        }))
+        const mapped: ProcessItem[] = data
+          .filter((item: any) => {
+            if (!item) return false
+            const id = item.id || ''
+            const title = (item.title || '').trim().toLowerCase()
+            if (id === 'proc-1792547532465-236o') return false
+            if (title === 'text' && (!item.description || item.description.trim() === '')) return false
+            return true
+          })
+          .map((item: any, idx: number) => ({
+            id: item.id || `p-${idx}`,
+            stepNumber:
+              item.stepNumber ||
+              (item.step_number
+                ? item.step_number < 10
+                  ? `0${item.step_number}`
+                  : `${item.step_number}`
+                : `0${idx + 1}`),
+            title: item.title || '',
+            category: normalizeCategory(item.category, item.subtitle),
+            subtitle: item.subtitle || item.category || '',
+            description: item.description || '',
+            image: item.image || item.image_url || '/images/process-hand-filing.png',
+          }))
         setProcessItems(mapped)
       } else if (Array.isArray(data) && data.length === 0) {
         setProcessItems([])

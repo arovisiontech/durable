@@ -28,10 +28,22 @@ import {
   Globe,
   TrendingUp,
   Factory,
+  Loader2,
 } from 'lucide-react'
 import { AdminMediaUploadPlaceholder } from '@/src/components/admin/AdminMediaUploadPlaceholder'
 import { RichTextToolbar } from '@/src/components/admin/RichTextToolbar'
-import { savePersistentData, loadPersistentData, getLocalStorageSync } from '@/src/lib/persistentStorage'
+import {
+  savePersistentData,
+  loadPersistentData,
+  getLocalStorageSync,
+  recordDeletedId,
+  clearDeletedId,
+  savePersistentDataAsync,
+} from '@/src/lib/persistentStorage'
+import {
+  deleteProcessStepAction,
+  saveProcessStepsAction,
+} from '@/app/admin/actions/process'
 
 // Interfaces
 export interface AdminHeroSlide {
@@ -406,6 +418,7 @@ export default function AdminContentHomePage() {
   // Modal Dialog Control States
   const [activeModal, setActiveModal] = useState<'hero' | 'stat' | 'solution' | 'qualityCard' | 'pillar' | 'process' | 'cert' | 'custom' | null>(null)
   const [editingItemId, setEditingItemId] = useState<string | null>(null)
+  const [deletingStepId, setDeletingStepId] = useState<string | null>(null)
 
   // Forms for Modals
   const [heroForm, setHeroForm] = useState<Omit<AdminHeroSlide, 'id'>>({
@@ -473,25 +486,34 @@ export default function AdminContentHomePage() {
       if (data && typeof data === 'object') setPrecisionData((prev) => ({ ...prev, ...data }))
     })
     loadPersistentData('durable_process_data', processSteps, (data) => {
-      if (Array.isArray(data) && data.length > 0) {
-        // Guarantee unique IDs so deleting duplicate items works cleanly
+      if (Array.isArray(data)) {
+        // Guarantee unique IDs and remove deleted/dummy items
         const seenIds = new Set<string>()
-        const clean = data.map((item: any, idx: number) => {
-          let id = item.id || `proc-${idx}`
-          if (seenIds.has(id)) {
-            id = `${id}-${idx}-${Math.random().toString(36).slice(2, 5)}`
-          }
-          seenIds.add(id)
-          return {
-            ...item,
-            id,
-            step_number: item.step_number || item.stepNumber || idx + 1,
-            title: item.title || '',
-            category: item.category || 'Research & Development',
-            description: item.description || '',
-            image_url: item.image_url || item.image || '/images/process-hand-filing.png',
-          }
-        })
+        const clean = data
+          .filter((item: any) => {
+            if (!item) return false
+            const id = item.id || ''
+            const title = (item.title || '').trim().toLowerCase()
+            if (id === 'proc-1792547532465-236o') return false
+            if (title === 'text' && (!item.description || item.description.trim() === '')) return false
+            return true
+          })
+          .map((item: any, idx: number) => {
+            let id = item.id || `proc-${idx}`
+            if (seenIds.has(id)) {
+              id = `${id}-${idx}-${Math.random().toString(36).slice(2, 5)}`
+            }
+            seenIds.add(id)
+            return {
+              ...item,
+              id,
+              step_number: item.step_number || item.stepNumber || idx + 1,
+              title: item.title || '',
+              category: item.category || 'Research & Development',
+              description: item.description || '',
+              image_url: item.image_url || item.image || '/images/process-hand-filing.png',
+            }
+          })
         setProcessSteps(clean)
       }
     })
@@ -1275,18 +1297,34 @@ export default function AdminContentHomePage() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => {
-                      const currentList = processStepsRef.current.length > 0 ? processStepsRef.current : processSteps
-                      const updated = currentList.filter((p) => p.id !== step.id)
-                      setProcessSteps(updated)
-                      processStepsRef.current = updated
-                      savePersistentData('durable_process_data', updated)
-                      saveAllToStorage(undefined, undefined, updated)
+                    disabled={deletingStepId === step.id}
+                    onClick={async () => {
+                      const stepId = step.id
+                      setDeletingStepId(stepId)
+                      try {
+                        recordDeletedId('durable_process_data', stepId)
+                        const currentList = processStepsRef.current.length > 0 ? processStepsRef.current : processSteps
+                        const updated = currentList.filter((p) => p.id !== stepId)
+                        setProcessSteps(updated)
+                        processStepsRef.current = updated
+                        savePersistentData('durable_process_data', updated)
+                        await savePersistentDataAsync('durable_process_data', updated, stepId)
+                        try {
+                          await deleteProcessStepAction(stepId)
+                        } catch {}
+                        saveAllToStorage(undefined, undefined, updated)
+                      } finally {
+                        setDeletingStepId(null)
+                      }
                     }}
-                    className="p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg cursor-pointer border border-red-200 transition-colors"
+                    className="p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg cursor-pointer border border-red-200 transition-colors disabled:opacity-50"
                     title="Delete Process Step"
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    {deletingStepId === step.id ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Trash2 className="w-3.5 h-3.5" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -1744,24 +1782,31 @@ export default function AdminContentHomePage() {
 
                 <button
                   type="button"
-                  onClick={() => {
+                  onClick={async () => {
                     let updated: AdminProcessStep[] = []
                     const currentList = processStepsRef.current.length > 0 ? processStepsRef.current : processSteps
                     if (editingItemId) {
+                      clearDeletedId('durable_process_data', editingItemId)
                       updated = currentList.map((p) =>
                         p.id === editingItemId
                           ? { ...p, ...processForm, id: editingItemId }
                           : p
                       )
                     } else {
+                      const newId = `proc-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
+                      clearDeletedId('durable_process_data', newId)
                       updated = [
                         ...currentList,
-                        { id: `proc-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, ...processForm },
+                        { id: newId, ...processForm },
                       ]
                     }
                     setProcessSteps(updated)
                     processStepsRef.current = updated
                     savePersistentData('durable_process_data', updated)
+                    await savePersistentDataAsync('durable_process_data', updated)
+                    try {
+                      await saveProcessStepsAction(updated)
+                    } catch {}
                     saveAllToStorage(undefined, undefined, updated)
                     setActiveModal(null)
                     setEditingItemId(null)
