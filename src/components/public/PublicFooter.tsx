@@ -109,11 +109,26 @@ export function PublicFooter({ settings, categories = [], initialData }: PublicF
         initialData || DEFAULT_FOOTER_DATA,
         (data) => {
           if (data) {
+            const cleanSocials = {
+              ...DEFAULT_FOOTER_DATA.socials,
+              ...(data.socials || {}),
+            }
+            if (!cleanSocials.instagram || cleanSocials.instagram === 'https://instagram.com' || cleanSocials.instagram === 'https://instagram.com/') {
+              cleanSocials.instagram = 'https://www.instagram.com/durablehospitalsupplies/'
+            }
+            if (!cleanSocials.facebook || cleanSocials.facebook === 'https://facebook.com' || cleanSocials.facebook === 'https://facebook.com/') {
+              cleanSocials.facebook = 'https://www.facebook.com/p/Durable-Hospital-Supplies-100063835312521/'
+            }
+            if (!cleanSocials.linkedin || cleanSocials.linkedin === 'https://linkedin.com' || cleanSocials.linkedin === 'https://linkedin.com/') {
+              cleanSocials.linkedin = 'https://pk.linkedin.com/company/durablehospitalsupplies?trk=public_post_feed-actor-name'
+            }
+
             setFooterData({
               ...DEFAULT_FOOTER_DATA,
               ...data,
               email: data.email?.toLowerCase() || DEFAULT_FOOTER_DATA.email,
               mapUrl: data.mapUrl || DEFAULT_FOOTER_DATA.mapUrl,
+              socials: cleanSocials,
             })
           }
         }
@@ -152,6 +167,27 @@ export function PublicFooter({ settings, categories = [], initialData }: PublicF
 
   const cleanEmail = (footerData.email || 'info@durablehs.com').trim().toLowerCase()
   const mapUrl = footerData.mapUrl || 'https://maps.app.goo.gl/RGr1xeaZjtdHgCpX8'
+
+  const instagramUrl =
+    footerData.socials?.instagram &&
+    footerData.socials.instagram !== 'https://instagram.com' &&
+    footerData.socials.instagram !== 'https://instagram.com/'
+      ? footerData.socials.instagram
+      : 'https://www.instagram.com/durablehospitalsupplies/'
+
+  const facebookUrl =
+    footerData.socials?.facebook &&
+    footerData.socials.facebook !== 'https://facebook.com' &&
+    footerData.socials.facebook !== 'https://facebook.com/'
+      ? footerData.socials.facebook
+      : 'https://www.facebook.com/p/Durable-Hospital-Supplies-100063835312521/'
+
+  const linkedinUrl =
+    footerData.socials?.linkedin &&
+    footerData.socials.linkedin !== 'https://linkedin.com' &&
+    footerData.socials.linkedin !== 'https://linkedin.com/'
+      ? footerData.socials.linkedin
+      : 'https://pk.linkedin.com/company/durablehospitalsupplies?trk=public_post_feed-actor-name'
 
   return (
     <footer className="w-full bg-[#181F28] text-slate-200 py-8 sm:py-12 relative overflow-hidden border-t border-slate-800">
@@ -292,9 +328,9 @@ export function PublicFooter({ settings, categories = [], initialData }: PublicF
             {/* Social Icons Row */}
             <div className="flex items-center gap-2 pt-2">
               {/* Instagram */}
-              {footerData.socials?.instagram && (
+              {instagramUrl && (
                 <a
-                  href={footerData.socials.instagram}
+                  href={instagramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Instagram"
@@ -309,9 +345,9 @@ export function PublicFooter({ settings, categories = [], initialData }: PublicF
               )}
 
               {/* Facebook */}
-              {footerData.socials?.facebook && (
+              {facebookUrl && (
                 <a
-                  href={footerData.socials.facebook}
+                  href={facebookUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Facebook"
@@ -339,9 +375,9 @@ export function PublicFooter({ settings, categories = [], initialData }: PublicF
               )}
 
               {/* LinkedIn */}
-              {footerData.socials?.linkedin && (
+              {linkedinUrl && (
                 <a
-                  href={footerData.socials.linkedin}
+                  href={linkedinUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="LinkedIn"
@@ -376,7 +412,11 @@ export function PublicFooter({ settings, categories = [], initialData }: PublicF
               {footerData.quickLinksTitle || 'QUICK LINKS'}
             </h3>
             <ul className="space-y-1.5 text-xs sm:text-sm text-slate-200 font-semibold">
-              {(footerData.quickLinks || []).map((link, idx) => (
+              {(
+                footerData.quickLinks && footerData.quickLinks.length > 0
+                  ? footerData.quickLinks
+                  : DEFAULT_FOOTER_DATA.quickLinks
+              ).map((link, idx) => (
                 <li key={idx}>
                   <Link
                     href={link.href}

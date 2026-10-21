@@ -21,6 +21,7 @@ import {
 import { PublicFooterData, FooterLinkItem } from '@/src/types/public'
 import { DEFAULT_FOOTER_DATA } from '@/src/data/defaultFooterData'
 import { savePersistentData, loadPersistentData } from '@/src/lib/persistentStorage'
+import { saveFooterAction } from '@/app/admin/actions/footer'
 
 export default function AdminFooterPage() {
   const [data, setData] = useState<PublicFooterData>(DEFAULT_FOOTER_DATA)
@@ -33,11 +34,26 @@ export default function AdminFooterPage() {
       DEFAULT_FOOTER_DATA,
       (loaded) => {
         if (loaded) {
+          const cleanSocials = {
+            ...DEFAULT_FOOTER_DATA.socials,
+            ...(loaded.socials || {}),
+          }
+          if (!cleanSocials.instagram || cleanSocials.instagram === 'https://instagram.com' || cleanSocials.instagram === 'https://instagram.com/') {
+            cleanSocials.instagram = 'https://www.instagram.com/durablehospitalsupplies/'
+          }
+          if (!cleanSocials.facebook || cleanSocials.facebook === 'https://facebook.com' || cleanSocials.facebook === 'https://facebook.com/') {
+            cleanSocials.facebook = 'https://www.facebook.com/p/Durable-Hospital-Supplies-100063835312521/'
+          }
+          if (!cleanSocials.linkedin || cleanSocials.linkedin === 'https://linkedin.com' || cleanSocials.linkedin === 'https://linkedin.com/') {
+            cleanSocials.linkedin = 'https://pk.linkedin.com/company/durablehospitalsupplies?trk=public_post_feed-actor-name'
+          }
+
           setData({
             ...DEFAULT_FOOTER_DATA,
             ...loaded,
             email: loaded.email?.toLowerCase() || DEFAULT_FOOTER_DATA.email,
             mapUrl: loaded.mapUrl || DEFAULT_FOOTER_DATA.mapUrl,
+            socials: cleanSocials,
           })
         }
       }
@@ -49,10 +65,15 @@ export default function AdminFooterPage() {
       ...data,
       email: data.email.trim().toLowerCase(),
       mapUrl: data.mapUrl.trim() || 'https://maps.app.goo.gl/RGr1xeaZjtdHgCpX8',
+      socials: {
+        ...DEFAULT_FOOTER_DATA.socials,
+        ...data.socials,
+      },
     }
 
     setData(cleanData)
     savePersistentData('durable_footer_data', cleanData)
+    saveFooterAction(cleanData).catch(() => {})
     setIsSaved(true)
     setTimeout(() => setIsSaved(false), 3000)
   }
@@ -702,7 +723,7 @@ export default function AdminFooterPage() {
                   })
                 }
                 className="w-full text-sm px-4 py-2.5 rounded-xl border border-slate-300 focus:border-red-500 focus:outline-none font-mono text-xs"
-                placeholder="https://instagram.com/durable"
+                placeholder="https://www.instagram.com/durablehospitalsupplies/"
               />
             </div>
 
@@ -720,7 +741,7 @@ export default function AdminFooterPage() {
                   })
                 }
                 className="w-full text-sm px-4 py-2.5 rounded-xl border border-slate-300 focus:border-red-500 focus:outline-none font-mono text-xs"
-                placeholder="https://facebook.com/durable"
+                placeholder="https://www.facebook.com/p/Durable-Hospital-Supplies-100063835312521/"
               />
             </div>
 
@@ -756,7 +777,7 @@ export default function AdminFooterPage() {
                   })
                 }
                 className="w-full text-sm px-4 py-2.5 rounded-xl border border-slate-300 focus:border-red-500 focus:outline-none font-mono text-xs"
-                placeholder="https://linkedin.com/company/durable"
+                placeholder="https://pk.linkedin.com/company/durablehospitalsupplies?trk=public_post_feed-actor-name"
               />
             </div>
 
