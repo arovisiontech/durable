@@ -5,6 +5,8 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: '50mb',
     },
+    cpus: 2,
+    workerThreads: false,
   },
   images: {
     remotePatterns: [
