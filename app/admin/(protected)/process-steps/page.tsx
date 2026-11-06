@@ -41,7 +41,7 @@ export interface ProcessStepItem {
   image_url?: string
 }
 
-export const DEPARTMENT_CATEGORIES = [
+const DEPARTMENT_CATEGORIES = [
   'Research & Development',
   'Material Sourcing',
   'Precision Manufacturing',
